@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace TaskManagerTLA.DAL.Entities
+namespace TaskManagerTLA.BLL.DTO
 {
-   public class ActualTask
+    public class ActualTaskDTO
     {
         public int ActualTaskId { get; set; }
         public int ActTaskLeigth { get; set; }

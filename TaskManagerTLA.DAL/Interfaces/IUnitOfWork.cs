@@ -5,7 +5,7 @@ using TaskManagerTLA.DAL.Entities;
 
 namespace TaskManagerTLA.DAL.Interfaces
 {
-    interface IUnitOfWork : IDisposable
+    public interface IUnitOfWork : IDisposable
     {
         IRepository<TaskModel> Tasks { get; }
         IRepository<ActualTask> ActualTasks {get; }

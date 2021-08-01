@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace TaskManagerTLA.DAL.Entities
+namespace TaskManagerTLA.BLL.DTO
 {
-    public class TaskModel
-    { 
+    public class TaskDTO
+    {
         public int TaskId { get; set; }
         public string TaskName { get; set; }
         public string TaskDescription { get; set; }
         public int TaskLeigth { get; set; }
         public DateTime TaskBegin { get; set; }
         public DateTime TaskEnd { get; set; }
+
     }
 }

@@ -9,7 +9,7 @@ using TaskManagerTLA.DAL.Interfaces;
 
 namespace TaskManagerTLA.DAL.Repositories
 {
-    class EFUnitOfWork : IUnitOfWork
+    public class EFUnitOfWork : IUnitOfWork
     {
 
         private TaskContext db;
@@ -21,9 +21,9 @@ namespace TaskManagerTLA.DAL.Repositories
         {
             get
             {
-                if(taskRepositories == null)
+                if (taskRepositories == null)
                 {
-                    taskRepositories = new TaskRepositories(db); 
+                    taskRepositories = new TaskRepositories(db);
                 }
                 return taskRepositories;
             }

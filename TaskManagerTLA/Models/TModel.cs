@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace TaskManagerTLA.DAL.Entities
+namespace TaskManagerTLA.Models
 {
-    public class TaskModel
-    { 
+    public class TModel
+    {
         public int TaskId { get; set; }
         public string TaskName { get; set; }
         public string TaskDescription { get; set; }

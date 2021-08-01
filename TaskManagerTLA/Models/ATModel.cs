@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace TaskManagerTLA.DAL.Entities
+namespace TaskManagerTLA.Models
 {
-   public class ActualTask
+    public class ATModel
     {
         public int ActualTaskId { get; set; }
         public int ActTaskLeigth { get; set; }
