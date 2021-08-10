@@ -10,6 +10,8 @@ namespace TaskManagerTLA.BLL.Interfaces
         void MakeActualTask(ActualTaskDTO ActTaskDTO);
         void MakeTask(TaskDTO taskDTO);
         TaskDTO GetTask(int? id);
+        void DeleteTask(int? id);
+        void DeleteActualTask(int? id);
         IEnumerable<TaskDTO> GetTasks();
         ActualTaskDTO GetActualTask(int? id);
         IEnumerable<ActualTaskDTO> GetActTasks();

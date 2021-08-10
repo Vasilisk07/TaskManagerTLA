@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using TaskManagerTLA.BLL.DTO;
-using TaskManagerTLA.BLL.Infrastructure;
 using TaskManagerTLA.BLL.Interfaces;
 using TaskManagerTLA.DAL.Entities;
 using TaskManagerTLA.DAL.Interfaces;
@@ -33,15 +32,9 @@ namespace TaskManagerTLA.BLL.Services
 
         public ActualTaskDTO GetActualTask(int? id)
         {
-            if (id == null)
-            {
-                throw new ValidationException("Not valid id", "");
-            }
+
             var ActlTask = Database.ActualTasks.Get(id.Value);
-            if (ActlTask == null)
-            {
-                throw new ValidationException("Task is empty", "");
-            }
+
             return new ActualTaskDTO
             {
                 ActTaskLeigth = ActlTask.ActTaskLeigth,
@@ -55,21 +48,15 @@ namespace TaskManagerTLA.BLL.Services
 
         public TaskDTO GetTask(int? id)
         {
-            if (id == null)
-            {
-                throw new ValidationException("Not valid id", "");
-            }
+
             var task = Database.Tasks.Get(id.Value);
-            if (task == null)
-            {
-                throw new ValidationException("Task is empty", "");
-            }
+ 
             return new TaskDTO
             {
                 TaskBegin = task.TaskBegin,
                 TaskDescription = task.TaskDescription,
                 TaskName = task.TaskName,
-                TaskId = task.TaskId,
+                TaskModelId = task.TaskModelId,
                 TaskEnd = task.TaskEnd,
                 TaskLeigth = task.TaskLeigth
             };
@@ -77,6 +64,7 @@ namespace TaskManagerTLA.BLL.Services
 
         public IEnumerable<TaskDTO> GetTasks()
         {
+            IEnumerable<TaskModel> Tlist = Database.Tasks.GetAll();
             var maper = new MapperConfiguration(cfg => cfg.CreateMap<TaskModel, TaskDTO>()).CreateMapper();
             return maper.Map<IEnumerable<TaskModel>, List<TaskDTO>>(Database.Tasks.GetAll());
         }
@@ -84,10 +72,8 @@ namespace TaskManagerTLA.BLL.Services
         public void MakeActualTask(ActualTaskDTO ActTaskDTO)
         {
             TaskModel Tmodel = Database.Tasks.Get(ActTaskDTO.TaskId);
-            if (Tmodel == null)
-            {
-                throw new ValidationException("Task is empty", "");
-            }
+            
+     
             ActualTask ActTask = new ActualTask
             {
                 TaskId = ActTaskDTO.TaskId,
@@ -105,7 +91,7 @@ namespace TaskManagerTLA.BLL.Services
         {
             TaskModel Tmodel = new TaskModel
             {
-                TaskId = taskDTO.TaskId,
+                TaskModelId = taskDTO.TaskModelId,
                 TaskName = taskDTO.TaskName,
                 TaskDescription = taskDTO.TaskDescription,
                 TaskLeigth = taskDTO.TaskLeigth,
@@ -115,5 +101,18 @@ namespace TaskManagerTLA.BLL.Services
             Database.Tasks.Create(Tmodel);
             Database.Save();
         }
+
+        public void DeleteTask(int? id)
+        {
+            Database.Tasks.Delete((int)id);
+            Database.Save();
+        }
+
+        public void DeleteActualTask(int? id)
+        {
+            Database.ActualTasks.Delete((int)id);
+            Database.Save();
+        }
+
     }
 }

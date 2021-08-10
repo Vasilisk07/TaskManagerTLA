@@ -1,0 +1,49 @@
+﻿@model TaskManagerTLA.Models.TModel
+
+@{
+    ViewData["Title"] = "Створити задачу";
+}
+
+<h1>CreateTask</h1>
+
+<h4>TModel</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="CreateTask">
+
+            <div class="form-group">
+                <label asp-for="TaskName" class="control-label"></label>
+                <input asp-for="TaskName" class="form-control" />
+                <span asp-validation-for="TaskName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TaskDescription" class="control-label"></label>
+                <input asp-for="TaskDescription" class="form-control" />
+                <span asp-validation-for="TaskDescription" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="TaskBegin" class="control-label"></label>
+                <input asp-for="TaskBegin" class="form-control" />
+                <span asp-validation-for="TaskBegin" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TaskEnd" class="control-label"></label>
+                <input asp-for="TaskEnd" class="form-control" />
+                <span asp-validation-for="TaskEnd" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

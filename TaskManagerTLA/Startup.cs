@@ -8,6 +8,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TaskManagerTLA.BLL.Interfaces;
+using TaskManagerTLA.BLL.Services;
+using TaskManagerTLA.DAL.Interfaces;
+using TaskManagerTLA.DAL.Repositories;
 
 namespace TaskManagerTLA
 {
@@ -24,11 +28,23 @@ namespace TaskManagerTLA
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            string connection = Configuration.GetConnectionString("DefaultConnection");
+           // services.AddTransient<IUnitOfWork, EFUnitOfWork>();
+            services.AddTransient<IUnitOfWork>(x => new EFUnitOfWork(connection));
+            services.AddTransient<ITaskService, TaskService>();
+            //services.AddTransient<ITaskService>(y => new  TaskService(services.BuildServiceProvider().GetService<IUnitOfWork>()));
+
+
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env,ITaskService taskServ)
         {
+           
+            
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

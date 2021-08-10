@@ -1,13 +1,13 @@
 ﻿@model IEnumerable<TaskManagerTLA.Models.TModel>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Список Задач";
 }
 
-<h1>Index</h1>
+<h1>Список Задач</h1>
 
 <p>
-    <a asp-action="CreateTask">Create new Task</a>
+    <a asp-action="CreateTask">Додати задачу</a>
 </p>
 <table class="table">
     <thead>
@@ -55,9 +55,8 @@
                 @Html.DisplayFor(modelItem => item.TaskEnd)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                @Html.ActionLink("Деталі", "DetailsTask", new { id=item.TaskModelId}) |
+                @Html.ActionLink("Видалити", "DeleteTask", new { id = item.TaskModelId  })
             </td>
         </tr>
 }

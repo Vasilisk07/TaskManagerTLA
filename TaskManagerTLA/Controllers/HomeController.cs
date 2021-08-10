@@ -14,20 +14,14 @@ namespace TaskManagerTLA.Controllers
 {
     public class HomeController : Controller
     {
-        ITaskService taskServise;
+      
 
-        public HomeController(ITaskService serv)
-        {
-            taskServise = serv;
-        }
 
         public IActionResult Index()
         {
-            IEnumerable<TaskDTO> taskDtos = taskServise.GetTasks();
-            var mapper = new MapperConfiguration(cfg => cfg.CreateMap<TaskDTO, TModel>()).CreateMapper();
-            var tasks = mapper.Map<IEnumerable<TaskDTO>, List<TModel>>(taskDtos);
 
-            return View(tasks);
+
+            return RedirectToAction("TaskList", "Task");
         }
 
         public IActionResult Privacy()
