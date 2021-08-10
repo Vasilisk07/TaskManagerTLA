@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -10,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TaskManagerTLA.BLL.Interfaces;
 using TaskManagerTLA.BLL.Services;
+using TaskManagerTLA.DAL.EF;
 using TaskManagerTLA.DAL.Interfaces;
 using TaskManagerTLA.DAL.Repositories;
 
@@ -27,15 +30,17 @@ namespace TaskManagerTLA
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
+            
             string connection = Configuration.GetConnectionString("DefaultConnection");
-           // services.AddTransient<IUnitOfWork, EFUnitOfWork>();
             services.AddTransient<IUnitOfWork>(x => new EFUnitOfWork(connection));
             services.AddTransient<ITaskService, TaskService>();
-            //services.AddTransient<ITaskService>(y => new  TaskService(services.BuildServiceProvider().GetService<IUnitOfWork>()));
 
 
+            services.AddDbContext<IdentityContext>(options => options.UseSqlServer(Configuration.GetConnectionString("IdentityConnection")));
+            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<IdentityContext>();
 
+
+            services.AddControllersWithViews();
 
         }
 
@@ -59,6 +64,9 @@ namespace TaskManagerTLA
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseAuthorization();
 

@@ -13,7 +13,7 @@ namespace TaskManagerTLA.DAL.EF
         public DbSet<TaskModel> Tasks { get; set; }
         public DbSet<ActualTask> ActualTasks { get; set; }
 
-
+        
 
         public TaskContext(DbContextOptions<TaskContext> options) : base(options)
         {
