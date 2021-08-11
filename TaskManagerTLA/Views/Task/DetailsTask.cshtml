@@ -1,54 +1,48 @@
-﻿@model TaskManagerTLA.Models.ATModel
+﻿@model IEnumerable<TaskManagerTLA.Models.ATModel>
 
 @{
     ViewData["Title"] = "DetailsTask";
 }
 
-<h1>DetailsTask</h1>
+<h1>@ViewBag.TaskName</h1>
 
-<div>
-    <h4>ATModel</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ActualTaskId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ActualTaskId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ActTaskLeigth)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ActTaskLeigth)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UserName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UserName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TaskName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TaskName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TaskId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TaskId)
-        </dd>
-    </dl>
-</div>
-<div>
-    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
-    <a asp-action="Index">Back to List</a>
-</div>
+<p>
+    @Html.ActionLink("Додати виконавця", "AddUserInTask", new { id = ViewBag.TaskId })
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.UserName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ActTaskLeigth)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserName)
+            </td>
+
+            <td>
+                @Html.DisplayFor(modelItem => item.ActTaskLeigth)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+
+            <td>
+                @Html.ActionLink("Видалити виконавця", "DeleteUserInTask", new { id=item.ActualTaskId})
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -14,14 +14,39 @@ namespace TaskManagerTLA.Controllers
 {
     public class HomeController : Controller
     {
-      
+        public HomeController()
+        {
+
+        }
 
 
         public IActionResult Index()
         {
+            ViewBag.Info = "";
 
+            //if (HttpContext.User.Identity.IsAuthenticated)
+            //{
+            //    ApplicationUser user = userManager.FindByName(User.Identity.Name);
+            //    string role = userManager.GetRoles(user.Id)[0];
+            //    switch (role)
+            //    {
+            //        case "Admin":
+            //            ViewBag.Info = "Вы вошли как администратор. Для вас доступен весь функционал приложения.";
+            //            break;
+            //        case "Manager":
+            //            ViewBag.Info = "Вы вошли как Менеджер проекта. Для вас доступен функционал просмотра и редактирования задач.";
+            //            break;
+            //        case "Dev":
+            //            ViewBag.Info = "Вы вошли как Исполнитель. Для вас доступны только вашы задачи.";
+            //            break;
+            //    }
+            //}
+            //else
+            //{
+            //    ViewBag.Info = "На данный момент вы не авторизованы. Выполните авторизацию или регистрацию для доступа к функционалу.";
+            //}
 
-            return RedirectToAction("TaskList", "Task");
+            return View();
         }
 
         public IActionResult Privacy()

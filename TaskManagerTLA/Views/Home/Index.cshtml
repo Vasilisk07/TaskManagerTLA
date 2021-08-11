@@ -1,65 +1,18 @@
 ﻿@model IEnumerable<TaskManagerTLA.Models.TModel>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Фонова сторінка";
 }
 
-<h1>Index</h1>
+<div class="description">
+    <h1>Здрастуйте!</h1>
+    <hr />
+    <p class="lead">Вас вітає додаток, який дає змогу формувати завдання з конкретними строками виконання, а також вести звітність по конкретним завданням.</p>
 
-<p>
-    <a asp-action="CreateTask">Create new Task</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.TaskModelId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TaskName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TaskDescription)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TaskLeigth)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TaskBegin)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TaskEnd)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.TaskModelId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TaskName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TaskDescription)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TaskLeigth)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TaskBegin)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TaskEnd)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+</div>
+
+<div class="jumbotron">
+    <h3>
+        @ViewBag.Info
+    </h3>
+</div>

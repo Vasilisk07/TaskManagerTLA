@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -13,9 +14,11 @@ namespace TaskManagerTLA.Controllers
     public class TaskController : Controller
     {
         ITaskService taskServise;
+        
 
         public TaskController(ITaskService serv)
         {
+            
             taskServise = serv;
         }
         [HttpGet]
@@ -54,12 +57,41 @@ namespace TaskManagerTLA.Controllers
 
         public IActionResult DetailsTask(int? id)
         {
-
-
-            return View();
-        }
+           
             
-       
+            if (id!=null)
+            {
+                var ATasks = taskServise.GetActTasks();
+                var mapper = new MapperConfiguration(cfg => cfg.CreateMap<ActualTaskDTO, ATModel>()).CreateMapper();
+                var tasks = mapper.Map<IEnumerable<ActualTaskDTO>, List<ATModel>>(ATasks);
+                var selectedTeams = from t in tasks where t.TaskId == id select t;
+                ViewBag.TaskName = taskServise.GetTask(id).TaskName;
+                ViewBag.TaskId = id;
+
+                return View(selectedTeams);
+            }
+
+
+            return RedirectToAction("TaskList", "Task");
+        }
+
+        [HttpGet]
+        public IActionResult AddUserInTask(int? id)
+        {
+
+            if (id!=null)
+            {
+
+
+
+                return View();
+            }
+
+
+
+
+            return RedirectToAction("DetailsTask", "Task");
+        }
 
 
 

@@ -10,8 +10,11 @@ namespace TaskManagerTLA.Models
     {
         
         public int ActualTaskId { get; set; }
+        [Display(Name = "Затрачений час")]
         public int ActTaskLeigth { get; set; }
+        [Display(Name = "Короткі звіти")]
         public string Description { get; set; }
+        [Display(Name = "Виконавці")]
         public string UserName { get; set; }
         public string TaskName { get; set; }
         public int TaskId { get; set; }
