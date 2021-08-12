@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -12,10 +14,12 @@ namespace TaskManagerTLA.Controllers
     {
         private readonly UserManager<IdentityUser> userManager;
         private readonly SignInManager<IdentityUser> signInManager;
-        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        private readonly RoleManager<IdentityRole> roleManager;
+        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, RoleManager<IdentityRole> roleManager)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
+            this.roleManager = roleManager;
         }
 
         [HttpGet]
@@ -92,8 +96,59 @@ namespace TaskManagerTLA.Controllers
             await signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ListUser()
+        {
 
 
+            List<IdentityUser> Users = userManager.Users.ToList();
+            List<UserModel> users= new List<UserModel>();
+            foreach (var item in Users)
+            {
+                IEnumerable<string> roles = await userManager.GetRolesAsync(item);
+                string role = roles.First();
+                users.Add(new UserModel { UserName = item.UserName, Email=item.Email, UserRole = role });
+            }
+            return View(users);
+        }
+
+
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteUser(string name)
+        {
+            if(name!=User.Identity.Name)
+            {
+                await userManager.DeleteAsync(await userManager.FindByNameAsync(name));
+            }
+            return RedirectToAction("ListUser", "Account");
+        }
+
+
+
+        [Authorize(Roles = "Admin")]
+        public  IActionResult ListRole(string name)
+        {
+            var mapper = new MapperConfiguration(cfg => cfg.CreateMap<IdentityRole,Role >().ForMember("UserRole",opt =>opt.MapFrom(c=>c.Name))).CreateMapper();
+            var roles = mapper.Map<IEnumerable<IdentityRole>, List<Role>>(roleManager.Roles);
+            ViewBag.UserName = name;
+            return View(roles);
+        }
+
+
+
+
+        [Authorize(Roles = "Admin")]
+        public async Task <IActionResult> ChangeRole(string name,string role)
+        {
+            IdentityUser User = await userManager.FindByNameAsync(name);
+            await userManager.RemoveFromRoleAsync(User, (await userManager.GetRolesAsync(User)).First());
+            await userManager.AddToRoleAsync(User, role);
+            return RedirectToAction("ListUser", "Account");
+        }
+
+
+      
 
 
         public IActionResult Index()

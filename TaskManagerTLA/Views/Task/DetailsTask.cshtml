@@ -40,9 +40,12 @@
             </td>
 
             <td>
-                @Html.ActionLink("Видалити виконавця", "DeleteUserInTask", new { id=item.ActualTaskId})
+                @Html.ActionLink("Видалити виконавця", "DeleteUserInTask", new { id=item.ActualTaskId, taskId = ViewBag.TaskId })
             </td>
         </tr>
 }
     </tbody>
 </table>
+<div>
+    <a asp-action="TaskList">Повернутись до задач</a>
+</div>

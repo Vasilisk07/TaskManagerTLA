@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -14,37 +15,40 @@ namespace TaskManagerTLA.Controllers
 {
     public class HomeController : Controller
     {
-        public HomeController()
+        private readonly UserManager<IdentityUser> userManager;
+        public HomeController(UserManager<IdentityUser> userManager)
         {
-
+            this.userManager = userManager;
         }
 
 
-        public IActionResult Index()
+
+        public async Task< IActionResult> Index()
         {
             ViewBag.Info = "";
 
-            //if (HttpContext.User.Identity.IsAuthenticated)
-            //{
-            //    ApplicationUser user = userManager.FindByName(User.Identity.Name);
-            //    string role = userManager.GetRoles(user.Id)[0];
-            //    switch (role)
-            //    {
-            //        case "Admin":
-            //            ViewBag.Info = "Вы вошли как администратор. Для вас доступен весь функционал приложения.";
-            //            break;
-            //        case "Manager":
-            //            ViewBag.Info = "Вы вошли как Менеджер проекта. Для вас доступен функционал просмотра и редактирования задач.";
-            //            break;
-            //        case "Dev":
-            //            ViewBag.Info = "Вы вошли как Исполнитель. Для вас доступны только вашы задачи.";
-            //            break;
-            //    }
-            //}
-            //else
-            //{
-            //    ViewBag.Info = "На данный момент вы не авторизованы. Выполните авторизацию или регистрацию для доступа к функционалу.";
-            //}
+            if (HttpContext.User.Identity.IsAuthenticated)
+            {
+               IdentityUser user = await userManager.GetUserAsync(User);
+                IEnumerable<string> roles = await userManager.GetRolesAsync(user);
+                string role = roles.First();
+                switch (role)
+                {
+                    case "Admin":
+                        ViewBag.Info = "Ви авторизувались як Адміністратор. Для вас доступний весь функціонал додатка.";
+                        break;
+                    case "Manager":
+                        ViewBag.Info = "Ви авторизувались як Адміністратор. Для вас доступний функціонал перегляду та редагування задач.";
+                        break;
+                    case "Developer":
+                        ViewBag.Info = "Ви авторизувались як Виконавець. Для вас доступні тільки ваші задачі.";
+                        break;
+                }
+            }
+            else
+            {
+                ViewBag.Info = "На данный момент ви не авторизовані. Виконайте авхід або реєстрацію .";
+            }
 
             return View();
         }

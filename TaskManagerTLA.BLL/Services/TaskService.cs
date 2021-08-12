@@ -34,32 +34,18 @@ namespace TaskManagerTLA.BLL.Services
         {
 
             var ActlTask = Database.ActualTasks.Get(id.Value);
-
-            return new ActualTaskDTO
-            {
-                ActTaskLeigth = ActlTask.ActTaskLeigth,
-                ActualTaskId = ActlTask.ActualTaskId,
-                Description = ActlTask.Description,
-                TaskId = ActlTask.TaskId,
-                TaskName = ActlTask.TaskName,
-                UserName = ActlTask.UserName
-            };
+            var mapper = new MapperConfiguration(cfg => cfg.CreateMap<ActualTask, ActualTaskDTO>()).CreateMapper();
+            var ActTask = mapper.Map<ActualTaskDTO>(ActlTask);
+            return ActTask;
         }
 
         public TaskDTO GetTask(int? id)
         {
 
             var task = Database.Tasks.Get(id.Value);
- 
-            return new TaskDTO
-            {
-                TaskBegin = task.TaskBegin,
-                TaskDescription = task.TaskDescription,
-                TaskName = task.TaskName,
-                TaskModelId = task.TaskModelId,
-                TaskEnd = task.TaskEnd,
-                TaskLeigth = task.TaskLeigth
-            };
+            var mapper = new MapperConfiguration(cfg => cfg.CreateMap<TaskModel, TaskDTO>()).CreateMapper();
+            var Tmodel = mapper.Map<TaskDTO>(task);
+            return Tmodel;
         }
 
         public IEnumerable<TaskDTO> GetTasks()
@@ -71,33 +57,31 @@ namespace TaskManagerTLA.BLL.Services
 
         public void MakeActualTask(ActualTaskDTO ActTaskDTO)
         {
-            TaskModel Tmodel = Database.Tasks.Get(ActTaskDTO.TaskId);
-            
-     
-            ActualTask ActTask = new ActualTask
+            bool ifExist = false;
+            var aTask = GetActTasks();
+            foreach (var item in aTask)
             {
-                TaskId = ActTaskDTO.TaskId,
-                ActTaskLeigth = ActTaskDTO.ActTaskLeigth,
-                ActualTaskId = ActTaskDTO.ActualTaskId,
-                Description = ActTaskDTO.Description,
-                TaskName = ActTaskDTO.TaskName,
-                UserName = ActTaskDTO.UserName
-            };
-            Database.ActualTasks.Create(ActTask);
-            Database.Save();
+                if (item.TaskId== ActTaskDTO.TaskId&&item.UserName == ActTaskDTO.UserName)
+                {
+                    ifExist = true;
+                    break;
+                }
+            }
+            if (!ifExist)
+            {
+                var mapper = new MapperConfiguration(cfg => cfg.CreateMap<ActualTaskDTO, ActualTask>()).CreateMapper();
+                var ActTask = mapper.Map<ActualTask>(ActTaskDTO);
+                Database.ActualTasks.Create(ActTask);
+                Database.Save();
+            }
+
         }
 
         public void MakeTask(TaskDTO taskDTO)
         {
-            TaskModel Tmodel = new TaskModel
-            {
-                TaskModelId = taskDTO.TaskModelId,
-                TaskName = taskDTO.TaskName,
-                TaskDescription = taskDTO.TaskDescription,
-                TaskLeigth = taskDTO.TaskLeigth,
-                TaskBegin = taskDTO.TaskBegin,
-                TaskEnd = taskDTO.TaskEnd
-            };
+
+            var mapper = new MapperConfiguration(cfg => cfg.CreateMap<TaskDTO, TaskModel>()).CreateMapper();
+            var Tmodel = mapper.Map<TaskModel>(taskDTO);
             Database.Tasks.Create(Tmodel);
             Database.Save();
         }
@@ -105,6 +89,14 @@ namespace TaskManagerTLA.BLL.Services
         public void DeleteTask(int? id)
         {
             Database.Tasks.Delete((int)id);
+            var actTask = GetActTasks();
+            foreach (var item in actTask)
+            {
+                if (item.TaskId == (int)id)
+                {
+                    Database.ActualTasks.Delete(item.ActualTaskId);
+                }
+            }
             Database.Save();
         }
 

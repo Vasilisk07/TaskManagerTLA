@@ -1,0 +1,61 @@
+﻿@model IEnumerable<TaskManagerTLA.Models.ATModel>
+
+@{
+    ViewData["Title"] = "Мої задачі";
+}
+
+<h2>Мої персональні задачі</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ActualTaskId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ActTaskLeigth)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UserName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TaskName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TaskId)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ActualTaskId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ActTaskLeigth)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TaskName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TaskId)
+            </td>
+            <td>
+                @Html.ActionLink("Внести данні", "EditPersonalTask", new { id=item.ActualTaskId }) 
+
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
