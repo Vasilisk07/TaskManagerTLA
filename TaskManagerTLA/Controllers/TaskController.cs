@@ -23,13 +23,14 @@ namespace TaskManagerTLA.Controllers
             taskServise = serv;
         }
 
+
         [HttpGet]
         [Authorize(Roles = "Admin, Manager")]
         public IActionResult CreateTask()
         {
-
             return View();
         }
+
 
         [HttpPost]
         [Authorize(Roles = "Admin, Manager")]
@@ -38,33 +39,35 @@ namespace TaskManagerTLA.Controllers
             var mapper = new MapperConfiguration(cfg => cfg.CreateMap<TModel, TaskDTO>()).CreateMapper();
             var tModel = mapper.Map<TaskDTO>(tVievModel);
             taskServise.MakeTask(tModel);
-
             return RedirectToAction("TaskList", "Task");
         }
+
+
         [Authorize(Roles = "Admin, Manager")]
         public IActionResult TaskList()
         {
             IEnumerable<TaskDTO> taskDtos = taskServise.GetTasks();
             var mapper = new MapperConfiguration(cfg => cfg.CreateMap<TaskDTO, TModel>()).CreateMapper();
             var tasks = mapper.Map<IEnumerable<TaskDTO>, List<TModel>>(taskDtos);
-
             return View(tasks);
         }
 
+
+        [Authorize(Roles = "Admin, Manager")]
         public IActionResult DeleteTask(int? id)
         {
-            if (id!=null)
+            if (id != null)
             {
                 taskServise.DeleteTask(id);
             }
             return RedirectToAction("TaskList", "Task");
         }
+
+
         [Authorize(Roles = "Admin, Manager")]
         public IActionResult DetailsTask(int? id)
         {
-           
-            
-            if (id!=null)
+            if (id != null)
             {
                 var ATasks = taskServise.GetActTasks();
                 var mapper = new MapperConfiguration(cfg => cfg.CreateMap<ActualTaskDTO, ATModel>()).CreateMapper();
@@ -75,17 +78,15 @@ namespace TaskManagerTLA.Controllers
 
                 return View(selectedTeams);
             }
-
-
             return RedirectToAction("TaskList", "Task");
         }
 
+
         [HttpGet]
         [Authorize(Roles = "Admin, Manager")]
-        public async  Task <IActionResult> AddUserInTask(int? id)
+        public async Task<IActionResult> AddUserInTask(int? id)
         {
-
-            if (id!=null)
+            if (id != null)
             {
                 List<IdentityUser> Users = userManager.Users.ToList();
                 List<UserModel> users = new List<UserModel>();
@@ -100,35 +101,34 @@ namespace TaskManagerTLA.Controllers
                 ViewBag.TaskName = taskServise.GetTask(id).TaskName;
                 return View(users);
             }
-
             return RedirectToAction("DetailsTask", "Task");
         }
+
+
         [Authorize(Roles = "Admin, Manager")]
         public IActionResult AddUser(int? id, string userName)
         {
-            ATModel atmodel = new ATModel() { TaskId= (int)id, UserName = userName, TaskName= taskServise.GetTask((int)id).TaskName };
-
+            ATModel atmodel = new ATModel() { TaskId = (int)id, UserName = userName, TaskName = taskServise.GetTask((int)id).TaskName };
             var mapper = new MapperConfiguration(cfg => cfg.CreateMap<ATModel, ActualTaskDTO>()).CreateMapper();
             var tModel = mapper.Map<ActualTaskDTO>(atmodel);
-
             taskServise.MakeActualTask(tModel);
-
-            return RedirectToAction("DetailsTask",new { id } );
-            
-
+            return RedirectToAction("DetailsTask", new { id });
         }
+
+
         [Authorize(Roles = "Admin, Manager")]
         public IActionResult DeleteUserInTask(int? id, int? taskId)
         {
             taskServise.DeleteActualTask(id);
 
-             return RedirectToAction("DetailsTask", new {id = taskId });
+            return RedirectToAction("DetailsTask", new { id = taskId });
         }
+
 
         [Authorize(Roles = "Admin, Manager, Developer")]
         public IActionResult ShowPersonalTask()
         {
-            List <ActualTaskDTO> curentTasksDTO = (from t in taskServise.GetActTasks() where t.UserName == User.Identity.Name select t).ToList();
+            List<ActualTaskDTO> curentTasksDTO = (from t in taskServise.GetActTasks() where t.UserName == User.Identity.Name select t).ToList();
             var mapper = new MapperConfiguration(cfg => cfg.CreateMap<ActualTaskDTO, ATModel>()).CreateMapper();
             var curentTasks = mapper.Map<IEnumerable<ActualTaskDTO>, List<ATModel>>(curentTasksDTO);
 
@@ -140,7 +140,7 @@ namespace TaskManagerTLA.Controllers
         [Authorize(Roles = "Admin, Manager, Developer")]
         public IActionResult EditPersonalTask(int? id)
         {
-           return View(new EditATModel { ActualTaskId=(int)id }) ;
+            return View(new EditATModel { ActualTaskId = (int)id });
         }
 
 
@@ -148,14 +148,8 @@ namespace TaskManagerTLA.Controllers
         [Authorize(Roles = "Admin, Manager, Developer")]
         public IActionResult EditPersonalTask(EditATModel EditModel)
         {
-
             taskServise.EditActualTask(EditModel.ActualTaskId, EditModel.ActTaskLeigth, EditModel.Description);
             return RedirectToAction("ShowPersonalTask", "Task");
-
         }
-
-
-
-
     }
 }

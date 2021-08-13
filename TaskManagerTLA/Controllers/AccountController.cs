@@ -15,6 +15,8 @@ namespace TaskManagerTLA.Controllers
         private readonly UserManager<IdentityUser> userManager;
         private readonly SignInManager<IdentityUser> signInManager;
         private readonly RoleManager<IdentityRole> roleManager;
+
+
         public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, RoleManager<IdentityRole> roleManager)
         {
             this.userManager = userManager;
@@ -22,18 +24,20 @@ namespace TaskManagerTLA.Controllers
             this.roleManager = roleManager;
         }
 
+
         [HttpGet]
         public IActionResult Register()
         {
             return View();
         }
 
+
         [HttpPost]
         public async Task<IActionResult> Register(RegisterModel model)
         {
             if (ModelState.IsValid)
             {
-                IdentityUser user = new IdentityUser { Email = model.Email, UserName = model.Name};
+                IdentityUser user = new IdentityUser { Email = model.Email, UserName = model.Name };
                 var result = await userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -48,7 +52,6 @@ namespace TaskManagerTLA.Controllers
                         ModelState.AddModelError(string.Empty, error.Description);
                     }
                 }
-
             }
             return View(model);
         }
@@ -60,6 +63,7 @@ namespace TaskManagerTLA.Controllers
             return View(new LoginModel { ReturnUrl = returnUrl });
         }
 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginModel model)
@@ -70,7 +74,6 @@ namespace TaskManagerTLA.Controllers
                     await signInManager.PasswordSignInAsync(model.Name, model.Password, model.RememberMe, false);
                 if (result.Succeeded)
                 {
-                   
                     if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
                     {
                         return Redirect(model.ReturnUrl);
@@ -89,6 +92,7 @@ namespace TaskManagerTLA.Controllers
         }
 
 
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
@@ -96,28 +100,27 @@ namespace TaskManagerTLA.Controllers
             await signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
+
+
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ListUser()
         {
-
-
             List<IdentityUser> Users = userManager.Users.ToList();
-            List<UserModel> users= new List<UserModel>();
+            List<UserModel> users = new List<UserModel>();
             foreach (var item in Users)
             {
                 IEnumerable<string> roles = await userManager.GetRolesAsync(item);
                 string role = roles.First();
-                users.Add(new UserModel { UserName = item.UserName, Email=item.Email, UserRole = role });
+                users.Add(new UserModel { UserName = item.UserName, Email = item.Email, UserRole = role });
             }
             return View(users);
         }
 
 
-
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUser(string name)
         {
-            if(name!=User.Identity.Name)
+            if (name != User.Identity.Name)
             {
                 await userManager.DeleteAsync(await userManager.FindByNameAsync(name));
             }
@@ -125,35 +128,23 @@ namespace TaskManagerTLA.Controllers
         }
 
 
-
         [Authorize(Roles = "Admin")]
-        public  IActionResult ListRole(string name)
+        public IActionResult ListRole(string name)
         {
-            var mapper = new MapperConfiguration(cfg => cfg.CreateMap<IdentityRole,Role >().ForMember("UserRole",opt =>opt.MapFrom(c=>c.Name))).CreateMapper();
+            var mapper = new MapperConfiguration(cfg => cfg.CreateMap<IdentityRole, Role>().ForMember("UserRole", opt => opt.MapFrom(c => c.Name))).CreateMapper();
             var roles = mapper.Map<IEnumerable<IdentityRole>, List<Role>>(roleManager.Roles);
             ViewBag.UserName = name;
             return View(roles);
         }
 
 
-
-
         [Authorize(Roles = "Admin")]
-        public async Task <IActionResult> ChangeRole(string name,string role)
+        public async Task<IActionResult> ChangeRole(string name, string role)
         {
             IdentityUser User = await userManager.FindByNameAsync(name);
             await userManager.RemoveFromRoleAsync(User, (await userManager.GetRolesAsync(User)).First());
             await userManager.AddToRoleAsync(User, role);
             return RedirectToAction("ListUser", "Account");
-        }
-
-
-      
-
-
-        public IActionResult Index()
-        {
-            return View();
         }
     }
 }

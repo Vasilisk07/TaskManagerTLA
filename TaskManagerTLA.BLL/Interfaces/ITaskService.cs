@@ -17,13 +17,5 @@ namespace TaskManagerTLA.BLL.Interfaces
         IEnumerable<ActualTaskDTO> GetActTasks();
         void EditActualTask(int? id, int? time, string desk);
         void Dispose();
-
-
-
-
-
-
-
-
     }
 }

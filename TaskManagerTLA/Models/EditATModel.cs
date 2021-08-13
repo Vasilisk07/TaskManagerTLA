@@ -13,6 +13,5 @@ namespace TaskManagerTLA.Models
         public int ActTaskLeigth { get; set; }
         [Display(Name = "Короткий звіт")]
         public string Description { get; set; }
-
     }
 }

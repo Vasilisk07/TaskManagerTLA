@@ -11,15 +11,12 @@ namespace TaskManagerTLA.Models
         [Required]
         [Display(Name = "Імя користувача")]
         public string Name { get; set; }
-
         [Required]
         [DataType(DataType.Password)]
         [Display(Name = "Пароль")]
         public string Password { get; set; }
-
         [Display(Name = "Запамятати?")]
         public bool RememberMe { get; set; }
-
         public string ReturnUrl { get; set; }
 
     }

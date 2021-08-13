@@ -22,11 +22,9 @@ namespace TaskManagerTLA.Controllers
         }
 
 
-
         public async Task< IActionResult> Index()
         {
             ViewBag.Info = "";
-
             if (HttpContext.User.Identity.IsAuthenticated)
             {
                IdentityUser user = await userManager.GetUserAsync(User);
@@ -49,14 +47,9 @@ namespace TaskManagerTLA.Controllers
             {
                 ViewBag.Info = "На данный момент ви не авторизовані. Виконайте авхід або реєстрацію .";
             }
-
             return View();
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

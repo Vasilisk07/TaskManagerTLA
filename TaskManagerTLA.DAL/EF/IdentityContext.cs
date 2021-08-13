@@ -10,8 +10,6 @@ namespace TaskManagerTLA.DAL.EF
 {
   public  class IdentityContext:IdentityDbContext<IdentityUser>
     {
-
-
         public IdentityContext(DbContextOptions<IdentityContext>options):base(options)
         {
             Database.EnsureCreated();
