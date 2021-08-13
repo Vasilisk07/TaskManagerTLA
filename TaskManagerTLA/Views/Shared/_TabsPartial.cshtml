@@ -1,0 +1,61 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<ul class="navbar-nav">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        string role = (await UserManager.GetRolesAsync(await UserManager.FindByNameAsync(User.Identity.Name))).First();
+
+        switch (role)
+        {
+            case "Admin":
+                <li class="nav-item">
+                    <form class="form-inline" asp-area="" asp-controller="Account" asp-action="ListUser" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                        <button type="submit" class="nav-link btn btn-link text-dark">Редактор користувачів</button>
+                    </form>
+                </li>
+                <li class="nav-item">
+                    <form class="form-inline" asp-area="" asp-controller="Task" asp-action="TaskList" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                        <button type="submit" class="nav-link btn btn-link text-dark">Редактор задач</button>
+                    </form>
+                </li>
+                <li class="nav-item">
+                    <form class="form-inline" asp-area="" asp-controller="Task" asp-action="ShowPersonalTask" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                        <button type="submit" class="nav-link btn btn-link text-dark">Мої Задачі</button>
+                    </form>
+                </li>
+                break;
+            case "Manager":
+                <li class="nav-item">
+                    <form class="form-inline" asp-area="" asp-controller="Task" asp-action="TaskList" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                        <button type="submit" class="nav-link btn btn-link text-dark">Редактор задач</button>
+                    </form>
+                </li>
+                <li class="nav-item">
+                    <form class="form-inline" asp-area="" asp-controller="Task" asp-action="ShowPersonalTask" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                        <button type="submit" class="nav-link btn btn-link text-dark">Мої Задачі</button>
+                    </form>
+                </li>
+                break;
+            case "Developer":
+                <li class="nav-item">
+                    <form class="form-inline" asp-area="" asp-controller="Task" asp-action="ShowPersonalTask" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                        <button type="submit" class="nav-link btn btn-link text-dark">Мої Задачі</button>
+                    </form>
+                </li>
+                break;
+        }
+
+
+    }
+    @*else
+        {
+            <li class="nav-item">
+                <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Register</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
+            </li>
+        }*@
+</ul>

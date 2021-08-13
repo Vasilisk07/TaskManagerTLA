@@ -100,6 +100,19 @@ namespace TaskManagerTLA.BLL.Services
             Database.Save();
         }
 
+        public void EditActualTask(int? id, int? time, string desk)
+        {
+
+           ActualTask EditsATask = Database.ActualTasks.Get((int)id);
+           EditsATask.Description= desk != null ? $" {EditsATask.Description} | {DateTime.Now.ToString("dd.MM.yyyy")} {desk}" : EditsATask.Description;
+           EditsATask.ActTaskLeigth = time!=null&&(int)time>0? EditsATask.ActTaskLeigth+(int)time: EditsATask.ActTaskLeigth;
+           TaskModel EditTask = Database.Tasks.Get(EditsATask.TaskId);
+           EditTask.TaskLeigth= time != null && (int)time > 0 ? EditTask.TaskLeigth + (int)time : EditTask.TaskLeigth;
+           Database.Save();
+        }
+
+
+
         public void DeleteActualTask(int? id)
         {
             Database.ActualTasks.Delete((int)id);

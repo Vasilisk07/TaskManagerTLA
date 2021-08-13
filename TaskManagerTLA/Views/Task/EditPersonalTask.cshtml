@@ -1,21 +1,19 @@
-﻿@model TaskManagerTLA.Models.ATModel
+﻿@model TaskManagerTLA.Models.EditATModel
 
 @{
-    ViewData["Title"] = "EditPersonalTask";
-}
-<h1>EditPersonalTask</h1>
+    ViewData["Title"] = "Додати Зміни";
+    
 
-<h4>ATModel</h4>
+}
+
+<h2>Додати зміни до задачі</h2>
+
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="EditPersonalTask">
+            @Html.HiddenFor(model => model.ActualTaskId)
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                        <div class="form-group">
-                <label asp-for="TaskName" class="control-label"></label>
-                <input asp-for="TaskName" class="form-control" />
-                <span asp-validation-for="TaskName" class="text-danger"></span>
-            </div>
             <div class="form-group">
                 <label asp-for="ActTaskLeigth" class="control-label"></label>
                 <input asp-for="ActTaskLeigth" class="form-control" />
@@ -27,23 +25,13 @@
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="UserName" class="control-label"></label>
-                <input asp-for="UserName" class="form-control" />
-                <span asp-validation-for="UserName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TaskName" class="control-label"></label>
-                <input asp-for="TaskName" class="form-control" />
-                <span asp-validation-for="TaskName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Зберегти" class="btn btn-primary" />
+                <input type="submit" value="Зафіксувати зміни" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="ShowPersonalTask">Повернутись до задач</a>
 </div>
 

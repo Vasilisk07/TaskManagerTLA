@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -21,13 +22,17 @@ namespace TaskManagerTLA.Controllers
             this.userManager = userManager;
             taskServise = serv;
         }
+
         [HttpGet]
+        [Authorize(Roles = "Admin, Manager")]
         public IActionResult CreateTask()
         {
 
             return View();
         }
+
         [HttpPost]
+        [Authorize(Roles = "Admin, Manager")]
         public IActionResult CreateTask(TModel tVievModel)
         {
             var mapper = new MapperConfiguration(cfg => cfg.CreateMap<TModel, TaskDTO>()).CreateMapper();
@@ -36,7 +41,7 @@ namespace TaskManagerTLA.Controllers
 
             return RedirectToAction("TaskList", "Task");
         }
-
+        [Authorize(Roles = "Admin, Manager")]
         public IActionResult TaskList()
         {
             IEnumerable<TaskDTO> taskDtos = taskServise.GetTasks();
@@ -54,7 +59,7 @@ namespace TaskManagerTLA.Controllers
             }
             return RedirectToAction("TaskList", "Task");
         }
-
+        [Authorize(Roles = "Admin, Manager")]
         public IActionResult DetailsTask(int? id)
         {
            
@@ -76,6 +81,7 @@ namespace TaskManagerTLA.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin, Manager")]
         public async  Task <IActionResult> AddUserInTask(int? id)
         {
 
@@ -97,7 +103,7 @@ namespace TaskManagerTLA.Controllers
 
             return RedirectToAction("DetailsTask", "Task");
         }
-
+        [Authorize(Roles = "Admin, Manager")]
         public IActionResult AddUser(int? id, string userName)
         {
             ATModel atmodel = new ATModel() { TaskId= (int)id, UserName = userName, TaskName= taskServise.GetTask((int)id).TaskName };
@@ -111,6 +117,7 @@ namespace TaskManagerTLA.Controllers
             
 
         }
+        [Authorize(Roles = "Admin, Manager")]
         public IActionResult DeleteUserInTask(int? id, int? taskId)
         {
             taskServise.DeleteActualTask(id);
@@ -118,6 +125,7 @@ namespace TaskManagerTLA.Controllers
              return RedirectToAction("DetailsTask", new {id = taskId });
         }
 
+        [Authorize(Roles = "Admin, Manager, Developer")]
         public IActionResult ShowPersonalTask()
         {
             List <ActualTaskDTO> curentTasksDTO = (from t in taskServise.GetActTasks() where t.UserName == User.Identity.Name select t).ToList();
@@ -127,20 +135,21 @@ namespace TaskManagerTLA.Controllers
             return View(curentTasks);
         }
 
+
         [HttpGet]
+        [Authorize(Roles = "Admin, Manager, Developer")]
         public IActionResult EditPersonalTask(int? id)
         {
-            ViewBag.ActualTaskId = id;
-
-            return View();
+           return View(new EditATModel { ActualTaskId=(int)id }) ;
         }
 
 
         [HttpPost]
-        public IActionResult EditPersonalTask(ATModel EditModel)
+        [Authorize(Roles = "Admin, Manager, Developer")]
+        public IActionResult EditPersonalTask(EditATModel EditModel)
         {
 
-
+            taskServise.EditActualTask(EditModel.ActualTaskId, EditModel.ActTaskLeigth, EditModel.Description);
             return RedirectToAction("ShowPersonalTask", "Task");
 
         }
