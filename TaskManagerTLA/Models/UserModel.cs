@@ -8,7 +8,7 @@ namespace TaskManagerTLA.Models
 {
     public class UserModel
     {
-      
+        public string id { get; set; }
         [Display(Name = "Імя користувача")]
         public string UserName { get; set; }
         [Display(Name = "Email")]

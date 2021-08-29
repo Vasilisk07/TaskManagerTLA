@@ -1,4 +1,4 @@
-﻿@model IEnumerable<TaskManagerTLA.Models.Role>
+﻿@model IEnumerable<TaskManagerTLA.Models.RoleModel>
 
 @{
     ViewData["Title"] = "Список ролей";
@@ -17,16 +17,17 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.UserRole)
-            </td>
-            <td>
-                @Html.ActionLink("Вибрати", "ChangeRole", new { name=ViewBag.UserName, role=item.UserRole }) 
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserRole)
+                </td>
+                <td>
+                    @Html.ActionLink("Вибрати", "ChangeRole", new { UserId = ViewBag.UserId, role = item.UserRole })
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
 <div>

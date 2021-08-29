@@ -35,8 +35,8 @@
                 @Html.DisplayFor(modelItem => item.UserRole)
             </td>
             <td>
-                @Html.ActionLink("Змінити роль", "ListRole", new { name = item.UserName }) |
-                @Html.ActionLink("Видалити", "DeleteUser", new { name = item.UserName})
+                @Html.ActionLink("Змінити роль", "ListRole", new { UserId = item.id }) |
+                @Html.ActionLink("Видалити", "DeleteUser", new { UserId = item.id })
             </td>
         </tr>
 }

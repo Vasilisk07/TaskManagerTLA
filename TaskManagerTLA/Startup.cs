@@ -10,11 +10,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TaskManagerTLA.BLL.BisnesLogic;
 using TaskManagerTLA.BLL.Interfaces;
 using TaskManagerTLA.BLL.Services;
 using TaskManagerTLA.DAL.EF;
+using TaskManagerTLA.DAL.Identity;
+using TaskManagerTLA.DAL.Identity.Interfaces;
 using TaskManagerTLA.DAL.Interfaces;
 using TaskManagerTLA.DAL.Repositories;
+
 
 namespace TaskManagerTLA
 {
@@ -36,12 +40,15 @@ namespace TaskManagerTLA
 
             services.AddDbContext<IdentityContext>(options => options.UseSqlServer(Configuration.GetConnectionString("IdentityConnection")));
             services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<IdentityContext>();
+            services.AddTransient<IUnitOfWorkIdentity, UnitOfWorkIdentity>();
+            services.AddTransient<IIdentityServices, IdentityServices>();
+            services.AddTransient<IHomePageGreeting, HomePageGreeting>();
 
             services.AddControllersWithViews();
 
         }
 
-
+  
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())

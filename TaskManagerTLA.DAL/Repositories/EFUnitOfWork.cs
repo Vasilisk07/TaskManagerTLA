@@ -17,6 +17,14 @@ namespace TaskManagerTLA.DAL.Repositories
         private ActualTaskRepositories actualTaskRepositories;
         private bool disposed = false;
 
+
+        public EFUnitOfWork(string connectionString)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<TaskContext>();
+            var options = optionsBuilder.UseSqlServer(connectionString).Options;
+            db = new TaskContext(options);
+        }
+
         public IRepository<TaskModel> Tasks
         {
             get
@@ -42,12 +50,6 @@ namespace TaskManagerTLA.DAL.Repositories
 
         }
 
-        public EFUnitOfWork(string connectionString)
-        {
-            var optionsBuilder = new DbContextOptionsBuilder<TaskContext>();
-            var options = optionsBuilder.UseSqlServer(connectionString).Options;
-            db = new TaskContext(options);
-        }
 
         public virtual void Dispose(bool disposing)
         {

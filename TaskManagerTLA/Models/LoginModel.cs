@@ -8,9 +8,10 @@ namespace TaskManagerTLA.Models
 {
     public class LoginModel
     {
+       
         [Required]
         [Display(Name = "Імя користувача")]
-        public string Name { get; set; }
+        public string UserName { get; set; }
         [Required]
         [DataType(DataType.Password)]
         [Display(Name = "Пароль")]

@@ -11,7 +11,7 @@ namespace TaskManagerTLA.Models
 
         [Required(ErrorMessage = "Вкажіть імя користувача")]
         [Display(Name = "Имя користувача")]
-        public string Name { get; set; }
+        public string UserName { get; set; }
         [Required(ErrorMessage = "Вкажіть Email адресу")]
         [Display(Name = "Email адреса")]
         [DataType(DataType.EmailAddress)]

@@ -56,10 +56,8 @@ namespace TaskManagerTLA.Controllers
         [Authorize(Roles = "Admin, Manager")]
         public IActionResult DeleteTask(int? id)
         {
-            if (id != null)
-            {
-                taskServise.DeleteTask(id);
-            }
+
+            taskServise.DeleteTask(id);
             return RedirectToAction("TaskList", "Task");
         }
 
@@ -67,18 +65,16 @@ namespace TaskManagerTLA.Controllers
         [Authorize(Roles = "Admin, Manager")]
         public IActionResult DetailsTask(int? id)
         {
-            if (id != null)
-            {
+
                 var ATasks = taskServise.GetActTasks();
                 var mapper = new MapperConfiguration(cfg => cfg.CreateMap<ActualTaskDTO, ATModel>()).CreateMapper();
                 var tasks = mapper.Map<IEnumerable<ActualTaskDTO>, List<ATModel>>(ATasks);
                 var selectedTeams = from t in tasks where t.TaskId == id select t;
                 ViewBag.TaskName = taskServise.GetTask(id).TaskName;
                 ViewBag.TaskId = id;
-
                 return View(selectedTeams);
-            }
-            return RedirectToAction("TaskList", "Task");
+         
+       
         }
 
 
