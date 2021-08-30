@@ -28,7 +28,6 @@ namespace TaskManagerTLA.DAL.Identity
 
 
 
-
         public virtual void Dispose(bool disposing)
         {
 

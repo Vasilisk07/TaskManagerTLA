@@ -22,7 +22,7 @@ namespace TaskManagerTLA.Controllers
         }
 
 
-        public async Task< IActionResult> Index()
+        public async Task<IActionResult> Index()
         {
 
             ViewBag.Info = await homePageGreeting.GetGreeting(HttpContext);

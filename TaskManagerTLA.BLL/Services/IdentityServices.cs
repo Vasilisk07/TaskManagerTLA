@@ -49,7 +49,7 @@ namespace TaskManagerTLA.BLL.Services
 
         public IEnumerable<RoleDTO> GetRoles()
         {
-            List<IdentityRole> rolesDb = Manager.RoleManager.Roles.ToList();
+            IEnumerable<IdentityRole> rolesDb = Manager.RoleManager.Roles;
             mapper = new MapperConfiguration(cfg => cfg.CreateMap<IdentityRole, RoleDTO>().
                          ForMember("UserRole", opt=>opt.MapFrom(c=>c.Name))).CreateMapper();
             var roles = mapper.Map<IEnumerable<IdentityRole>, List<RoleDTO>>(rolesDb);
