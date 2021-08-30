@@ -12,6 +12,9 @@ namespace TaskManagerTLA.BLL.Services
     public class TaskService : ITaskService
     {
         IUnitOfWork Database { get; set; }
+        private bool disposed = false;
+
+
 
         public TaskService(IUnitOfWork DB)
         {
@@ -21,7 +24,19 @@ namespace TaskManagerTLA.BLL.Services
 
         public void Dispose()
         {
-            Database.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                if (disposing)
+                {
+                    Database.Dispose();
+                }
+                disposed = true;
+            }
         }
 
 
