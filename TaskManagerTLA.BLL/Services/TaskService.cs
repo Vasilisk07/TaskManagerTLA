@@ -38,7 +38,10 @@ namespace TaskManagerTLA.BLL.Services
                 disposed = true;
             }
         }
-
+        ~TaskService()
+        {
+            Dispose(false);
+        }
 
         public IEnumerable<ActualTaskDTO> GetActTasks()
         {
