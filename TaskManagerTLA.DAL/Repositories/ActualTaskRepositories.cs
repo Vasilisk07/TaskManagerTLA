@@ -11,7 +11,7 @@ namespace TaskManagerTLA.DAL.Repositories
 {
     class ActualTaskRepositories : IRepository<ActualTask>
     {
-        private TaskContext db;
+        private readonly TaskContext db;
 
         public ActualTaskRepositories(TaskContext context)
         {

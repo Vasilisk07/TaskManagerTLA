@@ -16,14 +16,14 @@ namespace TaskManagerTLA.BLL.BisnesLogic
             this.identityService = identityService;
         }
          
-        public async Task <string> GetGreeting(HttpContext httpContext)
+        public string GetGreeting(HttpContext httpContext)
         {
 
             string resultGteting = "";
             if (httpContext.User.Identity.IsAuthenticated)
             {
-                UserDTO user = await identityService.GetUserByNameAsync(httpContext.User.Identity.Name);
-                string role = await identityService.GetRoleAsync(user.id);
+                UserDTO user = identityService.GetUserByName(httpContext.User.Identity.Name);
+                string role = identityService.GetUserRole(user.id);
                 switch (role)
                 {
                     case "Admin":

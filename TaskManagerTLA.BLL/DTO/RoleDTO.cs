@@ -6,7 +6,7 @@ namespace TaskManagerTLA.BLL.DTO
 {
     public class RoleDTO
     {
-       
+        public string Id { get; set; }
         public string UserRole { get; set; }
     }
 }

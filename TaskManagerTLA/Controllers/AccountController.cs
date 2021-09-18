@@ -17,10 +17,9 @@ namespace TaskManagerTLA.Controllers
 
         IMapper mapper;
         private IIdentityServices identityService;
-
-        public AccountController(IIdentityServices identityService)
+        public AccountController(IIdentityServices identityService, IMapper mapper)
         {
-
+            this.mapper = mapper;
             this.identityService = identityService;
         }
 
@@ -31,34 +30,48 @@ namespace TaskManagerTLA.Controllers
             return View();
         }
 
-
         [HttpPost]
         public async Task<IActionResult> Register(RegisterModel model)
         {
-            mapper = new MapperConfiguration(cfg => cfg.CreateMap<RegisterModel, UserDTO>()).CreateMapper();
-            var userDTO = mapper.Map<UserDTO>(model);
-            await identityService.MakeUserAsync(userDTO);
+            UserDTO userDTO = mapper.Map<UserDTO>(model);
+            try
+            {
+                identityService.RegisterNewUser(userDTO);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View(model);
+            }
+            await Login(new LoginModel { UserName = model.UserName, Password = model.Password });
             return RedirectToAction("Index", "Home");
+
         }
 
         [AllowAnonymous]
         [HttpGet]
-        public IActionResult Login(string returnUrl = null)
+        public IActionResult Login()
         {
-            return View(new LoginModel { ReturnUrl = returnUrl });
+            return View();
         }
 
-        [AllowAnonymous]
+        // довго не міг зрозуміти як обійтись без логіки в данному методі, в результаті вирішив обійти це так.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginModel model)
         {
-            mapper = new MapperConfiguration(cfg => cfg.CreateMap<LoginModel, LoginDTO>()).CreateMapper();
-            LoginDTO loginDTO = mapper.Map<LoginDTO>(model);
-            await identityService.LoginAsync(loginDTO);
+            LoginDTO loginUser = mapper.Map<LoginDTO>(model);
+            try
+            {
+                await identityService.Login(loginUser);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View(model);
+            }
             return RedirectToAction("Index", "Home");
         }
-
 
         [Authorize]
         [HttpPost]
@@ -69,21 +82,19 @@ namespace TaskManagerTLA.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> ListUser()
+        public IActionResult ListUser()
         {
-            IEnumerable<UserDTO> userDTO = await identityService.GetUsersAsync();
-            mapper = new MapperConfiguration(cfg => cfg.CreateMap<UserDTO, UserModel>()).CreateMapper();
+            IEnumerable<UserDTO> userDTO = identityService.GetUsers();
             var usersModels = mapper.Map<IEnumerable<UserDTO>, List<UserModel>>(userDTO);
             return View(usersModels);
         }
 
 
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteUser(string UserId)
+        public IActionResult DeleteUser(string UserId)
         {
-            await identityService.DeleteUserAsync(UserId);
+            identityService.DeleteUser(UserId);
             return RedirectToAction("ListUser", "Account");
         }
 
@@ -93,16 +104,15 @@ namespace TaskManagerTLA.Controllers
         {
             ViewBag.UserId = UserId;
             var rolesDTO = identityService.GetRoles();
-            mapper = new MapperConfiguration(cfg => cfg.CreateMap<RoleDTO, RoleModel>()).CreateMapper();
             var rolesModels = mapper.Map<IEnumerable<RoleDTO>, List<RoleModel>>(rolesDTO);
             return View(rolesModels);
         }
 
 
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> ChangeRole(string UserId, string role)
+        public IActionResult ChangeRole(string UserId, string roleId)
         {
-            await identityService.EditUserRoleAsync(UserId, role);
+            identityService.ChangeUserRole(UserId, roleId);
             return RedirectToAction("ListUser", "Account");
         }
     }

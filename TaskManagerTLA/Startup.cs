@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -12,10 +13,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using TaskManagerTLA.BLL.BisnesLogic;
 using TaskManagerTLA.BLL.Interfaces;
+using TaskManagerTLA.BLL.Mapper;
 using TaskManagerTLA.BLL.Services;
 using TaskManagerTLA.DAL.EF;
 using TaskManagerTLA.DAL.Identity;
 using TaskManagerTLA.DAL.Identity.Interfaces;
+using TaskManagerTLA.DAL.Identity.Repositories;
 using TaskManagerTLA.DAL.Interfaces;
 using TaskManagerTLA.DAL.Repositories;
 
@@ -35,20 +38,24 @@ namespace TaskManagerTLA
         public void ConfigureServices(IServiceCollection services)
         {
             string connection = Configuration.GetConnectionString("DefaultConnection");
+            string IdentityConnection = Configuration.GetConnectionString("IdentityConnection");
             services.AddTransient<IUnitOfWork>(x => new EFUnitOfWork(connection));
             services.AddTransient<ITaskService, TaskService>();
-
-            services.AddDbContext<IdentityContext>(options => options.UseSqlServer(Configuration.GetConnectionString("IdentityConnection")));
+            services.AddDbContext<IdentityContext>(options => options.UseSqlServer(IdentityConnection));
             services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<IdentityContext>();
-            services.AddTransient<IUnitOfWorkIdentity, UnitOfWorkIdentity>();
+            services.AddTransient<IUnitOfWorkIdentity>(x => new UnitOfWorkIdentity(IdentityConnection));
             services.AddTransient<IIdentityServices, IdentityServices>();
+            var mapperConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MappingProfile());
+            });
+            IMapper mapper = mapperConfig.CreateMapper();
+            services.AddSingleton(mapper);
             services.AddTransient<IHomePageGreeting, HomePageGreeting>();
-
             services.AddControllersWithViews();
-
         }
 
-  
+
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())

@@ -47,7 +47,7 @@ namespace TaskManagerTLATest
         [Test]
         public void GetActualTask_Inner_TestId_OutTestId()
         {
-            //Arrange
+             //Arrange
             int testId = 1;
             mock.Setup(repo => repo.ActualTasks.Get(testId)).Returns(TestListActualTasks.First());
             var service = new TaskService(mock.Object);

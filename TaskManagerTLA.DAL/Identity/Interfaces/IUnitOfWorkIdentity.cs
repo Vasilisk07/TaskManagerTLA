@@ -8,9 +8,10 @@ namespace TaskManagerTLA.DAL.Identity.Interfaces
 {
     public interface IUnitOfWorkIdentity : IDisposable
     {
-        UserManager<IdentityUser> UserManager { get; }
-        RoleManager<IdentityRole> RoleManager { get; }
-        SignInManager<IdentityUser> SignInManager { get; }
+        IIdentityRepositories<IdentityUser> UsersRepositories { get; }
+        IIdentityRepositories<IdentityRole> RolesRepositories { get; }
+        IIdentityRepositories<IdentityUserRole<string>> UserRolesRepositories { get; }
+        public void Save();
 
     }
 }

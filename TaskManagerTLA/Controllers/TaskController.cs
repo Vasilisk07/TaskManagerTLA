@@ -15,14 +15,14 @@ namespace TaskManagerTLA.Controllers
     public class TaskController : Controller
     {
         ITaskService taskServise;
-        private readonly UserManager<IdentityUser> userManager;
         private IIdentityServices identityService;
         IMapper mapper;
 
-        public TaskController(IIdentityServices identityService, ITaskService serv)
+        public TaskController(IIdentityServices identityService, ITaskService serv,IMapper mapper)
         {
             this.identityService = identityService;
             taskServise = serv;
+            this.mapper = mapper;
         }
 
 
@@ -38,7 +38,7 @@ namespace TaskManagerTLA.Controllers
         [Authorize(Roles = "Admin, Manager")]
         public IActionResult CreateTask(TModel tVievModel)
         {
-            mapper = new MapperConfiguration(cfg => cfg.CreateMap<TModel, TaskDTO>()).CreateMapper();
+           // mapper = new MapperConfiguration(cfg => cfg.CreateMap<TModel, TaskDTO>()).CreateMapper();
             var tModel = mapper.Map<TaskDTO>(tVievModel);
             taskServise.MakeTask(tModel);
             return RedirectToAction("TaskList", "Task");
@@ -49,7 +49,7 @@ namespace TaskManagerTLA.Controllers
         public IActionResult TaskList()
         {
             IEnumerable<TaskDTO> taskDtos = taskServise.GetTasks();
-            mapper = new MapperConfiguration(cfg => cfg.CreateMap<TaskDTO, TModel>()).CreateMapper();
+           // mapper = new MapperConfiguration(cfg => cfg.CreateMap<TaskDTO, TModel>()).CreateMapper();
             var tasks = mapper.Map<IEnumerable<TaskDTO>, List<TModel>>(taskDtos);
             return View(tasks);
         }
@@ -67,8 +67,8 @@ namespace TaskManagerTLA.Controllers
         public IActionResult DetailsTask(int? id)
         {
             var ATasks = taskServise.GetActTasks();
-            mapper = new MapperConfiguration(cfg => cfg.CreateMap<ActualTaskDTO, ATModel>()).CreateMapper();
-            var tasks = mapper.Map<IEnumerable<ActualTaskDTO>, List<ATModel>>(ATasks);
+           // mapper = new MapperConfiguration(cfg => cfg.CreateMap<ActualTaskDTO, ATModel>()).CreateMapper();
+            var tasks = mapper.Map<IEnumerable<ActualTaskDTO>, List<ActualTaskViewModel>>(ATasks);
             var selectedTeams = from t in tasks where t.TaskId == id select t;
             ViewBag.TaskName = taskServise.GetTask(id).TaskName;
             ViewBag.TaskId = id;
@@ -78,10 +78,10 @@ namespace TaskManagerTLA.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin, Manager")]
-        public async Task<IActionResult> AddUserInTask(int? id)
+        public IActionResult AddUserInTask(int? id)
         {
-            IEnumerable<UserDTO> usersDTO = await identityService.GetUsersAsync();
-            mapper = new MapperConfiguration(cfg => cfg.CreateMap<UserDTO, UserModel>()).CreateMapper();
+            IEnumerable<UserDTO> usersDTO = identityService.GetUsers();
+           // mapper = new MapperConfiguration(cfg => cfg.CreateMap<UserDTO, UserModel>()).CreateMapper();
             var usersModel = mapper.Map<IEnumerable<UserDTO>, List<UserModel>>(usersDTO);
             usersModel = (from t in usersModel where t.UserRole == "Developer" select t).ToList();
             ViewBag.TaskId = id;
@@ -93,8 +93,8 @@ namespace TaskManagerTLA.Controllers
         [Authorize(Roles = "Admin, Manager")]
         public IActionResult AddUser(int? id, string userName)
         {
-            ATModel atmodel = new ATModel() { TaskId = (int)id, UserName = userName, TaskName = taskServise.GetTask((int)id).TaskName };
-            mapper = new MapperConfiguration(cfg => cfg.CreateMap<ATModel, ActualTaskDTO>()).CreateMapper();
+            ActualTaskViewModel atmodel = new ActualTaskViewModel() { TaskId = (int)id, UserName = userName, TaskName = taskServise.GetTask((int)id).TaskName };
+           // mapper = new MapperConfiguration(cfg => cfg.CreateMap<ATModel, ActualTaskDTO>()).CreateMapper();
             var tModel = mapper.Map<ActualTaskDTO>(atmodel);
             taskServise.MakeActualTask(tModel);
             return RedirectToAction("DetailsTask", new { id });
@@ -113,8 +113,8 @@ namespace TaskManagerTLA.Controllers
         public IActionResult ShowPersonalTask()
         {
             List<ActualTaskDTO> curentTasksDTO = (from t in taskServise.GetActTasks() where t.UserName == User.Identity.Name select t).ToList();
-            mapper = new MapperConfiguration(cfg => cfg.CreateMap<ActualTaskDTO, ATModel>()).CreateMapper();
-            var curentTasks = mapper.Map<IEnumerable<ActualTaskDTO>, List<ATModel>>(curentTasksDTO);
+           // mapper = new MapperConfiguration(cfg => cfg.CreateMap<ActualTaskDTO, ATModel>()).CreateMapper();
+            var curentTasks = mapper.Map<IEnumerable<ActualTaskDTO>, List<ActualTaskViewModel>>(curentTasksDTO);
             return View(curentTasks);
         }
 

@@ -5,23 +5,27 @@ using System.Text;
 using System.Threading.Tasks;
 using TaskManagerTLA.BLL.DTO;
 
+
 namespace TaskManagerTLA.BLL.Interfaces
 {
     public interface IIdentityServices
     {
-        Task MakeUserAsync(UserDTO users);
-        Task MakeRoleAsync(RoleDTO taskDTO);
-        Task <UserDTO> GetUserByIdAsync(string id);
-        Task DeleteUserAsync(string id);
-        Task DeleteRoleAsync(string id);
-        Task <IEnumerable<UserDTO>> GetUsersAsync();
-        Task<UserDTO> GetUserByNameAsync(string name);
-        Task <string> GetRoleAsync(string userId);
-        IEnumerable <RoleDTO> GetRoles();
-        Task EditUserRoleAsync(string userId, string role);
-        Task LoginAsync(LoginDTO loginDTO);
+        Task Login(LoginDTO loginUser);
         Task Logout();
-        
+        void RegisterNewUser(UserDTO newUser);
+        bool CreateUserAndRole(UserDTO newUser);
+        bool CreateUserRole(string userId, string roleId);
+        public void DeleteUser(string userId);
+        void ChangeUserRole(string userId, string newRoleId);
+        void DeleteRole(string roleId);
+        void CreateRole(string newRoleName);
+        string GetUserRole(string userId);
+        IEnumerable<RoleDTO> GetRoles();
+        UserDTO GetUserById(string userId);
+        UserDTO GetUserByName(string userName);
+        IEnumerable<UserDTO> GetUsers();
+
+
 
     }
 }

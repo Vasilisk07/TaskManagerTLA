@@ -8,7 +8,7 @@ namespace TaskManagerTLA.BLL.Interfaces
 {
     public interface IHomePageGreeting
     {
-        Task<string> GetGreeting(HttpContext httpContext);
+        string GetGreeting(HttpContext httpContext);
 
     }
 }

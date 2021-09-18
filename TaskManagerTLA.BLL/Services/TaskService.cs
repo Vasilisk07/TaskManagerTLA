@@ -12,35 +12,10 @@ namespace TaskManagerTLA.BLL.Services
     public class TaskService : ITaskService
     {
         IUnitOfWork Database { get; set; }
-        private bool disposed = false;
-
-
 
         public TaskService(IUnitOfWork DB)
         {
             Database = DB;
-        }
-
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposed)
-            {
-                if (disposing)
-                {
-                    Database.Dispose();
-                }
-                disposed = true;
-            }
-        }
-        ~TaskService()
-        {
-            Dispose(false);
         }
 
         public IEnumerable<ActualTaskDTO> GetActTasks()
@@ -48,7 +23,6 @@ namespace TaskManagerTLA.BLL.Services
             var maper = new MapperConfiguration(cfg => cfg.CreateMap<ActualTask, ActualTaskDTO>()).CreateMapper();
             return maper.Map<IEnumerable<ActualTask>, List<ActualTaskDTO>>(Database.ActualTasks.GetAll());
         }
-
 
         public ActualTaskDTO GetActualTask(int? id)
         {
@@ -58,7 +32,6 @@ namespace TaskManagerTLA.BLL.Services
             return ActTask;
         }
 
-
         public TaskDTO GetTask(int? id)
         {
             var task = Database.Tasks.Get(id.Value);
@@ -67,14 +40,12 @@ namespace TaskManagerTLA.BLL.Services
             return Tmodel;
         }
 
-
         public IEnumerable<TaskDTO> GetTasks()
         {
             IEnumerable<TaskModel> Tlist = Database.Tasks.GetAll();
             var maper = new MapperConfiguration(cfg => cfg.CreateMap<TaskModel, TaskDTO>()).CreateMapper();
             return maper.Map<IEnumerable<TaskModel>, List<TaskDTO>>(Database.Tasks.GetAll());
         }
-
 
         public void MakeActualTask(ActualTaskDTO ActTaskDTO)
         {
@@ -97,7 +68,6 @@ namespace TaskManagerTLA.BLL.Services
             }
         }
 
-
         public void MakeTask(TaskDTO taskDTO)
         {
             var mapper = new MapperConfiguration(cfg => cfg.CreateMap<TaskDTO, TaskModel>()).CreateMapper();
@@ -105,7 +75,6 @@ namespace TaskManagerTLA.BLL.Services
             Database.Tasks.Create(Tmodel);
             Database.Save();
         }
-
 
         public void DeleteTask(int? id)
         {
@@ -121,7 +90,6 @@ namespace TaskManagerTLA.BLL.Services
             Database.Save();
         }
 
-
         public void EditActualTask(int? id, int? time, string desk)
         {
             ActualTask EditsATask = Database.ActualTasks.Get((int)id);
@@ -131,7 +99,6 @@ namespace TaskManagerTLA.BLL.Services
             EditTask.TaskLeigth = time != null && (int)time > 0 ? EditTask.TaskLeigth + (int)time : EditTask.TaskLeigth;
             Database.Save();
         }
-
 
         public void DeleteActualTask(int? id)
         {

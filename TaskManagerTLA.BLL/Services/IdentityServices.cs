@@ -15,101 +15,180 @@ namespace TaskManagerTLA.BLL.Services
 {
     public class IdentityServices : IIdentityServices
     {
-        IUnitOfWorkIdentity Manager { get;  }
-     
+        IUnitOfWorkIdentity Db { get; }
         IMapper mapper;
-        public IdentityServices(IUnitOfWorkIdentity manager)
+        SignInManager<IdentityUser> signInManager;
+        public IdentityServices(IUnitOfWorkIdentity identityRepositories, IMapper mapper, SignInManager<IdentityUser> signInManager)
         {
-            Manager = manager;
+            Db = identityRepositories;
+            this.mapper = mapper;
+            this.signInManager = signInManager;
         }
 
-        public async Task DeleteRoleAsync(string id)
+        public async Task Login(LoginDTO loginUser)
         {
-            await Manager.RoleManager.DeleteAsync(await Manager.RoleManager.FindByIdAsync(id));
+            var result = await signInManager.PasswordSignInAsync(loginUser.UserName, loginUser.Password, loginUser.RememberMe, false);
+            if (!result.Succeeded)
+            {
+                throw new Exception("Невірний логін або пароль");
+            }
+        }
+        public async Task Logout()
+        {
+            await signInManager.SignOutAsync();
         }
 
-        public async Task DeleteUserAsync(string id)
+        public void RegisterNewUser(UserDTO newUser)
         {
-            await Manager.UserManager.DeleteAsync(await Manager.UserManager.FindByIdAsync(id));
+            if (GetUserByName(newUser.UserName) != null)
+            {
+                throw new Exception("Користувач з таким іменем вже існує!");
+            }
+            if (!CreateUserAndRole(newUser))
+            {
+                throw new Exception("Не можливо створити користувача, введено не коректні данні ");
+            }
+
+
         }
 
-        public async Task EditUserRoleAsync(string id, string role)
+
+        //в данному методі не використовую автомапер, тому що в данній реалізації для більшості полів IdentityUser буде присвоєно значення за замовчуванням 
+        public bool CreateUserAndRole(UserDTO newUser)
         {
-            IdentityUser User = await Manager.UserManager.FindByIdAsync(id);
-            var roles = await Manager.UserManager.GetRolesAsync(User);
-            await Manager.UserManager.RemoveFromRolesAsync(User, roles.ToArray());
-            await Manager.UserManager.AddToRoleAsync(User, role);
+            //створення User
+            PasswordHasher<IdentityUser> hasher = new PasswordHasher<IdentityUser>();
+            IdentityUser newUserDb = new IdentityUser()
+            {
+                UserName = newUser.UserName,
+                NormalizedUserName = newUser.UserName.ToUpper(),
+                Email = newUser.Email,
+                NormalizedEmail = newUser.Email.ToUpper(),
+            };
+            newUserDb.PasswordHash = hasher.HashPassword(newUserDb, newUser.Password);
+
+            //присвоюєм юзеру роль "Developer"
+            if (Db.UsersRepositories.CreateItem(newUserDb))
+            {
+                string developerRoleId = "";
+                foreach (var item in Db.RolesRepositories.GetAllItems())
+                {
+                    if (item.Name == "Developer")
+                    {
+                        developerRoleId = item.Id;
+                    }
+                }
+
+                //зміни в Базі Данних зберігаются лише після успішного додавання юзера і ролі в БД, таким чином ми уникаєм можливості створення юзера без ролі 
+                return CreateUserRole(newUserDb.Id, developerRoleId);
+            }
+            return false;
         }
 
-        public async Task<string> GetRoleAsync(string UserId)
+        public bool CreateUserRole(string userId, string roleId)
         {
-            string role = (await Manager.UserManager.GetRolesAsync(await Manager.UserManager.FindByIdAsync(UserId))).First();
-            return role;
+            if (Db.UserRolesRepositories.CreateItem(new IdentityUserRole<string>() { RoleId = roleId, UserId = userId }))
+            {
+                Db.Save();
+                return true;
+            }
+            return false;
+        }
+
+        public void DeleteUser(string userId)
+        {
+            //видаляєм користувача і всі звязані з ним ролі
+            if (Db.UsersRepositories.DeleteItem(Db.UsersRepositories.GetItem(userId)))
+            {
+                DeleteAllUserRoles(userId);
+                Db.Save();
+            }
+        }
+
+        public void ChangeUserRole(string userId, string newRoleId)
+        {
+            DeleteAllUserRoles(userId);
+            CreateUserRole(userId, newRoleId);
+        }
+
+        //видаляєм всі звязані з користувачем ролі
+        public void DeleteAllUserRoles(string userId)
+        {
+            foreach (var item in Db.UserRolesRepositories.GetAllItems())
+            {
+                if (item.UserId == userId)
+                {
+                    Db.UserRolesRepositories.DeleteItem(item);
+
+                }
+            }
+        }
+
+        public void DeleteRole(string roleId)
+        {
+            foreach (var item in Db.RolesRepositories.GetAllItems())
+            {
+                if (item.Id == roleId)
+                {
+                    Db.RolesRepositories.DeleteItem(item);
+                    Db.Save();
+                }
+            }
+        }
+
+        public void CreateRole(string newRoleName)
+        {
+            Db.RolesRepositories.CreateItem(new IdentityRole(newRoleName));
+            Db.Save();
+        }
+        public string GetUserRole(string userId)
+        {
+            string roleId = "";
+            foreach (var item in Db.UserRolesRepositories.GetAllItems())
+            {
+                if (item.UserId == userId)
+                {
+                    roleId = item.RoleId;
+                }
+            }
+            return Db.RolesRepositories.GetItem(roleId).Name;
         }
 
         public IEnumerable<RoleDTO> GetRoles()
         {
-            IEnumerable<IdentityRole> rolesDb = Manager.RoleManager.Roles;
-            mapper = new MapperConfiguration(cfg => cfg.CreateMap<IdentityRole, RoleDTO>().
-                         ForMember("UserRole", opt=>opt.MapFrom(c=>c.Name))).CreateMapper();
+            IEnumerable<IdentityRole> rolesDb = Db.RolesRepositories.GetAllItems();
             var roles = mapper.Map<IEnumerable<IdentityRole>, List<RoleDTO>>(rolesDb);
             return roles;
         }
 
-        public async Task<UserDTO> GetUserByIdAsync(string id)
+        public UserDTO GetUserById(string userId)
         {
-            mapper = new MapperConfiguration(cfg => cfg.CreateMap<IdentityUser, UserDTO>()).CreateMapper();
-            var user = mapper.Map<UserDTO>(await Manager.UserManager.FindByIdAsync(id));
+            var user = mapper.Map<UserDTO>(Db.UsersRepositories.GetItem(userId));
             return user;
-
-        }
-        public async Task<UserDTO> GetUserByNameAsync(string name)
-        {
-            mapper = new MapperConfiguration(cfg => cfg.CreateMap<IdentityUser, UserDTO>()).CreateMapper();
-            var user = mapper.Map<UserDTO>(await Manager.UserManager.FindByNameAsync(name));
-            return user;
-
         }
 
-        public async Task<IEnumerable<UserDTO>> GetUsersAsync()
+        public UserDTO GetUserByName(string userName)
         {
-            mapper = new MapperConfiguration(cfg => cfg.CreateMap<IdentityUser, UserDTO>()).CreateMapper();
-            var users = mapper.Map<IEnumerable<IdentityUser>, List<UserDTO>>(Manager.UserManager.Users);
+            IdentityUser returnedUser = null;
+            foreach (var item in Db.UsersRepositories.GetAllItems())
+            {
+                if (userName == item.UserName)
+                {
+                    returnedUser = item;
+                }
+            }
+            var user = mapper.Map<UserDTO>(returnedUser);
+            return user;
+        }
+
+        public IEnumerable<UserDTO> GetUsers()
+        {
+            var users = mapper.Map<IEnumerable<IdentityUser>, List<UserDTO>>(Db.UsersRepositories.GetAllItems());
             foreach (var item in users)
             {
-                item.UserRole = await GetRoleAsync(item.id);
+                item.UserRole = GetUserRole(item.id);
             }
             return users;
         }
-
-        public async Task MakeRoleAsync(RoleDTO role)
-        {
-            mapper = new MapperConfiguration(cfg => cfg.CreateMap<RoleDTO, IdentityRole>()).CreateMapper();
-            var roleDb = mapper.Map<IdentityRole>(role);
-            await Manager.RoleManager.CreateAsync(roleDb);
-        }
-
-        public async Task MakeUserAsync(UserDTO user)
-        {
-            IdentityUser userDb = new IdentityUser() { UserName = user.UserName, Email = user.Email };
-            var result = await Manager.UserManager.CreateAsync(userDb, user.Password);
-            if (result.Succeeded)
-            {
-                await Manager.UserManager.AddToRoleAsync(userDb, "Developer");
-                await Manager.SignInManager.SignInAsync(userDb, false);
-            }
-        }
-        
-        public async Task LoginAsync(LoginDTO loginDTO)
-        {
-           await  Manager.SignInManager.PasswordSignInAsync(loginDTO.UserName, loginDTO.Password, loginDTO.RememberMe, false);
-
-        }
-
-        public async Task Logout()
-        {
-           await Manager.SignInManager.SignOutAsync();
-        }
-
     }
 }

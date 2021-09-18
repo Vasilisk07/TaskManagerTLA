@@ -8,7 +8,9 @@ namespace TaskManagerTLA.Models
 {
     public class RoleModel
     {
+        public string Id { get; set; }
         [Display(Name = "Ролі")]
         public string UserRole { get; set; }
+        
     }
 }
