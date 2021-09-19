@@ -4,7 +4,7 @@ using System.Text;
 
 namespace TaskManagerTLA.DAL.Interfaces
 {
-  public   interface IRepository<T> where T : class
+    public interface IRepository<T> where T : class
     {
         IEnumerable<T> GetAll();
         T Get(int id);

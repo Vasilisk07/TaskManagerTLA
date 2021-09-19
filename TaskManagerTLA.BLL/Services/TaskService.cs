@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using TaskManagerTLA.BLL.DTO;
 using TaskManagerTLA.BLL.Interfaces;
 using TaskManagerTLA.DAL.Entities;
@@ -11,49 +11,49 @@ namespace TaskManagerTLA.BLL.Services
 {
     public class TaskService : ITaskService
     {
-        IUnitOfWork Database { get; set; }
-
-        public TaskService(IUnitOfWork DB)
+        private readonly IUnitOfWork dataBase;
+        private readonly IMapper mapper;
+        public TaskService(IUnitOfWork dataBase, IMapper mapper)
         {
-            Database = DB;
+            this.dataBase = dataBase;
+            this.mapper = mapper;
         }
 
-        public IEnumerable<ActualTaskDTO> GetActTasks()
+        public IEnumerable<ActualTaskDTO> GetActualTasks()
         {
-            var maper = new MapperConfiguration(cfg => cfg.CreateMap<ActualTask, ActualTaskDTO>()).CreateMapper();
-            return maper.Map<IEnumerable<ActualTask>, List<ActualTaskDTO>>(Database.ActualTasks.GetAll());
+            return mapper.Map<IEnumerable<ActualTask>, List<ActualTaskDTO>>(dataBase.ActualTasks.GetAll());
         }
 
-        public ActualTaskDTO GetActualTask(int? id)
+        public ActualTaskDTO GetActualTask(int? actualTaskId)
         {
-            var ActlTask = Database.ActualTasks.Get(id.Value);
-            var mapper = new MapperConfiguration(cfg => cfg.CreateMap<ActualTask, ActualTaskDTO>()).CreateMapper();
-            var ActTask = mapper.Map<ActualTaskDTO>(ActlTask);
-            return ActTask;
+            ActualTaskDTO actualTaskDTO = mapper.Map<ActualTaskDTO>(dataBase.ActualTasks.Get(actualTaskId.Value));
+            return actualTaskDTO;
         }
 
-        public TaskDTO GetTask(int? id)
+        public TaskDTO GetTask(int? taskId)
         {
-            var task = Database.Tasks.Get(id.Value);
-            var mapper = new MapperConfiguration(cfg => cfg.CreateMap<TaskModel, TaskDTO>()).CreateMapper();
-            var Tmodel = mapper.Map<TaskDTO>(task);
-            return Tmodel;
+            TaskDTO taskDTO = mapper.Map<TaskDTO>(dataBase.Tasks.Get(taskId.Value));
+            return taskDTO;
+        }
+
+        public IEnumerable<ActualTaskDTO> GetDetailsTask(int? taskId)
+        {
+            return from t in GetActualTasks() where t.TaskId == taskId.Value select t;
         }
 
         public IEnumerable<TaskDTO> GetTasks()
         {
-            IEnumerable<TaskModel> Tlist = Database.Tasks.GetAll();
-            var maper = new MapperConfiguration(cfg => cfg.CreateMap<TaskModel, TaskDTO>()).CreateMapper();
-            return maper.Map<IEnumerable<TaskModel>, List<TaskDTO>>(Database.Tasks.GetAll());
+            IEnumerable<TaskDTO> taskListDTO = mapper.Map<IEnumerable<TaskModel>, List<TaskDTO>>(dataBase.Tasks.GetAll());
+            return taskListDTO;
         }
 
-        public void MakeActualTask(ActualTaskDTO ActTaskDTO)
+        public void MakeActualTask(ActualTaskDTO actualTaskDTO)
         {
             bool ifExist = false;
-            var aTask = GetActTasks();
+            var aTask = GetActualTasks();
             foreach (var item in aTask)
             {
-                if (item.TaskId == ActTaskDTO.TaskId && item.UserName == ActTaskDTO.UserName)
+                if (item.TaskId == actualTaskDTO.TaskId && item.UserName == actualTaskDTO.UserName)
                 {
                     ifExist = true;
                     break;
@@ -61,49 +61,59 @@ namespace TaskManagerTLA.BLL.Services
             }
             if (!ifExist)
             {
-                var mapper = new MapperConfiguration(cfg => cfg.CreateMap<ActualTaskDTO, ActualTask>()).CreateMapper();
-                var ActTask = mapper.Map<ActualTask>(ActTaskDTO);
-                Database.ActualTasks.Create(ActTask);
-                Database.Save();
+                ActualTask actualTask = mapper.Map<ActualTask>(actualTaskDTO);
+                dataBase.ActualTasks.Create(actualTask);
+                dataBase.Save();
             }
         }
 
         public void MakeTask(TaskDTO taskDTO)
         {
-            var mapper = new MapperConfiguration(cfg => cfg.CreateMap<TaskDTO, TaskModel>()).CreateMapper();
-            var Tmodel = mapper.Map<TaskModel>(taskDTO);
-            Database.Tasks.Create(Tmodel);
-            Database.Save();
+            TaskModel taskModel = mapper.Map<TaskModel>(taskDTO);
+            dataBase.Tasks.Create(taskModel);
+            dataBase.Save();
         }
 
-        public void DeleteTask(int? id)
+        public void DeleteTask(int? taskId)
         {
-            Database.Tasks.Delete((int)id);
-            var actTask = GetActTasks();
-            foreach (var item in actTask)
+            dataBase.Tasks.Delete(taskId.Value);
+            var actualTaskList = GetActualTasks();
+            foreach (var item in actualTaskList)
             {
-                if (item.TaskId == (int)id)
+                if (item.TaskId == taskId.Value)
                 {
-                    Database.ActualTasks.Delete(item.ActualTaskId);
+                    dataBase.ActualTasks.Delete(item.ActualTaskId);
                 }
             }
-            Database.Save();
+            dataBase.Save();
         }
 
-        public void EditActualTask(int? id, int? time, string desk)
+        public void EditActualTask(int? actualTaskId, int? elapsedTime, string description)
         {
-            ActualTask EditsATask = Database.ActualTasks.Get((int)id);
-            EditsATask.Description = desk != null ? $" {EditsATask.Description} | {DateTime.Now.ToString("dd.MM.yyyy")} {desk}" : EditsATask.Description;
-            EditsATask.ActTaskLeigth = time != null && (int)time > 0 ? EditsATask.ActTaskLeigth + (int)time : EditsATask.ActTaskLeigth;
-            TaskModel EditTask = Database.Tasks.Get(EditsATask.TaskId);
-            EditTask.TaskLeigth = time != null && (int)time > 0 ? EditTask.TaskLeigth + (int)time : EditTask.TaskLeigth;
-            Database.Save();
+            ActualTask EditsActualTask = dataBase.ActualTasks.Get(actualTaskId.Value);
+            EditsActualTask.Description = description != null ? $" {EditsActualTask.Description} | {DateTime.Now.ToString("dd.MM.yyyy")} {description}" : EditsActualTask.Description;
+            EditsActualTask.ActTaskLeigth = elapsedTime != null && elapsedTime.Value > 0 ? EditsActualTask.ActTaskLeigth + elapsedTime.Value : EditsActualTask.ActTaskLeigth;
+            TaskModel EditTask = dataBase.Tasks.Get(EditsActualTask.TaskId);
+            EditTask.TaskLeigth = elapsedTime != null && elapsedTime.Value > 0 ? EditTask.TaskLeigth + elapsedTime.Value : EditTask.TaskLeigth;
+            dataBase.Save();
         }
 
-        public void DeleteActualTask(int? id)
+        public void DeleteActualTaskByUser(string userName)
         {
-            Database.ActualTasks.Delete((int)id);
-            Database.Save();
+            foreach (var item in dataBase.ActualTasks.GetAll())
+            {
+                if (item.UserName == userName)
+                {
+                    dataBase.ActualTasks.Delete(item.ActualTaskId);
+                }
+            }
+            dataBase.Save();
+        }
+
+        public void DeleteActualTask(int? actualTaskId)
+        {
+            dataBase.ActualTasks.Delete(actualTaskId.Value);
+            dataBase.Save();
         }
 
     }

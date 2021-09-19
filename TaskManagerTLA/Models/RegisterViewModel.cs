@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TaskManagerTLA.Models
 {
-    public class RegisterModel
+    public class RegisterViewModel
     {
 
         [Required(ErrorMessage = "Вкажіть імя користувача")]
@@ -16,6 +16,7 @@ namespace TaskManagerTLA.Models
         [Display(Name = "Email адреса")]
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
+        [MinLength(5)]
         [Required(ErrorMessage = "Вкажіть пароль")]
         [DataType(DataType.Password)]
         [Display(Name = "Пароль")]

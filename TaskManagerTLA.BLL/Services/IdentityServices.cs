@@ -16,16 +16,18 @@ namespace TaskManagerTLA.BLL.Services
     public class IdentityServices : IIdentityServices
     {
         IUnitOfWorkIdentity Db { get; }
-        IMapper mapper;
-        SignInManager<IdentityUser> signInManager;
-        public IdentityServices(IUnitOfWorkIdentity identityRepositories, IMapper mapper, SignInManager<IdentityUser> signInManager)
+        private readonly IMapper mapper;
+        private readonly SignInManager<IdentityUser> signInManager;
+        private readonly ITaskService taskService;
+        public IdentityServices(IUnitOfWorkIdentity identityRepositories, IMapper mapper, SignInManager<IdentityUser> signInManager, ITaskService taskService)
         {
             Db = identityRepositories;
             this.mapper = mapper;
             this.signInManager = signInManager;
+            this.taskService = taskService;
         }
 
-        public async Task Login(LoginDTO loginUser)
+        public async Task Login(UserDTO loginUser)
         {
             var result = await signInManager.PasswordSignInAsync(loginUser.UserName, loginUser.Password, loginUser.RememberMe, false);
             if (!result.Succeeded)
@@ -48,10 +50,7 @@ namespace TaskManagerTLA.BLL.Services
             {
                 throw new Exception("Не можливо створити користувача, введено не коректні данні ");
             }
-
-
         }
-
 
         //в данному методі не використовую автомапер, тому що в данній реалізації для більшості полів IdentityUser буде присвоєно значення за замовчуванням 
         public bool CreateUserAndRole(UserDTO newUser)
@@ -97,10 +96,11 @@ namespace TaskManagerTLA.BLL.Services
 
         public void DeleteUser(string userId)
         {
-            //видаляєм користувача і всі звязані з ним ролі
+            //видаляєм користувача і всі звязані з ним ролі і присвоєні йому задачі
             if (Db.UsersRepositories.DeleteItem(Db.UsersRepositories.GetItem(userId)))
             {
                 DeleteAllUserRoles(userId);
+                taskService.DeleteActualTaskByUser(GetUserById(userId).UserName);
                 Db.Save();
             }
         }
@@ -119,7 +119,6 @@ namespace TaskManagerTLA.BLL.Services
                 if (item.UserId == userId)
                 {
                     Db.UserRolesRepositories.DeleteItem(item);
-
                 }
             }
         }
@@ -186,7 +185,7 @@ namespace TaskManagerTLA.BLL.Services
             var users = mapper.Map<IEnumerable<IdentityUser>, List<UserDTO>>(Db.UsersRepositories.GetAllItems());
             foreach (var item in users)
             {
-                item.UserRole = GetUserRole(item.id);
+                item.UserRole = GetUserRole(item.Id);
             }
             return users;
         }

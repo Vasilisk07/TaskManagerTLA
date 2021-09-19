@@ -4,7 +4,7 @@ using System.Text;
 
 namespace TaskManagerTLA.DAL.Entities
 {
-   public class ActualTask
+    public class ActualTask
     {
         public int ActualTaskId { get; set; }
         public int ActTaskLeigth { get; set; }

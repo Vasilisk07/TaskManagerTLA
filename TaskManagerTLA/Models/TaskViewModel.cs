@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TaskManagerTLA.Models
 {
-    public class TModel
+    public class TaskViewModel
     {
         [Display(Name = "Id Задачі")]
         public int TaskModelId { get; set; }

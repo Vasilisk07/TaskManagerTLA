@@ -35,7 +35,7 @@ namespace TaskManagerTLATest
             var service = new TaskService(mock.Object);
 
             //act
-            var resultList = service.GetActTasks().ToList();
+            var resultList = service.GetActualTasks().ToList();
            
             //Assert
             Assert.AreEqual(resultList.Count, TestListActualTasks.Count, "Inner count collection {0} does not match the input count collection {1}", resultList.Count, TestListActualTasks.Count);

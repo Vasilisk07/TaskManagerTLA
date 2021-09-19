@@ -15,20 +15,11 @@ namespace TaskManagerTLA.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IHomePageGreeting homePageGreeting;
-        public HomeController(IHomePageGreeting homePageGreeting)
-        {
-            this.homePageGreeting = homePageGreeting;
-        }
-
-
         public IActionResult Index()
         {
-
-            ViewBag.Info = homePageGreeting.GetGreeting(HttpContext);
+            ViewBag.UserName = User.Identity.Name;
             return View();
         }
-
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

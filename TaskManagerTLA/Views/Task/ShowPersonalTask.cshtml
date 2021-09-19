@@ -1,4 +1,4 @@
-﻿@model IEnumerable<TaskManagerTLA.Models.ActualTaskVievModel>
+﻿@model IEnumerable<TaskManagerTLA.Models.ActualTaskViewModel>
 
 @{
     ViewData["Title"] = "Мої задачі";
@@ -34,7 +34,7 @@
                 @Html.DisplayFor(modelItem => item.Description)
             </td>
             <td>
-                @Html.ActionLink("Внести данні", "EditPersonalTask", new { id = item.ActualTaskId })
+                @Html.ActionLink("Внести данні", "EditPersonalTask", new { actualTaskId = item.ActualTaskId })
 
             </td>
         </tr>

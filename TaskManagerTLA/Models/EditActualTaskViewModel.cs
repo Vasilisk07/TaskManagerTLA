@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TaskManagerTLA.Models
 {
-    public class EditATModel
+    public class EditActualTaskViewModel
     {
         public int ActualTaskId { get; set; }
         [Display(Name = "Затрачений час")]

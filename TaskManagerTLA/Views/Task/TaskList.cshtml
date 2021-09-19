@@ -1,4 +1,4 @@
-﻿@model IEnumerable<TaskManagerTLA.Models.TModel>
+﻿@model IEnumerable<TaskManagerTLA.Models.TaskViewModel>
 
 @{
     ViewData["Title"] = "Список Задач";
@@ -51,8 +51,8 @@
                 @Html.DisplayFor(modelItem => item.TaskEnd)
             </td>
             <td>
-                @Html.ActionLink("Деталі", "DetailsTask", new { id=item.TaskModelId}) |
-                @Html.ActionLink("Видалити", "DeleteTask", new { id = item.TaskModelId  })
+                @Html.ActionLink("Деталі", "DetailsTask", new { taskId = item.TaskModelId }) |
+                @Html.ActionLink("Видалити", "DeleteTask", new { taskId = item.TaskModelId  })
             </td>
         </tr>
 }

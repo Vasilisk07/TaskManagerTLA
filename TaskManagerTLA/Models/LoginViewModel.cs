@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace TaskManagerTLA.Models
 {
-    public class LoginModel
+    public class LoginViewModel
     {
-       
+
         [Required]
         [Display(Name = "Імя користувача")]
         public string UserName { get; set; }
@@ -18,7 +18,6 @@ namespace TaskManagerTLA.Models
         public string Password { get; set; }
         [Display(Name = "Запамятати?")]
         public bool RememberMe { get; set; }
-        public string ReturnUrl { get; set; }
 
     }
 }

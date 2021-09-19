@@ -1,4 +1,4 @@
-﻿@model IEnumerable<TaskManagerTLA.Models.UserModel>
+﻿@model IEnumerable<TaskManagerTLA.Models.UserViewModel>
 
 @{
     ViewData["Title"] = "Додати користувача";
@@ -36,7 +36,7 @@
             </td>
             <td>
 
-                @Html.ActionLink("Додати", "AddUser", new { id=ViewBag.TaskId, userName=item.UserName }) |
+                @Html.ActionLink("Додати", "AddUser", new { taskId=ViewBag.TaskId, userName=item.UserName }) |
             </td>
         </tr>
 }

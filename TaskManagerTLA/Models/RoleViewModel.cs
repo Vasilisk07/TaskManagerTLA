@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TaskManagerTLA.Models
 {
-    public class RoleModel
+    public class RoleViewModel
     {
         public string Id { get; set; }
         [Display(Name = "Ролі")]

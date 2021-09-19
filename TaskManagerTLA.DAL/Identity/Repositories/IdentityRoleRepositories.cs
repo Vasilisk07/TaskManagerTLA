@@ -17,7 +17,6 @@ namespace TaskManagerTLA.DAL.Identity
             this.Db = identityContext;
         }
 
-
         public bool CreateItem(IdentityRole newItem)
         {
             var res = Db.Roles.Add(newItem);
@@ -28,6 +27,7 @@ namespace TaskManagerTLA.DAL.Identity
             }
             return creationState;
         }
+
         public bool DeleteItem(IdentityRole Item)
         {
             var res = Db.Roles.Remove(Item);

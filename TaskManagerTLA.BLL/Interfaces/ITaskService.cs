@@ -7,15 +7,18 @@ namespace TaskManagerTLA.BLL.Interfaces
 {
     public interface ITaskService
     {
-        void MakeActualTask(ActualTaskDTO ActTaskDTO);
+        void MakeActualTask(ActualTaskDTO actualTaskDTO);
         void MakeTask(TaskDTO taskDTO);
-        TaskDTO GetTask(int? id);
-        void DeleteTask(int? id);
-        void DeleteActualTask(int? id);
+        TaskDTO GetTask(int? taskId);
+        void DeleteTask(int? taskId);
+        void DeleteActualTask(int? actualTaskId);
+        void DeleteActualTaskByUser(string userName);
         IEnumerable<TaskDTO> GetTasks();
-        ActualTaskDTO GetActualTask(int? id);
-        IEnumerable<ActualTaskDTO> GetActTasks();
-        void EditActualTask(int? id, int? time, string desk);
-      
+        ActualTaskDTO GetActualTask(int? actualTaskId);
+        IEnumerable<ActualTaskDTO> GetActualTasks();
+        void EditActualTask(int? actualTaskId, int? elapsedTime, string description);
+        IEnumerable<ActualTaskDTO> GetDetailsTask(int? taskId);
+
+
     }
 }

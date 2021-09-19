@@ -7,7 +7,6 @@ namespace TaskManagerTLA.DAL.Identity.Interfaces
 {
     public interface IIdentityRepositories<T> where T : class
     {
-
         bool CreateItem(T newItem);
         bool DeleteItem(T Item);
         IEnumerable<T> GetAllItems();

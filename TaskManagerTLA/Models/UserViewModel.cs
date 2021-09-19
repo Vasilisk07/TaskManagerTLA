@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace TaskManagerTLA.Models
 {
-    public class UserModel
+    public class UserViewModel
     {
-        public string id { get; set; }
+        public string Id { get; set; }
         [Display(Name = "Імя користувача")]
         public string UserName { get; set; }
         [Display(Name = "Email")]

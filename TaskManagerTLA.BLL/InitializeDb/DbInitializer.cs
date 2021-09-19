@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TaskManagerTLA.BLL.InitializeDb
 {
-   public class DbInitializer
+    public class DbInitializer
     {
         public static async Task InitializeAsync(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
         {
@@ -19,6 +19,7 @@ namespace TaskManagerTLA.BLL.InitializeDb
             {
                 await roleManager.CreateAsync(new IdentityRole("Manager"));
             }
+
             if (await roleManager.FindByNameAsync("Developer") == null)
             {
                 await roleManager.CreateAsync(new IdentityRole("Developer"));
@@ -33,6 +34,7 @@ namespace TaskManagerTLA.BLL.InitializeDb
                     await userManager.AddToRoleAsync(admin, "Admin");
                 }
             }
+
             if (await userManager.FindByNameAsync("Bob") == null)
             {
                 IdentityUser manager = new IdentityUser { UserName = "Bob", Email = "Bob@mail.com" };
@@ -52,6 +54,7 @@ namespace TaskManagerTLA.BLL.InitializeDb
                     await userManager.AddToRoleAsync(dev, "Developer");
                 }
             }
+
             if (await userManager.FindByNameAsync("Nick") == null)
             {
                 IdentityUser dev = new IdentityUser { UserName = "Nick", Email = "Nick@mail.com" };
@@ -61,6 +64,7 @@ namespace TaskManagerTLA.BLL.InitializeDb
                     await userManager.AddToRoleAsync(dev, "Developer");
                 }
             }
+
             if (await userManager.FindByNameAsync("Adam") == null)
             {
                 IdentityUser dev = new IdentityUser { UserName = "Adam", Email = "Adam@mail.com" };
@@ -70,10 +74,6 @@ namespace TaskManagerTLA.BLL.InitializeDb
                     await userManager.AddToRoleAsync(dev, "Developer");
                 }
             }
-
-
         }
-
-
     }
 }

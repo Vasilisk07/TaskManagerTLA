@@ -1,4 +1,4 @@
-﻿@model IEnumerable<TaskManagerTLA.Models.ATModel>
+﻿@model IEnumerable<TaskManagerTLA.Models.ActualTaskViewModel>
 
 @{
     ViewData["Title"] = "DetailsTask";
@@ -7,7 +7,7 @@
 <h1>@ViewBag.TaskName</h1>
 
 <p>
-    @Html.ActionLink("Додати виконавця", "AddUserInTask", new { id = ViewBag.TaskId })
+    @Html.ActionLink("Додати виконавця", "AddUserInTask", new { taskId = ViewBag.TaskId })
 </p>
 <table class="table">
     <thead>
@@ -40,7 +40,7 @@
             </td>
 
             <td>
-                @Html.ActionLink("Видалити виконавця", "DeleteUserInTask", new { id=item.ActualTaskId, taskId = ViewBag.TaskId })
+                @Html.ActionLink("Видалити виконавця", "DeleteUserInTask", new { actualTaskId = item.ActualTaskId, taskId = ViewBag.TaskId })
             </td>
         </tr>
 }

@@ -1,18 +1,60 @@
-﻿@model IEnumerable<TaskManagerTLA.Models.TModel>
+﻿@using Microsoft.AspNetCore.Identity
+@model IEnumerable<TaskManagerTLA.Models.TaskViewModel>
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
 
 @{
     ViewData["Title"] = "Фонова сторінка";
 }
 
 <div class="description">
-    <h1>Здрастуйте!</h1>
+    <h1>Здрастуйте! @ViewBag.UserName</h1>
     <hr />
     <p class="lead">Вас вітає додаток, який дає змогу формувати завдання з конкретними термінами виконання, а також вносити звітність по конкретним завданням.</p>
 
 </div>
 
 <div class="jumbotron">
-    <h3>
-        @ViewBag.Info
-    </h3>
+
+
+    @ViewBag.Info
+
+    @if (SignInManager.IsSignedIn(User))
+    {
+        string role = (await UserManager.GetRolesAsync(await UserManager.FindByNameAsync(User.Identity.Name))).First();
+
+        switch (role)
+        {
+            case "Admin":
+                <h3>
+                    Ви авторизувались як Адміністратор. Для вас доступний весь функціонал додатка.
+                </h3>
+
+                break;
+            case "Manager":
+                <h3>
+                    Ви авторизувались як Менеджер. Для вас доступний функціонал перегляду та редагування задач.
+                </h3>
+                break;
+            case "Developer":
+                <h3>
+                    Ви авторизувались як Виконавець. Для вас доступні тільки ваші задачі.
+                </h3>
+                break;
+        }
+
+
+    }
+    else
+    {
+
+        <h3>
+            На данний момент ви не авторизовані. Виконайте вхід або реєстрацію.
+        </h3>
+    }
+
+
+
+
+
 </div>

@@ -14,7 +14,7 @@ namespace TaskManagerTLA.DAL.Identity.Repositories
         private IdentityUserRepositories userRepositories;
         private IdentityRoleRepositories roleRepositories;
         private IdentityUserRolesRepositories userRolesRepositories;
-        private IdentityContext IdentityDbContext;
+        private readonly IdentityContext IdentityDbContext;
         private bool disposed = false;
 
         public UnitOfWorkIdentity(string connectionString)

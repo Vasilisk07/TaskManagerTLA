@@ -8,7 +8,7 @@ namespace TaskManagerTLA.DAL.Interfaces
     public interface IUnitOfWork : IDisposable
     {
         IRepository<TaskModel> Tasks { get; }
-        IRepository<ActualTask> ActualTasks {get; }
+        IRepository<ActualTask> ActualTasks { get; }
         void Save();
     }
 }

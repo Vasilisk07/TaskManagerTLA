@@ -18,7 +18,7 @@ namespace TaskManagerTLA.DAL.Repositories
             this.db = context;
         }
 
-        public IEnumerable<TaskModel>GetAll()
+        public IEnumerable<TaskModel> GetAll()
         {
             return db.Tasks;
         }
@@ -38,7 +38,7 @@ namespace TaskManagerTLA.DAL.Repositories
 
         }
 
-        public IEnumerable<TaskModel> Find(Func<TaskModel,Boolean> predicate)
+        public IEnumerable<TaskModel> Find(Func<TaskModel, Boolean> predicate)
         {
             return db.Tasks.Where(predicate).ToList();
 
@@ -46,7 +46,7 @@ namespace TaskManagerTLA.DAL.Repositories
         public void Delete(int id)
         {
             TaskModel task = db.Tasks.Find(id);
-            if (task!=null)
+            if (task != null)
             {
                 db.Tasks.Remove(task);
             }

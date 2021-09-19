@@ -10,12 +10,10 @@ namespace TaskManagerTLA.DAL.Repositories
 {
     public class EFUnitOfWork : IUnitOfWork
     {
-
-        private TaskContext db;
+        private readonly TaskContext db;
         private TaskRepositories taskRepositories;
         private ActualTaskRepositories actualTaskRepositories;
         private bool disposed = false;
-
 
         public EFUnitOfWork(string connectionString)
         {
@@ -36,6 +34,7 @@ namespace TaskManagerTLA.DAL.Repositories
             }
 
         }
+
         public IRepository<ActualTask> ActualTasks
         {
             get
@@ -48,7 +47,6 @@ namespace TaskManagerTLA.DAL.Repositories
             }
 
         }
-
 
         public virtual void Dispose(bool disposing)
         {

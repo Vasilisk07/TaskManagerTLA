@@ -15,14 +15,13 @@ namespace TaskManagerTLA.Controllers
     public class AccountController : Controller
     {
 
-        IMapper mapper;
-        private IIdentityServices identityService;
+        private readonly IMapper mapper;
+        private readonly IIdentityServices identityService;
         public AccountController(IIdentityServices identityService, IMapper mapper)
         {
             this.mapper = mapper;
             this.identityService = identityService;
         }
-
 
         [HttpGet]
         public IActionResult Register()
@@ -31,7 +30,7 @@ namespace TaskManagerTLA.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterModel model)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
             UserDTO userDTO = mapper.Map<UserDTO>(model);
             try
@@ -43,7 +42,7 @@ namespace TaskManagerTLA.Controllers
                 ModelState.AddModelError("", ex.Message);
                 return View(model);
             }
-            await Login(new LoginModel { UserName = model.UserName, Password = model.Password });
+            await Login(new LoginViewModel { UserName = model.UserName, Password = model.Password });
             return RedirectToAction("Index", "Home");
 
         }
@@ -55,12 +54,12 @@ namespace TaskManagerTLA.Controllers
             return View();
         }
 
-        // довго не міг зрозуміти як обійтись без логіки в данному методі, в результаті вирішив обійти це так.
+        // довго не міг зрозуміти як обійтись без логіки в данному методі, в результаті вирішив обійти це наступним чином.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginModel model)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
-            LoginDTO loginUser = mapper.Map<LoginDTO>(model);
+            UserDTO loginUser = mapper.Map<UserDTO>(model);
             try
             {
                 await identityService.Login(loginUser);
@@ -86,33 +85,32 @@ namespace TaskManagerTLA.Controllers
         public IActionResult ListUser()
         {
             IEnumerable<UserDTO> userDTO = identityService.GetUsers();
-            var usersModels = mapper.Map<IEnumerable<UserDTO>, List<UserModel>>(userDTO);
+            var usersModels = mapper.Map<IEnumerable<UserDTO>, List<UserViewModel>>(userDTO);
             return View(usersModels);
         }
 
 
         [Authorize(Roles = "Admin")]
-        public IActionResult DeleteUser(string UserId)
+        public IActionResult DeleteUser(string userId)
         {
-            identityService.DeleteUser(UserId);
+            identityService.DeleteUser(userId);
             return RedirectToAction("ListUser", "Account");
         }
 
 
         [Authorize(Roles = "Admin")]
-        public IActionResult ListRole(string UserId)
+        public IActionResult ListRole(string userId)
         {
-            ViewBag.UserId = UserId;
-            var rolesDTO = identityService.GetRoles();
-            var rolesModels = mapper.Map<IEnumerable<RoleDTO>, List<RoleModel>>(rolesDTO);
-            return View(rolesModels);
+            ViewBag.UserId = userId;
+            var roleModels = mapper.Map<IEnumerable<RoleDTO>, List<RoleViewModel>>(identityService.GetRoles());
+            return View(roleModels);
         }
 
 
         [Authorize(Roles = "Admin")]
-        public IActionResult ChangeRole(string UserId, string roleId)
+        public IActionResult ChangeRole(string userId, string roleId)
         {
-            identityService.ChangeUserRole(UserId, roleId);
+            identityService.ChangeUserRole(userId, roleId);
             return RedirectToAction("ListUser", "Account");
         }
     }
