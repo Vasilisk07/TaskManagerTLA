@@ -1,45 +1,50 @@
+﻿using AutoMapper;
 using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using TaskManagerTLA.BLL.DTO;
+using TaskManagerTLA.BLL.Mapper;
 using TaskManagerTLA.BLL.Services;
 using TaskManagerTLA.DAL.Entities;
 using TaskManagerTLA.DAL.Interfaces;
 
 namespace TaskManagerTLATest
 {
-    public class TaskServiceTest
+    public class TaskServiceTests
     {
         List<ActualTask> TestListActualTasks;
         List<TaskModel> TestListTasks;
-        Mock<IUnitOfWork> mock;
+        Mock<IUnitOfWork> mockUnitOfWork;
+        IMapper mapper;
 
         [SetUp]
         public void Setup()
         {
             TestListActualTasks = GetListActualTasks();
             TestListTasks = GetListTasks();
-            mock = new Mock<IUnitOfWork>();
+            mockUnitOfWork = new Mock<IUnitOfWork>();
+            var mapperConfig = new MapperConfiguration(mc => { mc.AddProfile(new MappingProfile()); });
+            mapper = mapperConfig.CreateMapper();
 
         }
 
         //ActualTaskTest///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         [Test]
-        public void GetActTasks_Returned_List_5_Count()
+        public void GetActualTasks_Returned_List_5_Count()
         {
             //Arrange
-            mock.Setup(repo=>repo.ActualTasks.GetAll()).Returns(TestListActualTasks);
-            var service = new TaskService(mock.Object);
+            mockUnitOfWork.Setup(repo => repo.ActualTasks.GetAll()).Returns(TestListActualTasks);
+            var service = new TaskService(mockUnitOfWork.Object, mapper);
 
             //act
             var resultList = service.GetActualTasks().ToList();
-           
+
             //Assert
             Assert.AreEqual(resultList.Count, TestListActualTasks.Count, "Inner count collection {0} does not match the input count collection {1}", resultList.Count, TestListActualTasks.Count);
-            
+
         }
 
 
@@ -47,14 +52,14 @@ namespace TaskManagerTLATest
         [Test]
         public void GetActualTask_Inner_TestId_OutTestId()
         {
-             //Arrange
+            //Arrange
             int testId = 1;
-            mock.Setup(repo => repo.ActualTasks.Get(testId)).Returns(TestListActualTasks.First());
-            var service = new TaskService(mock.Object);
+            mockUnitOfWork.Setup(repo => repo.ActualTasks.Get(testId)).Returns(TestListActualTasks.First());
+            var service = new TaskService(mockUnitOfWork.Object, mapper);
 
             //act
             var resultList = service.GetActualTask(testId);
-          
+
             //Assert
             Assert.AreEqual(resultList.ActualTaskId, testId, "Inner Element id {0} not equal return element id {1}", resultList.ActualTaskId, testId);
 
@@ -66,39 +71,39 @@ namespace TaskManagerTLATest
         {
             //Arrange
             ActualTaskDTO InnerActualTaskDTO = new ActualTaskDTO { ActualTaskId = 6, TaskName = "Read book", UserName = "Jack", TaskId = 7, ActTaskLeigth = 10, Description = "Some Task Work" };
-            mock.Setup(repo=>repo.ActualTasks.GetAll()).Returns(TestListActualTasks);
-            mock.Setup(repo => repo.Save());
-            var service = new TaskService(mock.Object);
+            mockUnitOfWork.Setup(repo => repo.ActualTasks.GetAll()).Returns(TestListActualTasks);
+            mockUnitOfWork.Setup(repo => repo.Save());
+            var service = new TaskService(mockUnitOfWork.Object, mapper);
 
             //act
             service.MakeActualTask(InnerActualTaskDTO);
 
             //Assert
-            mock.Verify(r => r.ActualTasks.Create(It.IsAny< ActualTask>()),Times.Once(), "Object was not added database");
-            mock.Verify(r => r.Save(), "Changes not save");
+            mockUnitOfWork.Verify(r => r.ActualTasks.Create(It.IsAny<ActualTask>()), Times.Once(), "Object was not added database");
+            mockUnitOfWork.Verify(r => r.Save(), "Changes not save");
         }
         [Test]
         public void MakeActualTask_Inner_ActualTask_Exist()
         {
             //Arrange
-            ActualTaskDTO ExistActualTaskDTO = new ActualTaskDTO 
-            {   
-                ActualTaskId = TestListActualTasks.First().TaskId, 
+            ActualTaskDTO ExistActualTaskDTO = new ActualTaskDTO
+            {
+                ActualTaskId = TestListActualTasks.First().TaskId,
                 TaskName = TestListActualTasks.First().TaskName,
-                UserName = TestListActualTasks.First().UserName, 
-                TaskId = TestListActualTasks.First().TaskId, 
-                ActTaskLeigth = TestListActualTasks.First().ActTaskLeigth, 
-                Description = TestListActualTasks.First().Description 
+                UserName = TestListActualTasks.First().UserName,
+                TaskId = TestListActualTasks.First().TaskId,
+                ActTaskLeigth = TestListActualTasks.First().ActTaskLeigth,
+                Description = TestListActualTasks.First().Description
             };
-            mock.Setup(repo=>repo.ActualTasks.GetAll()).Returns(TestListActualTasks);
-            mock.Setup(repo => repo.Save());
-            var service = new TaskService(mock.Object);
+            mockUnitOfWork.Setup(repo => repo.ActualTasks.GetAll()).Returns(TestListActualTasks);
+            mockUnitOfWork.Setup(repo => repo.Save());
+            var service = new TaskService(mockUnitOfWork.Object, mapper);
 
             //act
             service.MakeActualTask(ExistActualTaskDTO);
 
             //Assert
-            mock.Verify(r => r.ActualTasks.Create(It.IsAny<ActualTask>()),Times.Never(), "Rewrite exist object");
+            mockUnitOfWork.Verify(r => r.ActualTasks.Create(It.IsAny<ActualTask>()), Times.Never(), "Rewrite exist object");
 
         }
 
@@ -108,30 +113,30 @@ namespace TaskManagerTLATest
         {
             //Arrange
             int testId = 1;
-            mock.Setup(repo => repo.ActualTasks.Delete(testId));
-            mock.Setup(repo => repo.Save());
-            var service = new TaskService(mock.Object);
+            mockUnitOfWork.Setup(repo => repo.ActualTasks.Delete(testId));
+            mockUnitOfWork.Setup(repo => repo.Save());
+            var service = new TaskService(mockUnitOfWork.Object, mapper);
 
             //act
             service.DeleteActualTask(testId);
 
             //Assert
-            mock.Verify(r => r.ActualTasks.Delete(testId),Times.Once(), "Object not deleted");
-            mock.Verify(r => r.Save(), "Changes not save");
+            mockUnitOfWork.Verify(r => r.ActualTasks.Delete(testId), Times.Once(), "Object not deleted");
+            mockUnitOfWork.Verify(r => r.Save(), "Changes not save");
         }
 
         [Test]
         [TestCase(1, 5, "Some Description")]
         [TestCase(1, 18, "S")]
         [TestCase(1, 0, "")]
-        public void EditActualTask_Inner_TestId(int testId,int testTime,string testDescriptions)
+        public void EditActualTask_Inner_TestId(int testId, int testTime, string testDescriptions)
         {
             //Arrange
             ActualTask returnedActualTask = TestListActualTasks[0];
             TaskModel returnedTask = TestListTasks[0];
-            mock.Setup(repo => repo.ActualTasks.Get(testId)).Returns(returnedActualTask);
-            mock.Setup(repo => repo.Tasks.Get(returnedActualTask.TaskId)).Returns(returnedTask);
-            var service = new TaskService(mock.Object);
+            mockUnitOfWork.Setup(repo => repo.ActualTasks.Get(testId)).Returns(returnedActualTask);
+            mockUnitOfWork.Setup(repo => repo.Tasks.Get(returnedActualTask.TaskId)).Returns(returnedTask);
+            var service = new TaskService(mockUnitOfWork.Object, mapper);
             //act
             service.EditActualTask(testId, testTime, testDescriptions);
             //Assert
@@ -149,9 +154,9 @@ namespace TaskManagerTLATest
             string firstValueDescActualTask = returnedActualTask.Description;
             TaskModel returnedTask = TestListTasks[0];
             int firstValueleighTask = returnedTask.TaskLeigth;
-            mock.Setup(repo => repo.ActualTasks.Get(testId)).Returns(returnedActualTask);
-            mock.Setup(repo => repo.Tasks.Get(returnedActualTask.TaskId)).Returns(returnedTask);
-            var service = new TaskService(mock.Object);
+            mockUnitOfWork.Setup(repo => repo.ActualTasks.Get(testId)).Returns(returnedActualTask);
+            mockUnitOfWork.Setup(repo => repo.Tasks.Get(returnedActualTask.TaskId)).Returns(returnedTask);
+            var service = new TaskService(mockUnitOfWork.Object, mapper);
             //act
             service.EditActualTask(testId, null, null);
             //Assert
@@ -166,8 +171,8 @@ namespace TaskManagerTLATest
         public void GetTasks_Returned_List_5_Count()
         {
             //Arrange
-            mock.Setup(repo => repo.Tasks.GetAll()).Returns(TestListTasks);
-            var service = new TaskService(mock.Object);
+            mockUnitOfWork.Setup(repo => repo.Tasks.GetAll()).Returns(TestListTasks);
+            var service = new TaskService(mockUnitOfWork.Object, mapper);
 
             //act
             var resultList = service.GetTasks().ToList();
@@ -183,8 +188,8 @@ namespace TaskManagerTLATest
         {
             //Arrange
             int testId = 1;
-            mock.Setup(repo => repo.Tasks.Get(testId)).Returns(TestListTasks.First());
-            var service = new TaskService(mock.Object);
+            mockUnitOfWork.Setup(repo => repo.Tasks.Get(testId)).Returns(TestListTasks.First());
+            var service = new TaskService(mockUnitOfWork.Object, mapper);
 
             //act
             var resultList = service.GetTask(testId);
@@ -197,17 +202,17 @@ namespace TaskManagerTLATest
         public void MakeTask_Inner_Task_WriteDB()
         {
             //Arrange
-            TaskDTO InnerTaskDTO = new TaskDTO { TaskModelId = 6, TaskName = "Rewrite program", TaskBegin = new DateTime(2021, 04, 26), TaskEnd = new DateTime(2021, 11, 21), TaskLeigth = 0, TaskDescription="Rewrite some program"};
-            mock.Setup(repo => repo.Tasks.GetAll()).Returns(TestListTasks);
-            mock.Setup(repo => repo.Save());
-            var service = new TaskService(mock.Object);
+            TaskDTO InnerTaskDTO = new TaskDTO { TaskModelId = 6, TaskName = "Rewrite program", TaskBegin = new DateTime(2021, 04, 26), TaskEnd = new DateTime(2021, 11, 21), TaskLeigth = 0, TaskDescription = "Rewrite some program" };
+            mockUnitOfWork.Setup(repo => repo.Tasks.GetAll()).Returns(TestListTasks);
+            mockUnitOfWork.Setup(repo => repo.Save());
+            var service = new TaskService(mockUnitOfWork.Object, mapper);
 
             //act
             service.MakeTask(InnerTaskDTO);
 
             //Assert
-            mock.Verify(r => r.Tasks.Create(It.IsAny<TaskModel>()), Times.Once(), "Object was not added database");
-            mock.Verify(r => r.Save(), "Changes not save");
+            mockUnitOfWork.Verify(r => r.Tasks.Create(It.IsAny<TaskModel>()), Times.Once(), "Object was not added database");
+            mockUnitOfWork.Verify(r => r.Save(), "Changes not save");
         }
 
         [Test]
@@ -215,20 +220,51 @@ namespace TaskManagerTLATest
         {
             //Arrange
             int testId = 1;
-            mock.Setup(repo => repo.Tasks.Delete(testId));
-            mock.Setup(repo => repo.ActualTasks.GetAll()).Returns(TestListActualTasks);
-            var service = new TaskService(mock.Object);
+            mockUnitOfWork.Setup(repo => repo.Tasks.Delete(testId));
+            mockUnitOfWork.Setup(repo => repo.ActualTasks.GetAll()).Returns(TestListActualTasks);
+            var service = new TaskService(mockUnitOfWork.Object, mapper);
 
             //act
             service.DeleteTask(testId);
 
             //Assert
-            mock.Verify(r => r.Tasks.Delete(testId), Times.Once(), "Object not deleted");
-            mock.Verify(r => r.ActualTasks.GetAll(), Times.Once(), "Supporting object not found");
-            mock.Verify(r=>r.ActualTasks.Delete(testId),Times.Once(), "Supporting object not deleted");
-            mock.Verify(r => r.Save(), "Changes not save");
+            mockUnitOfWork.Verify(r => r.Tasks.Delete(testId), Times.Once(), "Object not deleted");
+            mockUnitOfWork.Verify(r => r.ActualTasks.GetAll(), Times.Once(), "Supporting object not found");
+            mockUnitOfWork.Verify(r => r.ActualTasks.Delete(testId), Times.Once(), "Supporting object not deleted");
+            mockUnitOfWork.Verify(r => r.Save(), "Changes not save");
         }
 
+        [Test]
+        public void DeleteActualTaskByUser_InnerUserName()
+        {
+            //Arrange
+            string userName = "Frank";
+            mockUnitOfWork.Setup(repo => repo.ActualTasks.GetAll()).Returns(TestListActualTasks);
+            var service = new TaskService(mockUnitOfWork.Object, mapper);
+
+            //act
+            service.DeleteActualTaskByUser(userName);
+
+            //Assert
+            mockUnitOfWork.Verify(r => r.ActualTasks.GetAll(), Times.Once(), "Supporting object not found");
+            mockUnitOfWork.Verify(r => r.ActualTasks.Delete(It.IsAny<int>()), Times.Exactly(2), "Object not deleted");
+            mockUnitOfWork.Verify(r => r.Save(), "Changes not save");
+        }
+
+        [Test]
+        public void GetDetailsTask_InnerTaskId()
+        {
+            //Arrange
+            int taskId = 3;
+            int countResultList = 1;
+            mockUnitOfWork.Setup(repo => repo.ActualTasks.GetAll()).Returns(TestListActualTasks);
+            var service = new TaskService(mockUnitOfWork.Object, mapper);
+            //act
+            var resultList = service.GetDetailsTask(taskId);
+            //Assert
+            Assert.IsTrue(resultList.ToList().Count == countResultList, "Count List is {0} expected value is {1} ", resultList.ToList().Count, countResultList);
+            Assert.IsTrue(resultList.First().TaskId == taskId, "Item id {0} is not equal expected {1}", resultList.First().TaskId, taskId);
+        }
 
 
         //Helper methods////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -243,15 +279,15 @@ namespace TaskManagerTLATest
             return retList;
         }
 
-        private  List<ActualTask> GetListActualTasks()
+        private List<ActualTask> GetListActualTasks()
         {
             List<ActualTask> retList = new List<ActualTask>();
             retList.Add(new ActualTask { ActualTaskId = 1, TaskName = "Make interface", UserName = "Bob", TaskId = 1, ActTaskLeigth = 0, Description = "Work some task" });
             retList.Add(new ActualTask { ActualTaskId = 2, TaskName = "Make module", UserName = "Bob", TaskId = 3, ActTaskLeigth = 10, Description = "Work some task" });
             retList.Add(new ActualTask { ActualTaskId = 3, TaskName = "Make program", UserName = "Bob", TaskId = 5, ActTaskLeigth = 10, Description = "Work some task" });
-            retList.Add(new ActualTask { ActualTaskId = 4, TaskName = "Make controller", UserName = "Bob", TaskId = 4, ActTaskLeigth = 10, Description = "Work some task" });
+            retList.Add(new ActualTask { ActualTaskId = 4, TaskName = "Make controller", UserName = "Frank", TaskId = 4, ActTaskLeigth = 10, Description = "Work some task" });
             retList.Add(new ActualTask { ActualTaskId = 5, TaskName = "Make testing", UserName = "Bob", TaskId = 2, ActTaskLeigth = 10, Description = "Work some task" });
-            retList.Add(new ActualTask { ActualTaskId = 6, TaskName = "Make testing", UserName = "Bob", TaskId = 2, ActTaskLeigth = 10, Description = "Work some task" });
+            retList.Add(new ActualTask { ActualTaskId = 6, TaskName = "Make testing", UserName = "Frank", TaskId = 2, ActTaskLeigth = 10, Description = "Work some task" });
             return retList;
         }
     }

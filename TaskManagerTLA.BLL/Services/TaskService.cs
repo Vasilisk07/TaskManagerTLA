@@ -13,6 +13,7 @@ namespace TaskManagerTLA.BLL.Services
     {
         private readonly IUnitOfWork dataBase;
         private readonly IMapper mapper;
+
         public TaskService(IUnitOfWork dataBase, IMapper mapper)
         {
             this.dataBase = dataBase;
@@ -21,6 +22,7 @@ namespace TaskManagerTLA.BLL.Services
 
         public IEnumerable<ActualTaskDTO> GetActualTasks()
         {
+
             return mapper.Map<IEnumerable<ActualTask>, List<ActualTaskDTO>>(dataBase.ActualTasks.GetAll());
         }
 
