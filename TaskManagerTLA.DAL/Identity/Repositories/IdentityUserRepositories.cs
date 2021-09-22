@@ -16,8 +16,8 @@ namespace TaskManagerTLA.DAL.Identity.Interfaces
         }
         public bool CreateItem(IdentityUser newItem)
         {
-
             var res = Db.Users.Add(newItem);
+            //TODO  return res.State == EntityState.Added;
             bool creationState = false;
             if (res.State == EntityState.Added)
             {
@@ -28,6 +28,7 @@ namespace TaskManagerTLA.DAL.Identity.Interfaces
         public bool DeleteItem(IdentityUser Item)
         {
             var res = Db.Users.Remove(Item);
+            //TODO  return res.State == EntityState.Deleted;
             bool deletedState = false;
             if (res.State == EntityState.Deleted)
             {

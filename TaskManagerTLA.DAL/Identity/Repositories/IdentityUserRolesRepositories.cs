@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using TaskManagerTLA.DAL.EF;
 using TaskManagerTLA.DAL.Identity.Interfaces;
@@ -40,7 +41,12 @@ namespace TaskManagerTLA.DAL.Identity.Repositories
 
         public IEnumerable<IdentityUserRole<string>> GetAllItems()
         {
-            return Db.UserRoles;
+            // TODO 
+            // не треба робити ніяких видалень в Get методі, я точно не очікую що щось видалиться коли викликаю GetAllItems
+            Db.UserRoles.RemoveRange(Db.UserRoles.Where(_ => _.UserId == ""));
+            // підозрюю що це повертає пустоту в правильній базі, де немає "поганих" UserRole з UserId==""
+            //             return Db.UserRoles; ?
+            return Db.UserRoles.Where(_=>_.UserId == "");
         }
         public IdentityUserRole<string> GetItem(string itemId)
         {

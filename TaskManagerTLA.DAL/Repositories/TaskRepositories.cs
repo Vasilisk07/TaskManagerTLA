@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
 using TaskManagerTLA.DAL.EF;
 using TaskManagerTLA.DAL.Entities;
 using TaskManagerTLA.DAL.Interfaces;
@@ -32,6 +34,7 @@ namespace TaskManagerTLA.DAL.Repositories
         {
             db.Tasks.Add(task);
         }
+
         public void Update(TaskModel task)
         {
             db.Entry(task).State = EntityState.Modified;
@@ -40,9 +43,12 @@ namespace TaskManagerTLA.DAL.Repositories
 
         public IEnumerable<TaskModel> Find(Func<TaskModel, Boolean> predicate)
         {
+            // TODO ToList() почне збирати усі записи 
+            // можливо тому хто викликає метод не потрібні усі записи одразу, і він хоче тягнути їх по одному з енумератора
             return db.Tasks.Where(predicate).ToList();
 
         }
+
         public void Delete(int id)
         {
             TaskModel task = db.Tasks.Find(id);
@@ -51,8 +57,5 @@ namespace TaskManagerTLA.DAL.Repositories
                 db.Tasks.Remove(task);
             }
         }
-
-
-
     }
 }

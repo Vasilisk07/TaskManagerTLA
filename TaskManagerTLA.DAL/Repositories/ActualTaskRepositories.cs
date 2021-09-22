@@ -43,6 +43,7 @@ namespace TaskManagerTLA.DAL.Repositories
             return db.ActualTasks.Where(predicate).ToList();
 
         }
+
         public void Delete(int id)
         {
             ActualTask task = db.ActualTasks.Find(id);

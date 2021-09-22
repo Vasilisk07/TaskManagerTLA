@@ -10,6 +10,8 @@ namespace TaskManagerTLA.DAL.Repositories
 {
     public class EFUnitOfWork : IUnitOfWork
     {
+        // TODO відповідно до SOLID краще тут використовувати інтерфейси ITaskRepository, IActualTaskRepository..
+        // це все має інжектнутись
         private readonly TaskContext db;
         private TaskRepositories taskRepositories;
         private ActualTaskRepositories actualTaskRepositories;
@@ -50,7 +52,6 @@ namespace TaskManagerTLA.DAL.Repositories
 
         public virtual void Dispose(bool disposing)
         {
-
             if (!disposed)
             {
                 if (disposing)

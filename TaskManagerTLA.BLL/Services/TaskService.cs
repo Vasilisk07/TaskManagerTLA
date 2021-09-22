@@ -34,12 +34,16 @@ namespace TaskManagerTLA.BLL.Services
 
         public TaskDTO GetTask(int? taskId)
         {
+            // int? треба перевірити на null перед тим як робити taskId.Value, будеш мати ексепшн
             TaskDTO taskDTO = mapper.Map<TaskDTO>(dataBase.Tasks.Get(taskId.Value));
             return taskDTO;
         }
 
         public IEnumerable<ActualTaskDTO> GetDetailsTask(int? taskId)
         {
+            // TODO делегувати запит sql серверу
+            // в тебе навіть метод є в репозиторіх готовий        IEnumerable<T> Find(Func<T, Boolean> predicate);
+
             return from t in GetActualTasks() where t.TaskId == taskId.Value select t;
         }
 
@@ -55,12 +59,14 @@ namespace TaskManagerTLA.BLL.Services
             var aTask = GetActualTasks();
             foreach (var item in aTask)
             {
+                // TODO це правило унікальності можна описати в EF https://stackoverflow.com/questions/18889218/unique-key-constraints-for-multiple-columns-in-entity-framework
                 if (item.TaskId == actualTaskDTO.TaskId && item.UserName == actualTaskDTO.UserName)
                 {
                     ifExist = true;
                     break;
                 }
             }
+            // TODO якщо такий таск уже є - ми повинні якось повідомити користувача?
             if (!ifExist)
             {
                 ActualTask actualTask = mapper.Map<ActualTask>(actualTaskDTO);
@@ -80,6 +86,8 @@ namespace TaskManagerTLA.BLL.Services
         {
             dataBase.Tasks.Delete(taskId.Value);
             var actualTaskList = GetActualTasks();
+            // TODO потрібно витягти лише один запис з контексту і його видалити
+            // маєш в репозиторії готовий метод IEnumerable<T> Find(Func<T, Boolean> predicate);
             foreach (var item in actualTaskList)
             {
                 if (item.TaskId == taskId.Value)
@@ -93,7 +101,7 @@ namespace TaskManagerTLA.BLL.Services
         public void EditActualTask(int? actualTaskId, int? elapsedTime, string description)
         {
             ActualTask EditsActualTask = dataBase.ActualTasks.Get(actualTaskId.Value);
-            EditsActualTask.Description = description != null ? $" {EditsActualTask.Description} | {DateTime.Now.ToString("dd.MM.yyyy")} {description}" : EditsActualTask.Description;
+            EditsActualTask.Description = description != null ? $" {EditsActualTask.Description} | {DateTime.Now:dd.MM.yyyy} {description}" : EditsActualTask.Description;
             EditsActualTask.ActTaskLeigth = elapsedTime != null && elapsedTime.Value > 0 ? EditsActualTask.ActTaskLeigth + elapsedTime.Value : EditsActualTask.ActTaskLeigth;
             TaskModel EditTask = dataBase.Tasks.Get(EditsActualTask.TaskId);
             EditTask.TaskLeigth = elapsedTime != null && elapsedTime.Value > 0 ? EditTask.TaskLeigth + elapsedTime.Value : EditTask.TaskLeigth;
@@ -102,6 +110,8 @@ namespace TaskManagerTLA.BLL.Services
 
         public void DeleteActualTaskByUser(string userName)
         {
+            // TODO делегувати запит sql серверу
+
             foreach (var item in dataBase.ActualTasks.GetAll())
             {
                 if (item.UserName == userName)

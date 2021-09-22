@@ -8,6 +8,7 @@ namespace TaskManagerTLA.DAL.Identity.Interfaces
 {
     public interface IUnitOfWorkIdentity : IDisposable
     {
+        //TODO IIdentityRepository, UsersRepository....
         IIdentityRepositories<IdentityUser> UsersRepositories { get; }
         IIdentityRepositories<IdentityRole> RolesRepositories { get; }
         IIdentityRepositories<IdentityUserRole<string>> UserRolesRepositories { get; }

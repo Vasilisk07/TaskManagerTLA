@@ -1,11 +1,14 @@
 ﻿using AutoMapper;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using TaskManagerTLA.BLL.DTO;
 using TaskManagerTLA.BLL.Interfaces;
 using TaskManagerTLA.Models;
@@ -14,12 +17,12 @@ namespace TaskManagerTLA.Controllers
 {
     public class AccountController : Controller
     {
-
         private readonly IMapper mapper;
         private readonly IIdentityServices identityService;
         private readonly ITaskService taskService;
         private readonly SignInManager<IdentityUser> signInManager;
-        public AccountController(IIdentityServices identityService, IMapper mapper,SignInManager<IdentityUser> signInManager,ITaskService taskService)
+
+        public AccountController(IIdentityServices identityService, IMapper mapper, SignInManager<IdentityUser> signInManager, ITaskService taskService)
         {
             this.mapper = mapper;
             this.identityService = identityService;

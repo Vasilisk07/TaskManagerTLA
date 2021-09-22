@@ -11,6 +11,7 @@ namespace TaskManagerTLA.DAL.Identity.Repositories
 {
     public class UnitOfWorkIdentity : IUnitOfWorkIdentity
     {
+        // TODO ці всі поля мають інджектнутись
         private IdentityUserRepositories userRepositories;
         private IdentityRoleRepositories roleRepositories;
         private IdentityUserRolesRepositories userRolesRepositories;

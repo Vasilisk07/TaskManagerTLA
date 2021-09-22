@@ -1,4 +1,5 @@
 using AutoMapper;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -6,11 +7,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+
 using TaskManagerTLA.BLL.Interfaces;
 using TaskManagerTLA.BLL.Mapper;
 using TaskManagerTLA.BLL.Services;
 using TaskManagerTLA.DAL.EF;
-using TaskManagerTLA.DAL.Identity;
 using TaskManagerTLA.DAL.Identity.Interfaces;
 using TaskManagerTLA.DAL.Identity.Repositories;
 using TaskManagerTLA.DAL.Interfaces;
@@ -39,12 +40,17 @@ namespace TaskManagerTLA
             services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<IdentityContext>();
             services.AddTransient<IUnitOfWorkIdentity>(x => new UnitOfWorkIdentity(IdentityConnection));
             services.AddTransient<IIdentityServices, IdentityServices>();
+            // TODO
+            // погана практика робити мапер singleton, зроби щось таке
+            // services.AddAutoMapper(typeof(MappingProfile));
+
             var mapperConfig = new MapperConfiguration(mc =>
             {
                 mc.AddProfile(new MappingProfile());
             });
             IMapper mapper = mapperConfig.CreateMapper();
             services.AddSingleton(mapper);
+
             services.AddControllersWithViews();
         }
 
@@ -64,6 +70,7 @@ namespace TaskManagerTLA
             app.UseStaticFiles();
             app.UseRouting();
             app.UseAuthentication();
+            // TODO 2 рази UseAuthorization
             app.UseAuthorization();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>

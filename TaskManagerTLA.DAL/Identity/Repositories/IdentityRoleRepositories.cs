@@ -20,6 +20,7 @@ namespace TaskManagerTLA.DAL.Identity
         public bool CreateItem(IdentityRole newItem)
         {
             var res = Db.Roles.Add(newItem);
+            //TODO  return res.State == EntityState.Added;
             bool creationState = false;
             if (res.State == EntityState.Added)
             {
@@ -31,6 +32,7 @@ namespace TaskManagerTLA.DAL.Identity
         public bool DeleteItem(IdentityRole Item)
         {
             var res = Db.Roles.Remove(Item);
+            //TODO  return res.State == EntityState.Deleted;
             bool deletedState = false;
             if (res.State == EntityState.Deleted)
             {

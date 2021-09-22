@@ -30,8 +30,6 @@ namespace TaskManagerTLATest
 
         }
 
-        //ActualTaskTest///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
         [Test]
         public void GetActualTasks_Returned_List_5_Count()
         {
@@ -48,7 +46,7 @@ namespace TaskManagerTLATest
         }
 
 
-
+        // TODO що за inner елемент?
         [Test]
         public void GetActualTask_Inner_TestId_OutTestId()
         {
@@ -82,6 +80,7 @@ namespace TaskManagerTLATest
             mockUnitOfWork.Verify(r => r.ActualTasks.Create(It.IsAny<ActualTask>()), Times.Once(), "Object was not added database");
             mockUnitOfWork.Verify(r => r.Save(), "Changes not save");
         }
+
         [Test]
         public void MakeActualTask_Inner_ActualTask_Exist()
         {
@@ -104,6 +103,8 @@ namespace TaskManagerTLATest
 
             //Assert
             mockUnitOfWork.Verify(r => r.ActualTasks.Create(It.IsAny<ActualTask>()), Times.Never(), "Rewrite exist object");
+            // TODO помилки в Verify повинні краще описати саме причину поломки тесту
+            // тобто тут можна написати (якщо треба) "`Create` should not be called` чи щось такеі
 
         }
 
@@ -165,6 +166,7 @@ namespace TaskManagerTLATest
             Assert.AreEqual(returnedTask.TaskLeigth, firstValueleighTask, "TaskLeigth is not correct modify for inner null");
         }
 
+        // TODO в окремий тест файл
         //TaskTest//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         [Test]
@@ -202,7 +204,7 @@ namespace TaskManagerTLATest
         public void MakeTask_Inner_Task_WriteDB()
         {
             //Arrange
-            TaskDTO InnerTaskDTO = new TaskDTO { TaskModelId = 6, TaskName = "Rewrite program", TaskBegin = new DateTime(2021, 04, 26), TaskEnd = new DateTime(2021, 11, 21), TaskLeigth = 0, TaskDescription = "Rewrite some program" };
+            TaskDTO InnerTaskDTO = new TaskDTO { TaskModelId = 6, TaskName = "Rewrite program", TaskBegin = new DateTime(2021, 04, 26), TaskEnd = new DateTime(2021, 11, 21), TaskLength = 0, TaskDescription = "Rewrite some program" };
             mockUnitOfWork.Setup(repo => repo.Tasks.GetAll()).Returns(TestListTasks);
             mockUnitOfWork.Setup(repo => repo.Save());
             var service = new TaskService(mockUnitOfWork.Object, mapper);
@@ -266,7 +268,7 @@ namespace TaskManagerTLATest
             Assert.IsTrue(resultList.First().TaskId == taskId, "Item id {0} is not equal expected {1}", resultList.First().TaskId, taskId);
         }
 
-
+        // TODO в окремий хелпер клас
         //Helper methods////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         private List<TaskModel> GetListTasks()
         {

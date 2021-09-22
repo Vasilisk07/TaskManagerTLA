@@ -17,6 +17,7 @@ namespace TaskManagerTLA.BLL.Services
     {
         IUnitOfWorkIdentity Db { get; }
         private readonly IMapper mapper;
+        // TODO inject all the dependencies: SignInManager, ITaskService
         public IdentityServices(IUnitOfWorkIdentity identityRepositories, IMapper mapper)
         {
             Db = identityRepositories;
@@ -68,6 +69,7 @@ namespace TaskManagerTLA.BLL.Services
                 string developerRoleId = "";
                 foreach (var item in Db.RolesRepositories.GetAllItems())
                 {
+                    // TODO якщо тут не хардкодити, то можна задати з якою роллю юзер стоврювати
                     if (item.Name == "Developer")
                     {
                         developerRoleId = item.Id;
@@ -101,6 +103,7 @@ namespace TaskManagerTLA.BLL.Services
             }
         }
 
+        // TODO насправді це не Change, так як ми видаляємо всі ролі юзера і ставимо одну нову.p
         public void ChangeUserRole(string userId, string newRoleId)
         {
             DeleteAllUserRoles(userId);
@@ -110,6 +113,8 @@ namespace TaskManagerTLA.BLL.Services
         //видаляєм всі звязані з користувачем ролі
         public void DeleteAllUserRoles(string userId)
         {
+            // TODO це не ефективно, кразе попросити sql сервер знайти потрібні ентіті і видалити
+            // типу так:             Db.UserRoles.RemoveRange(Db.UserRoles.Where(_ => _.UserId == ""));
             foreach (var item in Db.UserRolesRepositories.GetAllItems())
             {
                 if (item.UserId == userId)
@@ -121,11 +126,13 @@ namespace TaskManagerTLA.BLL.Services
 
         public void DeleteRole(string roleId)
         {
+            // TODO делегувати запит sql серверу
             foreach (var item in Db.RolesRepositories.GetAllItems())
             {
                 if (item.Id == roleId)
                 {
                     Db.RolesRepositories.DeleteItem(item);
+                    // TODO думаю можна зробити Save() один раз після foreach
                     Db.Save();
                 }
             }
@@ -136,9 +143,13 @@ namespace TaskManagerTLA.BLL.Services
             Db.RolesRepositories.CreateItem(new IdentityRole(newRoleName));
             Db.Save();
         }
+
+        // TODO юзер може мати багато ролей в UserRolesRepositories
         public string GetUserRole(string userId)
         {
             string roleId = "";
+            // TODO делегувати запит sql серверу
+
             foreach (var item in Db.UserRolesRepositories.GetAllItems())
             {
                 if (item.UserId == userId)
@@ -165,6 +176,8 @@ namespace TaskManagerTLA.BLL.Services
         public UserDTO GetUserByName(string userName)
         {
             IdentityUser returnedUser = null;
+            // TODO делегувати запит sql серверу
+
             foreach (var item in Db.UsersRepositories.GetAllItems())
             {
                 if (userName == item.UserName)
@@ -178,6 +191,8 @@ namespace TaskManagerTLA.BLL.Services
 
         public IEnumerable<UserDTO> GetUsers()
         {
+            // TODO так як у нас є EntityFramework він сам може підтягнути UserRole, якщо правильно налаштувати зв'язки
+            
             var users = mapper.Map<IEnumerable<IdentityUser>, List<UserDTO>>(Db.UsersRepositories.GetAllItems());
             foreach (var item in users)
             {
