@@ -17,10 +17,14 @@ namespace TaskManagerTLA.Controllers
 
         private readonly IMapper mapper;
         private readonly IIdentityServices identityService;
-        public AccountController(IIdentityServices identityService, IMapper mapper)
+        private readonly ITaskService taskService;
+        private readonly SignInManager<IdentityUser> signInManager;
+        public AccountController(IIdentityServices identityService, IMapper mapper,SignInManager<IdentityUser> signInManager,ITaskService taskService)
         {
             this.mapper = mapper;
             this.identityService = identityService;
+            this.signInManager = signInManager;
+            this.taskService = taskService;
         }
 
         [HttpGet]
@@ -62,7 +66,7 @@ namespace TaskManagerTLA.Controllers
             UserDTO loginUser = mapper.Map<UserDTO>(model);
             try
             {
-                await identityService.Login(loginUser);
+                await identityService.Login(loginUser, signInManager);
             }
             catch (Exception ex)
             {
@@ -77,7 +81,7 @@ namespace TaskManagerTLA.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
-            await identityService.Logout();
+            await identityService.Logout(signInManager);
             return RedirectToAction("Index", "Home");
         }
 
@@ -93,7 +97,7 @@ namespace TaskManagerTLA.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult DeleteUser(string userId)
         {
-            identityService.DeleteUser(userId);
+            identityService.DeleteUser(userId, taskService);
             return RedirectToAction("ListUser", "Account");
         }
 

@@ -10,12 +10,12 @@ namespace TaskManagerTLA.BLL.Interfaces
 {
     public interface IIdentityServices
     {
-        Task Login(UserDTO loginUser);
-        Task Logout();
+        Task Login(UserDTO loginUser, SignInManager<IdentityUser> signInManager);
+        Task Logout(SignInManager<IdentityUser> signInManager);
         void RegisterNewUser(UserDTO newUser);
         bool CreateUserAndRole(UserDTO newUser);
         bool CreateUserRole(string userId, string roleId);
-        public void DeleteUser(string userId);
+        public void DeleteUser(string userId, ITaskService taskService);
         void ChangeUserRole(string userId, string newRoleId);
         void DeleteRole(string roleId);
         void CreateRole(string newRoleName);

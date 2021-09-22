@@ -17,25 +17,21 @@ namespace TaskManagerTLA.BLL.Services
     {
         IUnitOfWorkIdentity Db { get; }
         private readonly IMapper mapper;
-        private readonly SignInManager<IdentityUser> signInManager;
-        private readonly ITaskService taskService;
-        public IdentityServices(IUnitOfWorkIdentity identityRepositories, IMapper mapper, SignInManager<IdentityUser> signInManager, ITaskService taskService)
+        public IdentityServices(IUnitOfWorkIdentity identityRepositories, IMapper mapper)
         {
             Db = identityRepositories;
             this.mapper = mapper;
-            this.signInManager = signInManager;
-            this.taskService = taskService;
         }
 
-        public async Task Login(UserDTO loginUser)
+        public async Task Login(UserDTO loginUser, SignInManager<IdentityUser> signInManager)
         {
             var result = await signInManager.PasswordSignInAsync(loginUser.UserName, loginUser.Password, loginUser.RememberMe, false);
             if (!result.Succeeded)
             {
-                throw new Exception("Невірний логін або пароль");
+                throw new Exception("Невірний логін або пароль.");
             }
         }
-        public async Task Logout()
+        public async Task Logout(SignInManager<IdentityUser> signInManager)
         {
             await signInManager.SignOutAsync();
         }
@@ -48,7 +44,7 @@ namespace TaskManagerTLA.BLL.Services
             }
             if (!CreateUserAndRole(newUser))
             {
-                throw new Exception("Не можливо створити користувача, введено не коректні данні ");
+                throw new Exception("Не можливо створити користувача, введено не коректні данні.");
             }
         }
 
@@ -94,7 +90,7 @@ namespace TaskManagerTLA.BLL.Services
             return false;
         }
 
-        public void DeleteUser(string userId)
+        public void DeleteUser(string userId, ITaskService taskService)
         {
             //видаляєм користувача і всі звязані з ним ролі і присвоєні йому задачі
             if (Db.UsersRepositories.DeleteItem(Db.UsersRepositories.GetItem(userId)))
