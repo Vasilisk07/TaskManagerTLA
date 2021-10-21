@@ -5,57 +5,59 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using TaskManagerTLA.DAL.EF;
+using TaskManagerTLA.DAL.Identity.Entities;
 using TaskManagerTLA.DAL.Identity.Interfaces;
+using TaskManagerTLA.DAL.Interfaces;
 
 namespace TaskManagerTLA.DAL.Identity.Repositories
 {
     public class UnitOfWorkIdentity : IUnitOfWorkIdentity
     {
         // TODO ці всі поля мають інджектнутись
-        private IdentityUserRepositories userRepositories;
-        private IdentityRoleRepositories roleRepositories;
-        private IdentityUserRolesRepositories userRolesRepositories;
+        private IdentityUserRepository userRepositories;
+        private IdentityRoleRepository rolesRepositories;
+        private IdentityUserRolesRepository userRolesRepositories;
         private readonly IdentityContext IdentityDbContext;
         private bool disposed = false;
 
-        public UnitOfWorkIdentity(string connectionString)
+        public UnitOfWorkIdentity(string connectionString )
         {
             var optionsBuilder = new DbContextOptionsBuilder<IdentityContext>();
             var options = optionsBuilder.UseSqlServer(connectionString).Options;
             IdentityDbContext = new IdentityContext(options);
+            
         }
 
-        public IIdentityRepositories<IdentityUser> UsersRepositories
+        public IIdentityRepository<ApplicationUser> UsersRepositories
         {
             get
             {
                 if (userRepositories == null)
                 {
-                    userRepositories = new IdentityUserRepositories(IdentityDbContext);
+                    userRepositories = new IdentityUserRepository(IdentityDbContext);
                 }
                 return userRepositories;
             }
         }
-
-        public IIdentityRepositories<IdentityRole> RolesRepositories
+        public IIdentityRepository<IdentityRole> RolesRepositories
         {
             get
             {
-                if (roleRepositories == null)
+                if (rolesRepositories == null)
                 {
-                    roleRepositories = new IdentityRoleRepositories(IdentityDbContext);
+                    rolesRepositories = new IdentityRoleRepository(IdentityDbContext);
                 }
-                return roleRepositories;
+                return rolesRepositories;
             }
         }
 
-        public IIdentityRepositories<IdentityUserRole<string>> UserRolesRepositories
+        public IIdentityRepository<IdentityUserRole<string>> UserRolesRepositories
         {
             get
             {
                 if (userRolesRepositories == null)
                 {
-                    userRolesRepositories = new IdentityUserRolesRepositories(IdentityDbContext);
+                    userRolesRepositories = new IdentityUserRolesRepository(IdentityDbContext);
                 }
                 return userRolesRepositories;
             }
@@ -73,7 +75,6 @@ namespace TaskManagerTLA.DAL.Identity.Repositories
                 disposed = true;
             }
         }
-
         public void Dispose()
         {
             Dispose(true);

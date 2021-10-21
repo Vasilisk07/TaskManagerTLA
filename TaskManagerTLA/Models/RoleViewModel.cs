@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace TaskManagerTLA.Models
 {
@@ -10,7 +6,6 @@ namespace TaskManagerTLA.Models
     {
         public string Id { get; set; }
         [Display(Name = "Ролі")]
-        public string UserRole { get; set; }
-        
+        public string Name { get; set; }
     }
 }

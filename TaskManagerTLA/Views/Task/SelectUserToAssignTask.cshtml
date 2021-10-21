@@ -1,10 +1,11 @@
 ﻿@model IEnumerable<TaskManagerTLA.Models.UserViewModel>
 
 @{
-    ViewData["Title"] = "Список користувачів";
+    ViewData["Title"] = "Додати користувача";
 }
 
-<h1>Список користувачів</h1>
+<h2>Додати користувача до задачі @ViewBag.TaskName</h2>
+
 
 <table class="table">
     <thead>
@@ -35,10 +36,13 @@
                     @Html.DisplayFor(modelItem => item.Role)
                 </td>
                 <td>
-                    @Html.ActionLink("Змінити роль", "ListRole", new { UserId = item.Id }) |
-                    @Html.ActionLink("Видалити", "DeleteUser", new { UserId = item.Id })
+
+                    @Html.ActionLink("Додати", "AssignTaskToUser", new { userId = item.Id, globalTaskId = ViewBag.globalTaskId }) |
                 </td>
             </tr>
         }
     </tbody>
 </table>
+<div>
+    <a asp-action="TaskList">назад</a>
+</div>

@@ -13,8 +13,8 @@ namespace TaskManagerTLA.DAL.Repositories
         // TODO відповідно до SOLID краще тут використовувати інтерфейси ITaskRepository, IActualTaskRepository..
         // це все має інжектнутись
         private readonly TaskContext db;
-        private TaskRepositories taskRepositories;
-        private ActualTaskRepositories actualTaskRepositories;
+        private TaskRepositories globalTaskRepositories;
+        private AssignedTaskRepositories assignedTaskRepositories;
         private bool disposed = false;
 
         public EFUnitOfWork(string connectionString)
@@ -24,28 +24,28 @@ namespace TaskManagerTLA.DAL.Repositories
             db = new TaskContext(options);
         }
 
-        public IRepository<TaskModel> Tasks
+        public IRepository<GlobalTask> GlobalTasks
         {
             get
             {
-                if (taskRepositories == null)
+                if (globalTaskRepositories == null)
                 {
-                    taskRepositories = new TaskRepositories(db);
+                    globalTaskRepositories = new TaskRepositories(db);
                 }
-                return taskRepositories;
+                return globalTaskRepositories;
             }
 
         }
 
-        public IRepository<ActualTask> ActualTasks
+        public IRepository<AssignedTask> AssignedTasks
         {
             get
             {
-                if (actualTaskRepositories == null)
+                if (assignedTaskRepositories == null)
                 {
-                    actualTaskRepositories = new ActualTaskRepositories(db);
+                    assignedTaskRepositories = new AssignedTaskRepositories(db);
                 }
-                return actualTaskRepositories;
+                return assignedTaskRepositories;
             }
 
         }

@@ -1,10 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using TaskManagerTLA.BLL.DTO;
 using TaskManagerTLA.DAL.Entities;
+using TaskManagerTLA.DAL.Identity.Entities;
 using TaskManagerTLA.Models;
 
 namespace TaskManagerTLA.BLL.Mapper
@@ -14,20 +13,23 @@ namespace TaskManagerTLA.BLL.Mapper
         public MappingProfile()
         {
             //Тут я нарешті розібрався з мапером) я так думаю.
-            CreateMap<IdentityRole, RoleDTO>().ForMember("UserRole", opt => opt.MapFrom(c => c.Name));
-            CreateMap<IdentityUser, UserDTO>();
+            CreateMap<IdentityRole, RoleDTO>();
+            CreateMap<ApplicationUser, UserDTO>()
+                .ForMember("Role", opt => opt.MapFrom(c => c.Roles.FirstOrDefault().Name));
             CreateMap<RegisterViewModel, UserDTO>();
             CreateMap<UserDTO, UserViewModel>();
             CreateMap<LoginViewModel, UserDTO>();
             CreateMap<RoleDTO, RoleViewModel>();
-            CreateMap<TaskViewModel, TaskDTO>();
-            CreateMap<TaskDTO, TaskViewModel>();
-            CreateMap<ActualTask, ActualTaskDTO>();
-            CreateMap<TaskModel, TaskDTO>();
-            CreateMap<TaskDTO, TaskModel>();
-            CreateMap<ActualTaskDTO, ActualTask>();
-            CreateMap<ActualTaskDTO, ActualTaskViewModel>();
-            CreateMap<ActualTaskViewModel, ActualTaskDTO>();
+            CreateMap<GlobalTaskViewModel, GlobalTaskDTO>();
+            CreateMap<GlobalTaskDTO, GlobalTaskViewModel>();
+            CreateMap<AssignedTask, AssignedTaskDTO>()
+                .ForMember("GlobalTaskName", opt => opt.MapFrom(c => c.GlobalTask.Name))
+                .ForMember("UserName", opt => opt.MapFrom(c => c.User.UserName));
+            CreateMap<GlobalTask, GlobalTaskDTO>();
+            CreateMap<GlobalTaskDTO, GlobalTask>();
+            CreateMap<AssignedTaskDTO, AssignedTask>();
+            CreateMap<AssignedTaskDTO, AssignedTaskViewModel>();
+            CreateMap<AssignedTaskViewModel, AssignedTaskDTO>();
         }
     }
 }

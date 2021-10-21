@@ -1,0 +1,52 @@
+﻿@model IEnumerable<TaskManagerTLA.Models.AssignedTaskViewModel>
+
+@{
+    ViewData["Title"] = "DetailsTask";
+}
+
+<h1>@ViewBag.TaskName</h1>
+
+<p>
+    @Html.ActionLink("Додати виконавця", "SelectUserToAssignTask", new { globalTaskId = ViewBag.globalTaskId })
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.UserName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SpentHours)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserName)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.SpentHours)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+
+                <td>
+                    @Html.ActionLink("Видалити виконавця", "CancelAssignedTask", new { userId = item.UserId, globalTaskId = ViewBag.globalTaskId })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div>
+    <a asp-action="TaskList">Повернутись до задач</a>
+</div>

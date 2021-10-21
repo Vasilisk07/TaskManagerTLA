@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TaskManagerTLA.BLL.DTO;
+using TaskManagerTLA.BLL.Exeption;
 using TaskManagerTLA.BLL.Interfaces;
 using TaskManagerTLA.DAL.Entities;
 using TaskManagerTLA.DAL.Interfaces;
@@ -20,113 +21,79 @@ namespace TaskManagerTLA.BLL.Services
             this.mapper = mapper;
         }
 
-        public IEnumerable<ActualTaskDTO> GetActualTasks()
+        public IEnumerable<AssignedTaskDTO> GetAssignedTasksByUserName(string username)
         {
-
-            return mapper.Map<IEnumerable<ActualTask>, List<ActualTaskDTO>>(dataBase.ActualTasks.GetAll());
+            var assignedTaskList = dataBase.AssignedTasks.GetAll().TakeWhile(p => p.User.UserName == username);
+            return mapper.Map<IEnumerable<AssignedTask>, List<AssignedTaskDTO>>(assignedTaskList);
         }
 
-        public ActualTaskDTO GetActualTask(int? actualTaskId)
+        public GlobalTaskDTO GetGlobalTask(int? GlobalTaskId)
         {
-            ActualTaskDTO actualTaskDTO = mapper.Map<ActualTaskDTO>(dataBase.ActualTasks.Get(actualTaskId.Value));
-            return actualTaskDTO;
+            if (GlobalTaskId == null) throw new MyException("Не дійсне значення");
+            var globalTask = dataBase.GlobalTasks.Get(GlobalTaskId.Value);
+            return mapper.Map<GlobalTaskDTO>(globalTask);
         }
 
-        public TaskDTO GetTask(int? taskId)
+        public IEnumerable<AssignedTaskDTO> GetAssignedTasksByGlobalTaskId(int? globalTaskId)
         {
-            // int? треба перевірити на null перед тим як робити taskId.Value, будеш мати ексепшн
-            TaskDTO taskDTO = mapper.Map<TaskDTO>(dataBase.Tasks.Get(taskId.Value));
-            return taskDTO;
+            if (globalTaskId == null) throw new MyException("Не дійсне значення");
+            var globalTask = dataBase.GlobalTasks.GetAll().Where(p => p.Id == globalTaskId).Single();
+            var assignedTask = globalTask.AssignedTasks;
+            return mapper.Map<IEnumerable<AssignedTaskDTO>>(assignedTask);
         }
 
-        public IEnumerable<ActualTaskDTO> GetDetailsTask(int? taskId)
+        public IEnumerable<GlobalTaskDTO> GetGlobalTasks()
         {
-            // TODO делегувати запит sql серверу
-            // в тебе навіть метод є в репозиторіх готовий        IEnumerable<T> Find(Func<T, Boolean> predicate);
-
-            return from t in GetActualTasks() where t.TaskId == taskId.Value select t;
+            var globalTaskList = dataBase.GlobalTasks.GetAll();
+            return mapper.Map<IEnumerable<GlobalTaskDTO>>(globalTaskList);
         }
 
-        public IEnumerable<TaskDTO> GetTasks()
+        public void CreateAssignedTask(string userId, int? globalTaskId)
         {
-            IEnumerable<TaskDTO> taskListDTO = mapper.Map<IEnumerable<TaskModel>, List<TaskDTO>>(dataBase.Tasks.GetAll());
-            return taskListDTO;
-        }
-
-        public void MakeActualTask(ActualTaskDTO actualTaskDTO)
-        {
-            bool ifExist = false;
-            var aTask = GetActualTasks();
-            foreach (var item in aTask)
-            {
-                // TODO це правило унікальності можна описати в EF https://stackoverflow.com/questions/18889218/unique-key-constraints-for-multiple-columns-in-entity-framework
-                if (item.TaskId == actualTaskDTO.TaskId && item.UserName == actualTaskDTO.UserName)
-                {
-                    ifExist = true;
-                    break;
-                }
-            }
-            // TODO якщо такий таск уже є - ми повинні якось повідомити користувача?
-            if (!ifExist)
-            {
-                ActualTask actualTask = mapper.Map<ActualTask>(actualTaskDTO);
-                dataBase.ActualTasks.Create(actualTask);
-                dataBase.Save();
-            }
-        }
-
-        public void MakeTask(TaskDTO taskDTO)
-        {
-            TaskModel taskModel = mapper.Map<TaskModel>(taskDTO);
-            dataBase.Tasks.Create(taskModel);
+            var globalTask = dataBase.GlobalTasks.Get(globalTaskId.Value);
+            globalTask.AssignedTasks.Add(new AssignedTask { GlobalTaskId = globalTaskId.Value, UserId = userId });
             dataBase.Save();
         }
 
-        public void DeleteTask(int? taskId)
+        public void AddGlobalTask(GlobalTaskDTO globalTaskDTO)
         {
-            dataBase.Tasks.Delete(taskId.Value);
-            var actualTaskList = GetActualTasks();
-            // TODO потрібно витягти лише один запис з контексту і його видалити
-            // маєш в репозиторії готовий метод IEnumerable<T> Find(Func<T, Boolean> predicate);
-            foreach (var item in actualTaskList)
-            {
-                if (item.TaskId == taskId.Value)
-                {
-                    dataBase.ActualTasks.Delete(item.ActualTaskId);
-                }
-            }
+            GlobalTask taskModel = mapper.Map<GlobalTask>(globalTaskDTO);
+            dataBase.GlobalTasks.Create(taskModel);
             dataBase.Save();
         }
 
-        public void EditActualTask(int? actualTaskId, int? elapsedTime, string description)
+        public void DeleteGlobalTask(int? globalTaskId)
         {
-            ActualTask EditsActualTask = dataBase.ActualTasks.Get(actualTaskId.Value);
-            EditsActualTask.Description = description != null ? $" {EditsActualTask.Description} | {DateTime.Now:dd.MM.yyyy} {description}" : EditsActualTask.Description;
-            EditsActualTask.ActTaskLeigth = elapsedTime != null && elapsedTime.Value > 0 ? EditsActualTask.ActTaskLeigth + elapsedTime.Value : EditsActualTask.ActTaskLeigth;
-            TaskModel EditTask = dataBase.Tasks.Get(EditsActualTask.TaskId);
-            EditTask.TaskLeigth = elapsedTime != null && elapsedTime.Value > 0 ? EditTask.TaskLeigth + elapsedTime.Value : EditTask.TaskLeigth;
+            if (globalTaskId == null) throw new MyException("Не дійсне значення");
+            dataBase.GlobalTasks.Delete(globalTaskId.Value);
             dataBase.Save();
         }
 
-        public void DeleteActualTaskByUser(string userName)
+        public void UpdateDescription(string userId, int? globalTaskId, string description)
         {
-            // TODO делегувати запит sql серверу
-
-            foreach (var item in dataBase.ActualTasks.GetAll())
-            {
-                if (item.UserName == userName)
-                {
-                    dataBase.ActualTasks.Delete(item.ActualTaskId);
-                }
-            }
+            var asignedTask = dataBase.AssignedTasks.GetAll().Where(p => (p.UserId == userId && p.GlobalTaskId == globalTaskId)).FirstOrDefault();
+            asignedTask.Description = description != null ? $" {asignedTask.Description} | {DateTime.Now:dd.MM.yyyy} {description}" : asignedTask.Description;
             dataBase.Save();
         }
 
-        public void DeleteActualTask(int? actualTaskId)
+        public void UpdateElapsedTime(string userId, int? globalTaskId, int? elapsedTime)
         {
-            dataBase.ActualTasks.Delete(actualTaskId.Value);
+            if (globalTaskId == null && userId == null) throw new MyException("Не дійсне значення");
+            var asignedTask = dataBase.AssignedTasks.GetAll().Where(p => (p.UserId == userId && p.GlobalTaskId == globalTaskId)).FirstOrDefault();
+            asignedTask.SpentHours = elapsedTime != null && elapsedTime.Value > 0 ? asignedTask.SpentHours + elapsedTime.Value : asignedTask.SpentHours;
+            var globalTask = dataBase.GlobalTasks.Get(globalTaskId.Value);
+            globalTask.TotalSpentHours = elapsedTime != null && elapsedTime.Value > 0 ? globalTask.TotalSpentHours + elapsedTime.Value : globalTask.TotalSpentHours;
             dataBase.Save();
         }
 
+        public void DeleteAssignedTask(string userId, int? globalTaskId)
+        {
+            //в данній реалізації видаляю саме присвоєну певному юзеру таску з основної
+            //щоб не тягнути сюди ще і IdentityService
+            if (globalTaskId == null && userId == null) throw new MyException("Не дійсне значення");
+            var globalTask = dataBase.GlobalTasks.GetAll().Where(p => p.Id == globalTaskId).FirstOrDefault();
+            globalTask.AssignedTasks.Remove(globalTask.AssignedTasks.Where(p => p.UserId == userId).FirstOrDefault());
+            dataBase.Save();
+        }
     }
 }

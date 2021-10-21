@@ -1,14 +1,5 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using TaskManagerTLA.BLL.DTO;
-using TaskManagerTLA.BLL.Interfaces;
 using TaskManagerTLA.Models;
 
 namespace TaskManagerTLA.Controllers

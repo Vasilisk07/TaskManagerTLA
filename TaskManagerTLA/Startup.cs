@@ -1,5 +1,3 @@
-using AutoMapper;
-
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -7,11 +5,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-
+using Microsoft.Extensions.Logging;
 using TaskManagerTLA.BLL.Interfaces;
 using TaskManagerTLA.BLL.Mapper;
 using TaskManagerTLA.BLL.Services;
 using TaskManagerTLA.DAL.EF;
+using TaskManagerTLA.DAL.Identity.Entities;
 using TaskManagerTLA.DAL.Identity.Interfaces;
 using TaskManagerTLA.DAL.Identity.Repositories;
 using TaskManagerTLA.DAL.Interfaces;
@@ -29,33 +28,22 @@ namespace TaskManagerTLA
 
         public IConfiguration Configuration { get; }
 
-
         public void ConfigureServices(IServiceCollection services)
         {
             string connection = Configuration.GetConnectionString("DefaultConnection");
-            string IdentityConnection = Configuration.GetConnectionString("IdentityConnection");
             services.AddTransient<IUnitOfWork>(x => new EFUnitOfWork(connection));
             services.AddTransient<ITaskService, TaskService>();
-            services.AddDbContext<IdentityContext>(options => options.UseSqlServer(IdentityConnection));
-            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<IdentityContext>();
-            services.AddTransient<IUnitOfWorkIdentity>(x => new UnitOfWorkIdentity(IdentityConnection));
-            services.AddTransient<IIdentityServices, IdentityServices>();
-            // TODO
-            // погана практика робити мапер singleton, зроби щось таке
-            // services.AddAutoMapper(typeof(MappingProfile));
+            services.AddDbContext<IdentityContext>(options => options.UseSqlServer(connection));
+            services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<IdentityContext>();
+            services.AddTransient<IUnitOfWorkIdentity>(x => new UnitOfWorkIdentity(connection));
+            services.AddTransient<IIdentityService, IdentityService>();
+            services.AddAutoMapper(typeof(MappingProfile));
 
-            var mapperConfig = new MapperConfiguration(mc =>
-            {
-                mc.AddProfile(new MappingProfile());
-            });
-            IMapper mapper = mapperConfig.CreateMapper();
-            services.AddSingleton(mapper);
 
             services.AddControllersWithViews();
-        }
+        } 
 
-
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, ILogger<Startup> logger, IWebHostEnvironment env )
         {
             if (env.IsDevelopment())
             {
@@ -66,12 +54,12 @@ namespace TaskManagerTLA
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
+          
+            app.UseAuthentication();
             app.UseHttpsRedirection();
+            app.UseResponseCaching(); 
             app.UseStaticFiles();
             app.UseRouting();
-            app.UseAuthentication();
-            // TODO 2 рази UseAuthorization
-            app.UseAuthorization();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {

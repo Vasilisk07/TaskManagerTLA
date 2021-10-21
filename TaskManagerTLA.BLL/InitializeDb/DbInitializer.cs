@@ -1,14 +1,13 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
+using TaskManagerTLA.DAL.Identity.Entities;
+
 
 namespace TaskManagerTLA.BLL.InitializeDb
 {
     public class DbInitializer
     {
-        public static async Task InitializeAsync(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
+        public static async Task InitializeAsync(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             if (await roleManager.FindByNameAsync("Admin") == null)
             {
@@ -27,7 +26,7 @@ namespace TaskManagerTLA.BLL.InitializeDb
 
             if (await userManager.FindByNameAsync("Administrator") == null)
             {
-                IdentityUser admin = new IdentityUser { UserName = "Administrator", Email = "Admin@mail.com" };
+                ApplicationUser admin = new ApplicationUser { UserName = "Administrator", Email = "Admin@mail.com" };
                 IdentityResult res = await userManager.CreateAsync(admin, "1234lL_");
                 if (res.Succeeded)
                 {
@@ -37,7 +36,7 @@ namespace TaskManagerTLA.BLL.InitializeDb
 
             if (await userManager.FindByNameAsync("Bob") == null)
             {
-                IdentityUser manager = new IdentityUser { UserName = "Bob", Email = "Bob@mail.com" };
+                ApplicationUser manager = new ApplicationUser { UserName = "Bob", Email = "Bob@mail.com" };
                 IdentityResult res = await userManager.CreateAsync(manager, "1234lL_");
                 if (res.Succeeded)
                 {
@@ -47,7 +46,7 @@ namespace TaskManagerTLA.BLL.InitializeDb
 
             if (await userManager.FindByNameAsync("Jack") == null)
             {
-                IdentityUser dev = new IdentityUser { UserName = "Jack", Email = "Jack@mail.com" };
+                ApplicationUser dev = new ApplicationUser { UserName = "Jack", Email = "Jack@mail.com" };
                 IdentityResult res = await userManager.CreateAsync(dev, "1234lL_");
                 if (res.Succeeded)
                 {
@@ -57,7 +56,7 @@ namespace TaskManagerTLA.BLL.InitializeDb
 
             if (await userManager.FindByNameAsync("Nick") == null)
             {
-                IdentityUser dev = new IdentityUser { UserName = "Nick", Email = "Nick@mail.com" };
+                ApplicationUser dev = new ApplicationUser { UserName = "Nick", Email = "Nick@mail.com" };
                 IdentityResult res = await userManager.CreateAsync(dev, "1234lL_");
                 if (res.Succeeded)
                 {
@@ -67,7 +66,7 @@ namespace TaskManagerTLA.BLL.InitializeDb
 
             if (await userManager.FindByNameAsync("Adam") == null)
             {
-                IdentityUser dev = new IdentityUser { UserName = "Adam", Email = "Adam@mail.com" };
+                ApplicationUser dev = new ApplicationUser { UserName = "Adam", Email = "Adam@mail.com" };
                 IdentityResult res = await userManager.CreateAsync(dev, "1234lL_");
                 if (res.Succeeded)
                 {

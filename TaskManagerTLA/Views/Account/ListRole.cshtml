@@ -11,7 +11,7 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.UserRole)
+                @Html.DisplayNameFor(model => model.Name)
             </th>
             <th></th>
         </tr>
@@ -21,7 +21,7 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.UserRole)
+                    @Html.DisplayFor(modelItem => item.Name)
                 </td>
                 <td>
                     @Html.ActionLink("Вибрати", "ChangeRole", new { UserId = ViewBag.UserId, roleId = item.Id })

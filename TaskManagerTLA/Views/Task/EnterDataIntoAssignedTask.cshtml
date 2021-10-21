@@ -1,23 +1,20 @@
-﻿@model TaskManagerTLA.Models.EditActualTaskViewModel
+﻿@model TaskManagerTLA.Models.EditAssignedTaskViewModel
 
-@{
-    ViewData["Title"] = "Додати Зміни";
-    
+@{ ViewData["Title"] = "Додати Зміни";}
 
-}
+<h2>Додати зміни до задачі @ViewBag.TaskName</h2>
 
-<h2>Додати зміни до задачі</h2>
 
-<hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="EditPersonalTask">
-            @Html.HiddenFor(model => model.ActualTaskId)
+        <form asp-action="EnterDataIntoAssignedTask">
+            @Html.HiddenFor(model => model.GlobalTaskId)
+            @Html.HiddenFor(model => model.UserId)
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="ActTaskLeigth" class="control-label"></label>
-                <input asp-for="ActTaskLeigth" class="form-control" />
-                <span asp-validation-for="ActTaskLeigth" class="text-danger"></span>
+                <label asp-for="SpentHours" class="control-label"></label>
+                <input asp-for="SpentHours" class="form-control" />
+                <span asp-validation-for="SpentHours" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>

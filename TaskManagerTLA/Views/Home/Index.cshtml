@@ -1,7 +1,4 @@
-﻿@using Microsoft.AspNetCore.Identity
-@model IEnumerable<TaskManagerTLA.Models.TaskViewModel>
-@inject SignInManager<IdentityUser> SignInManager
-@inject UserManager<IdentityUser> UserManager
+﻿
 
 @{
     ViewData["Title"] = "Фонова сторінка";
@@ -15,8 +12,6 @@
 </div>
 
 <div class="jumbotron">
-
-
     @ViewBag.Info
 
     @if (SignInManager.IsSignedIn(User))
@@ -42,19 +37,11 @@
                 </h3>
                 break;
         }
-
-
     }
     else
     {
-
         <h3>
             На данний момент ви не авторизовані. Виконайте вхід або реєстрацію.
         </h3>
     }
-
-
-
-
-
 </div>

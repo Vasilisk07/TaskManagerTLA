@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace TaskManagerTLA.Models
 {
     public class RegisterViewModel
     {
-
         [Required(ErrorMessage = "Вкажіть імя користувача")]
         [Display(Name = "Имя користувача")]
         public string UserName { get; set; }
@@ -26,6 +21,5 @@ namespace TaskManagerTLA.Models
         [DataType(DataType.Password)]
         [Display(Name = "Підтвердіть пароль")]
         public string PasswordConfirm { get; set; }
-
     }
 }

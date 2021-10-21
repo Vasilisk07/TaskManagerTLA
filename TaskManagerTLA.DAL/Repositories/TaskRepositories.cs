@@ -11,7 +11,7 @@ using TaskManagerTLA.DAL.Interfaces;
 
 namespace TaskManagerTLA.DAL.Repositories
 {
-    class TaskRepositories : IRepository<TaskModel>
+    class TaskRepositories : IRepository<GlobalTask>
     {
         private readonly TaskContext db;
 
@@ -20,42 +20,53 @@ namespace TaskManagerTLA.DAL.Repositories
             this.db = context;
         }
 
-        public IEnumerable<TaskModel> GetAll()
+        public IEnumerable<GlobalTask> GetAll()
         {
-            return db.Tasks;
+            return db.GlobalTask.Include(c=>c.Users).Include(p=>p.AssignedTasks);
         }
 
-        public TaskModel Get(int id)
+        public GlobalTask Get(int id)
         {
-            return db.Tasks.Find(id);
+            var globalTask = db.GlobalTask.Find(id);
+            return globalTask;
         }
 
-        public void Create(TaskModel task)
+        public void Create(GlobalTask task)
         {
-            db.Tasks.Add(task);
+            db.GlobalTask.Add(task);
         }
 
-        public void Update(TaskModel task)
+        public void Update(GlobalTask task)
         {
             db.Entry(task).State = EntityState.Modified;
 
         }
 
-        public IEnumerable<TaskModel> Find(Func<TaskModel, Boolean> predicate)
+        public IEnumerable<GlobalTask> Find(Func<GlobalTask, Boolean> predicate)
         {
-            // TODO ToList() почне збирати усі записи 
-            // можливо тому хто викликає метод не потрібні усі записи одразу, і він хоче тягнути їх по одному з енумератора
-            return db.Tasks.Where(predicate).ToList();
+            //! TODO ToList() почне збирати усі записи 
+            //! можливо тому хто викликає метод не потрібні усі записи одразу, і він хоче тягнути їх по одному з енумератора
+            return db.GlobalTask.Where(predicate);
+            
 
         }
+
+
+
 
         public void Delete(int id)
         {
-            TaskModel task = db.Tasks.Find(id);
+            GlobalTask task = db.GlobalTask.Find(id);
             if (task != null)
             {
-                db.Tasks.Remove(task);
+                db.GlobalTask.Remove(task);
             }
         }
+        public void DeleteRange(IEnumerable<GlobalTask> deletedList)
+        {
+            db.GlobalTask.RemoveRange(deletedList);
+        }
+
+
     }
 }

@@ -1,0 +1,44 @@
+﻿@model IEnumerable<TaskManagerTLA.Models.AssignedTaskViewModel>
+
+@{
+    ViewData["Title"] = "Мої задачі";
+}
+
+<h2>Мої персональні задачі</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.GlobalTaskName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SpentHours)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GlobalTaskName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SpentHours)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.ActionLink("Внести данні", "EnterDataIntoAssignedTask", new { userId = item.UserId, globalTaskId = item.GlobalTaskId })
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

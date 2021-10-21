@@ -1,12 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using TaskManagerTLA.BLL.DTO;
+using TaskManagerTLA.BLL.Exeption;
 using TaskManagerTLA.BLL.Interfaces;
 using TaskManagerTLA.Models;
 
@@ -14,14 +12,14 @@ namespace TaskManagerTLA.Controllers
 {
     public class TaskController : Controller
     {
-        private readonly ITaskService taskServise;
-        private readonly IIdentityServices identityService;
+        private readonly ITaskService taskService;
+        private readonly IIdentityService identityService;
         private readonly IMapper mapper;
 
-        public TaskController(IIdentityServices identityService, ITaskService taskService, IMapper mapper)
+        public TaskController(IIdentityService identityService, ITaskService taskService, IMapper mapper)
         {
             this.identityService = identityService;
-            taskServise = taskService;
+            this.taskService = taskService;
             this.mapper = mapper;
         }
 
@@ -34,85 +32,133 @@ namespace TaskManagerTLA.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin, Manager")]
-        public IActionResult CreateTask(TaskViewModel taskVievModel)
+        public IActionResult CreateTask(GlobalTaskViewModel taskVievModel)
         {
-            var taskDTO = mapper.Map<TaskDTO>(taskVievModel);
-            taskServise.MakeTask(taskDTO);
+            var taskDTO = mapper.Map<GlobalTaskDTO>(taskVievModel);
+            taskService.AddGlobalTask(taskDTO);
             return RedirectToAction("TaskList", "Task");
         }
 
         [Authorize(Roles = "Admin, Manager")]
         public IActionResult TaskList()
         {
-            var tasks = mapper.Map<IEnumerable<TaskDTO>, List<TaskViewModel>>(taskServise.GetTasks());
+            var tasks = mapper.Map<IEnumerable<GlobalTaskDTO>, List<GlobalTaskViewModel>>(taskService.GetGlobalTasks());
             return View(tasks);
         }
 
         [Authorize(Roles = "Admin, Manager")]
-        public IActionResult DeleteTask(int? taskId)
+        public IActionResult DeleteTask(int? globalTaskId)
         {
-            taskServise.DeleteTask(taskId);
-            return RedirectToAction("TaskList", "Task");
+            try
+            {
+                taskService.DeleteGlobalTask(globalTaskId);
+                return RedirectToAction("TaskList", "Task");
+            }
+            catch (MyException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View();
+            }
         }
 
         [Authorize(Roles = "Admin, Manager")]
-        public IActionResult DetailsTask(int? taskId)
+        public IActionResult DetailAboutTask(int? globalTaskId)
         {
-            var selectedTeams = mapper.Map<IEnumerable<ActualTaskDTO>, List<ActualTaskViewModel>>(taskServise.GetDetailsTask(taskId));
-            ViewBag.TaskName = taskServise.GetTask(taskId).TaskName;
-            ViewBag.TaskId = taskId;
-            return View(selectedTeams);
+            try
+            {
+                var selectedTeams = mapper.Map<IEnumerable<AssignedTaskDTO>, List<AssignedTaskViewModel>>(taskService.GetAssignedTasksByGlobalTaskId(globalTaskId));
+                ViewBag.TaskName = taskService.GetGlobalTask(globalTaskId).Name;
+                ViewBag.globalTaskId = globalTaskId;
+                return View(selectedTeams);
+            }
+            catch (MyException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View();
+            }
         }
 
         [HttpGet]
         [Authorize(Roles = "Admin, Manager")]
-        public IActionResult AddUserInTask(int? taskId)
+        public IActionResult SelectUserToAssignTask(int? globalTaskId)
         {
-            IEnumerable<UserDTO> usersDTO = identityService.GetUsers();
-            var usersModel = mapper.Map<IEnumerable<UserDTO>, List<UserViewModel>>(usersDTO);
-            usersModel = (from t in usersModel where t.UserRole == "Developer" select t).ToList();
-            ViewBag.TaskId = taskId;
-            ViewBag.TaskName = taskServise.GetTask(taskId).TaskName;
-            return View(usersModel);
+            try
+            {
+                IEnumerable<UserDTO> usersDTO = identityService.GetUsersWhoAreNotAssignedTask(globalTaskId);
+                var usersModel = mapper.Map<IEnumerable<UserDTO>, List<UserViewModel>>(usersDTO);
+                ViewBag.globalTaskId = globalTaskId;
+                ViewBag.TaskName = taskService.GetGlobalTask(globalTaskId).Name;
+                return View(usersModel);
+            }
+            catch (MyException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View();
+            }
+
         }
 
         [Authorize(Roles = "Admin, Manager")]
-        public IActionResult AddUser(int? taskId, string userName)
+        public IActionResult AssignTaskToUser(string userId, int? globalTaskId)
         {
-            ActualTaskViewModel actualTaskModel = new ActualTaskViewModel() { TaskId = taskId.Value, UserName = userName, TaskName = taskServise.GetTask(taskId).TaskName };
-            var taskDTO = mapper.Map<ActualTaskDTO>(actualTaskModel);
-            taskServise.MakeActualTask(taskDTO);
-            return RedirectToAction("DetailsTask", new { taskId });
+            try
+            {
+                taskService.CreateAssignedTask(userId, globalTaskId);
+                return RedirectToAction("DetailAboutTask", new { globalTaskId });
+            }
+            catch (MyException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View();
+            }
         }
 
         [Authorize(Roles = "Admin, Manager")]
-        public IActionResult DeleteUserInTask(int? actualTaskId, int? taskId)
+        public IActionResult CancelAssignedTask(string userId, int? globalTaskId)
         {
-            taskServise.DeleteActualTask(actualTaskId);
-            return RedirectToAction("DetailsTask", new { taskId });
+            try
+            {
+                taskService.DeleteAssignedTask(userId, globalTaskId);
+                return RedirectToAction("DetailAboutTask", new { globalTaskId });
+            }
+            catch (MyException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View();
+            }
         }
 
         [Authorize(Roles = "Admin, Manager, Developer")]
-        public IActionResult ShowPersonalTask()
+        public IActionResult ShowAssignedTaskCurrentUser()
         {
-            List<ActualTaskDTO> personalTasksDTOList = (from t in taskServise.GetActualTasks() where t.UserName == User.Identity.Name select t).ToList();
-            var personalTasksViewList = mapper.Map<IEnumerable<ActualTaskDTO>, List<ActualTaskViewModel>>(personalTasksDTOList);
+            var personalTasksDTOList = taskService.GetAssignedTasksByUserName(User.Identity.Name).ToList();
+            var personalTasksViewList = mapper.Map<IEnumerable<AssignedTaskDTO>, List<AssignedTaskViewModel>>(personalTasksDTOList);
             return View(personalTasksViewList);
         }
 
         [HttpGet]
         [Authorize(Roles = "Admin, Manager, Developer")]
-        public IActionResult EditPersonalTask(int? actualTaskId)
+        public IActionResult EnterDataIntoAssignedTask(string userId, int? globalTaskId)
         {
-            return View(new EditActualTaskViewModel { ActualTaskId = actualTaskId.Value });
+            try
+            {
+                ViewBag.TaskName = taskService.GetGlobalTask(globalTaskId).Name;
+                return View(new EditAssignedTaskViewModel { UserId = userId, GlobalTaskId = globalTaskId.Value });
+            }
+            catch (MyException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View();
+            }
         }
 
         [HttpPost]
         [Authorize(Roles = "Admin, Manager, Developer")]
-        public IActionResult EditPersonalTask(EditActualTaskViewModel EditModel)
+        public IActionResult EnterDataIntoAssignedTask(EditAssignedTaskViewModel EditModel)
         {
-            taskServise.EditActualTask(EditModel.ActualTaskId, EditModel.ActTaskLeigth, EditModel.Description);
-            return RedirectToAction("ShowPersonalTask", "Task");
+            taskService.UpdateDescription(EditModel.UserId, EditModel.GlobalTaskId, EditModel.Description);
+            taskService.UpdateElapsedTime(EditModel.UserId, EditModel.GlobalTaskId, EditModel.SpentHours);
+            return RedirectToAction("ShowAssignedTaskCurrentUser", "Task");
         }
     }
 }

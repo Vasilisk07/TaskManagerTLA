@@ -1,18 +1,14 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using TaskManagerTLA.DAL.Interfaces;
+using TaskManagerTLA.DAL.Identity.Entities;
 
 namespace TaskManagerTLA.DAL.Identity.Interfaces
 {
     public interface IUnitOfWorkIdentity : IDisposable
     {
-        //TODO IIdentityRepository, UsersRepository....
-        IIdentityRepositories<IdentityUser> UsersRepositories { get; }
-        IIdentityRepositories<IdentityRole> RolesRepositories { get; }
-        IIdentityRepositories<IdentityUserRole<string>> UserRolesRepositories { get; }
+        IIdentityRepository<ApplicationUser> UsersRepositories { get; }
+        IIdentityRepository<IdentityRole> RolesRepositories { get; }
+        IIdentityRepository<IdentityUserRole<string>> UserRolesRepositories { get; }
         public void Save();
-
     }
 }

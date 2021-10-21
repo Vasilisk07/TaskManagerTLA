@@ -1,15 +1,10 @@
 ﻿using AutoMapper;
-
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-
 using TaskManagerTLA.BLL.DTO;
+using TaskManagerTLA.BLL.Exeption;
 using TaskManagerTLA.BLL.Interfaces;
 using TaskManagerTLA.Models;
 
@@ -18,16 +13,12 @@ namespace TaskManagerTLA.Controllers
     public class AccountController : Controller
     {
         private readonly IMapper mapper;
-        private readonly IIdentityServices identityService;
-        private readonly ITaskService taskService;
-        private readonly SignInManager<IdentityUser> signInManager;
+        private readonly IIdentityService identityService;
 
-        public AccountController(IIdentityServices identityService, IMapper mapper, SignInManager<IdentityUser> signInManager, ITaskService taskService)
+        public AccountController(IIdentityService identityService, IMapper mapper)
         {
             this.mapper = mapper;
             this.identityService = identityService;
-            this.signInManager = signInManager;
-            this.taskService = taskService;
         }
 
         [HttpGet]
@@ -42,16 +33,15 @@ namespace TaskManagerTLA.Controllers
             UserDTO userDTO = mapper.Map<UserDTO>(model);
             try
             {
-                identityService.RegisterNewUser(userDTO);
+                identityService.CreateUserAndRole(userDTO);
             }
-            catch (Exception ex)
+            catch (MyException ex)
             {
                 ModelState.AddModelError("", ex.Message);
                 return View(model);
             }
             await Login(new LoginViewModel { UserName = model.UserName, Password = model.Password });
             return RedirectToAction("Index", "Home");
-
         }
 
         [AllowAnonymous]
@@ -61,7 +51,6 @@ namespace TaskManagerTLA.Controllers
             return View();
         }
 
-        // довго не міг зрозуміти як обійтись без логіки в данному методі, в результаті вирішив обійти це наступним чином.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
@@ -69,9 +58,9 @@ namespace TaskManagerTLA.Controllers
             UserDTO loginUser = mapper.Map<UserDTO>(model);
             try
             {
-                await identityService.Login(loginUser, signInManager);
+                await identityService.Login(loginUser);
             }
-            catch (Exception ex)
+            catch (MyException ex)
             {
                 ModelState.AddModelError("", ex.Message);
                 return View(model);
@@ -84,7 +73,7 @@ namespace TaskManagerTLA.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
-            await identityService.Logout(signInManager);
+            await identityService.Logout();
             return RedirectToAction("Index", "Home");
         }
 
@@ -96,14 +85,12 @@ namespace TaskManagerTLA.Controllers
             return View(usersModels);
         }
 
-
         [Authorize(Roles = "Admin")]
         public IActionResult DeleteUser(string userId)
         {
-            identityService.DeleteUser(userId, taskService);
+            identityService.DeleteUser(userId);
             return RedirectToAction("ListUser", "Account");
         }
-
 
         [Authorize(Roles = "Admin")]
         public IActionResult ListRole(string userId)
@@ -113,11 +100,10 @@ namespace TaskManagerTLA.Controllers
             return View(roleModels);
         }
 
-
         [Authorize(Roles = "Admin")]
         public IActionResult ChangeRole(string userId, string roleId)
         {
-            identityService.ChangeUserRole(userId, roleId);
+            identityService.UpdateUserRole(userId, roleId);
             return RedirectToAction("ListUser", "Account");
         }
     }

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<TaskManagerTLA.Models.TaskViewModel>
+﻿@model IEnumerable<TaskManagerTLA.Models.GlobalTaskViewModel>
 
 @{
     ViewData["Title"] = "Список Задач";
@@ -14,47 +14,48 @@
         <tr>
 
             <th>
-                @Html.DisplayNameFor(model => model.TaskName)
+                @Html.DisplayNameFor(model => model.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.TaskDescription)
+                @Html.DisplayNameFor(model => model.Description)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.TaskLeigth)
+                @Html.DisplayNameFor(model => model.TotalSpentHours)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.TaskBegin)
+                @Html.DisplayNameFor(model => model.Begin)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.TaskEnd)
+                @Html.DisplayNameFor(model => model.End)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
+        @foreach (var item in Model)
+        {
+            <tr>
 
-            <td>
-                @Html.DisplayFor(modelItem => item.TaskName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TaskDescription)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TaskLeigth)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TaskBegin)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TaskEnd)
-            </td>
-            <td>
-                @Html.ActionLink("Деталі", "DetailsTask", new { taskId = item.TaskModelId }) |
-                @Html.ActionLink("Видалити", "DeleteTask", new { taskId = item.TaskModelId  })
-            </td>
-        </tr>
-}
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TotalSpentHours)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Begin)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.End)
+                </td>
+                <td>
+                    @Html.ActionLink("Деталі", "DetailAboutTask", new { globalTaskId = item.Id }) |
+                    @Html.ActionLink("Видалити", "DeleteTask", new { globalTaskId = item.Id })
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
