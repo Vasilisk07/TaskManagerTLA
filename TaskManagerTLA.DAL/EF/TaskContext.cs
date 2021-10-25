@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using TaskManagerTLA.DAL.Entities;
 using TaskManagerTLA.DAL.Identity.Entities;
 
 namespace TaskManagerTLA.DAL.EF
 {
-    class TaskContext : DbContext
+    public class TaskContext : DbContext
     {
         public DbSet<GlobalTask> GlobalTask { get; set; }
         public DbSet<AssignedTask> AssignedTask { get; set; }
@@ -14,11 +15,29 @@ namespace TaskManagerTLA.DAL.EF
         }
 
         // тут виник такий нюанс що налаштування звязків прийшлось продублювати в обох контекстах,
-        // можливо це так і треба, але можливо я шось криво реалізував 
-        // чого воно працює саме так питання для мене так і залишилось відкритим...
+        // можливо це так і треба, але можливо я шось криво реалізував  
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<ApplicationUser>().ToTable("AspNetUsers");
+            modelBuilder.Entity<ApplicationUser>()
+                 .HasMany(u => u.Roles)
+                 .WithMany(s => s.Users)
+                 .UsingEntity<ApplicationUserRole>(
+            j => j
+                 .HasOne(pt => pt.Role)
+                 .WithMany(t => t.UserRoles)
+                 .HasForeignKey(pt => pt.RoleId),
+            j => j
+                 .HasOne(pt => pt.User)
+                 .WithMany(t => t.UserRoles)
+                 .HasForeignKey(pt => pt.UserId),
+            j =>
+            {
+                j.HasKey(t => new { t.RoleId, t.UserId });
+                j.ToTable("AspNetUserRoles");
+            });
+
             modelBuilder.Entity<GlobalTask>()
                   .HasMany(u => u.Users)
                   .WithMany(s => s.GlobalTasks)
@@ -39,8 +58,7 @@ namespace TaskManagerTLA.DAL.EF
                  j.ToTable("AssignedTask");
 
              });
-
-            base.OnModelCreating(modelBuilder);
+            
         }
     }
 }

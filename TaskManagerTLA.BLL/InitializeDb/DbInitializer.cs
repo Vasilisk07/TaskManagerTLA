@@ -7,21 +7,21 @@ namespace TaskManagerTLA.BLL.InitializeDb
 {
     public class DbInitializer
     {
-        public static async Task InitializeAsync(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        public static async Task InitializeAsync(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
         {
             if (await roleManager.FindByNameAsync("Admin") == null)
             {
-                await roleManager.CreateAsync(new IdentityRole("Admin"));
+                await roleManager.CreateAsync(new ApplicationRole("Admin"));
             }
 
             if (await roleManager.FindByNameAsync("Manager") == null)
             {
-                await roleManager.CreateAsync(new IdentityRole("Manager"));
+                await roleManager.CreateAsync(new ApplicationRole("Manager"));
             }
 
             if (await roleManager.FindByNameAsync("Developer") == null)
             {
-                await roleManager.CreateAsync(new IdentityRole("Developer"));
+                await roleManager.CreateAsync(new ApplicationRole("Developer"));
             }
 
             if (await userManager.FindByNameAsync("Administrator") == null)

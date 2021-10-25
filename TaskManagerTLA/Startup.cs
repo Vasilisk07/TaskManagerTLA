@@ -15,7 +15,7 @@ using TaskManagerTLA.DAL.Identity.Interfaces;
 using TaskManagerTLA.DAL.Identity.Repositories;
 using TaskManagerTLA.DAL.Interfaces;
 using TaskManagerTLA.DAL.Repositories;
-
+using TaskManagerTLA.MyDependency;
 
 namespace TaskManagerTLA
 {
@@ -30,20 +30,11 @@ namespace TaskManagerTLA
 
         public void ConfigureServices(IServiceCollection services)
         {
-            string connection = Configuration.GetConnectionString("DefaultConnection");
-            services.AddTransient<IUnitOfWork>(x => new EFUnitOfWork(connection));
-            services.AddTransient<ITaskService, TaskService>();
-            services.AddDbContext<IdentityContext>(options => options.UseSqlServer(connection));
-            services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<IdentityContext>();
-            services.AddTransient<IUnitOfWorkIdentity>(x => new UnitOfWorkIdentity(connection));
-            services.AddTransient<IIdentityService, IdentityService>();
-            services.AddAutoMapper(typeof(MappingProfile));
-
-
+            services.AddMyService(Configuration);
             services.AddControllersWithViews();
-        } 
+        }
 
-        public void Configure(IApplicationBuilder app, ILogger<Startup> logger, IWebHostEnvironment env )
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -54,10 +45,9 @@ namespace TaskManagerTLA
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
-          
             app.UseAuthentication();
             app.UseHttpsRedirection();
-            app.UseResponseCaching(); 
+            app.UseResponseCaching();
             app.UseStaticFiles();
             app.UseRouting();
             app.UseAuthorization();

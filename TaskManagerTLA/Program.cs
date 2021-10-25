@@ -22,7 +22,7 @@ namespace TaskManagerTLA
                 try
                 {
                     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-                    var rolesManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+                    var rolesManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
                     await DbInitializer.InitializeAsync(userManager, rolesManager);
                 }
                 catch (Exception ex)
@@ -40,8 +40,9 @@ namespace TaskManagerTLA
             {
                 builder.AddConfiguration(context.Configuration.GetSection("Logging"));
                 builder.AddConsole();
-                builder.AddFile(); 
+                builder.AddFile();
             })
+
         .ConfigureWebHostDefaults(webBuilder =>
         {
             webBuilder.UseStartup<Startup>();

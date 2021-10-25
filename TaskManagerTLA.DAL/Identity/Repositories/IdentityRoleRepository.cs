@@ -1,16 +1,15 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using TaskManagerTLA.DAL.EF;
+using TaskManagerTLA.DAL.Identity.Entities;
 using TaskManagerTLA.DAL.Identity.Interfaces;
 
 namespace TaskManagerTLA.DAL.Identity
 {
-    class IdentityRoleRepository : IIdentityRepository<IdentityRole>
+    class IdentityRoleRepository : IIdentityRepository<ApplicationRole>
     {
-
         private readonly IdentityContext database;
 
         public IdentityRoleRepository(IdentityContext identityContext)
@@ -18,32 +17,32 @@ namespace TaskManagerTLA.DAL.Identity
             this.database = identityContext;
         }
 
-        public bool CreateItem(IdentityRole newItem)
+        public bool CreateItem(ApplicationRole newItem)
         {
             var res = database.Roles.Add(newItem);
             return res.State == EntityState.Added;
         }
 
-        public bool DeleteItem(IdentityRole Item)
+        public bool DeleteItem(ApplicationRole Item)
         {
             var res = database.Roles.Remove(Item);
             return res.State == EntityState.Deleted;
         }
-        public void DeleteRange(IEnumerable<IdentityRole> deletedList)
+        public void DeleteRange(IEnumerable<ApplicationRole> deletedList)
         {
             database.Roles.RemoveRange(deletedList);
         }
 
-        public IEnumerable<IdentityRole> GetAllItems()
+        public IEnumerable<ApplicationRole> GetAllItems()
         {
-            return database.Roles;
+            return database.Roles.Include(p => p.Users);
         }
-        public IdentityRole GetItem(string itemId)
+        public ApplicationRole GetItem(string itemId)
         {
             return database.Roles.Find(itemId);
         }
 
-        public IEnumerable<IdentityRole> Find(Func<IdentityRole, Boolean> predicate)
+        public IEnumerable<ApplicationRole> Find(Func<ApplicationRole, Boolean> predicate)
         {
             return database.Roles.Where(predicate);
         }

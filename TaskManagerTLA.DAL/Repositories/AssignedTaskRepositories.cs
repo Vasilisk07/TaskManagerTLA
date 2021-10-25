@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using TaskManagerTLA.DAL.EF;
 using TaskManagerTLA.DAL.Entities;
 using TaskManagerTLA.DAL.Interfaces;
@@ -35,7 +34,6 @@ namespace TaskManagerTLA.DAL.Repositories
         public void Update(AssignedTask task)
         {
             db.Entry(task).State = EntityState.Modified;
-
         }
 
         public IEnumerable<AssignedTask> Find(Func<AssignedTask, Boolean> predicate)

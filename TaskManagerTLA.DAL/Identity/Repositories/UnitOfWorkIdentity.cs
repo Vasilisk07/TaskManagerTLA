@@ -1,31 +1,25 @@
-﻿
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using TaskManagerTLA.DAL.EF;
 using TaskManagerTLA.DAL.Identity.Entities;
 using TaskManagerTLA.DAL.Identity.Interfaces;
-using TaskManagerTLA.DAL.Interfaces;
 
 namespace TaskManagerTLA.DAL.Identity.Repositories
 {
     public class UnitOfWorkIdentity : IUnitOfWorkIdentity
     {
         // TODO ці всі поля мають інджектнутись
-        private IdentityUserRepository userRepositories;
-        private IdentityRoleRepository rolesRepositories;
-        private IdentityUserRolesRepository userRolesRepositories;
+
+        // тут я не зрозумів як можна передати репозиторії через залежності
+        // посуті ж  контролювати створеня репозиторыъв має UnitOfWork і надавати їм спільний доступ до бази данних
+        // а якшо я буду їх інжектувати через залежності то вони будуть створюватись і передаватись без участі UnitOfWork
+        private IIdentityRepository<ApplicationUser> userRepositories;
+        private IIdentityRepository<ApplicationRole> rolesRepositories;
         private readonly IdentityContext IdentityDbContext;
         private bool disposed = false;
 
-        public UnitOfWorkIdentity(string connectionString )
+        public UnitOfWorkIdentity(IdentityContext database)
         {
-            var optionsBuilder = new DbContextOptionsBuilder<IdentityContext>();
-            var options = optionsBuilder.UseSqlServer(connectionString).Options;
-            IdentityDbContext = new IdentityContext(options);
-            
+            IdentityDbContext = database;
         }
 
         public IIdentityRepository<ApplicationUser> UsersRepositories
@@ -39,7 +33,8 @@ namespace TaskManagerTLA.DAL.Identity.Repositories
                 return userRepositories;
             }
         }
-        public IIdentityRepository<IdentityRole> RolesRepositories
+
+        public IIdentityRepository<ApplicationRole> RolesRepositories
         {
             get
             {
@@ -48,18 +43,6 @@ namespace TaskManagerTLA.DAL.Identity.Repositories
                     rolesRepositories = new IdentityRoleRepository(IdentityDbContext);
                 }
                 return rolesRepositories;
-            }
-        }
-
-        public IIdentityRepository<IdentityUserRole<string>> UserRolesRepositories
-        {
-            get
-            {
-                if (userRolesRepositories == null)
-                {
-                    userRolesRepositories = new IdentityUserRolesRepository(IdentityDbContext);
-                }
-                return userRolesRepositories;
             }
         }
 
@@ -75,6 +58,7 @@ namespace TaskManagerTLA.DAL.Identity.Repositories
                 disposed = true;
             }
         }
+
         public void Dispose()
         {
             Dispose(true);

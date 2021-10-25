@@ -35,7 +35,7 @@ namespace TaskManagerTLA.DAL.Identity.Interfaces
 
         public IEnumerable<ApplicationUser> GetAllItems()
         {
-            var users = database.Users.Include(c => c.GlobalTasks).Include(c => c.AssignedTasks);//.Include(c=>c.UserRoles);
+            var users = database.Users.Include(c => c.GlobalTasks).Include(c => c.AssignedTasks).Include(c => c.Roles);
             return users;
         }
 

@@ -8,8 +8,7 @@ namespace TaskManagerTLA.BLL.Interfaces
     {
         Task Login(UserDTO loginUser);
         Task Logout();
-        bool CreateUserAndRole(UserDTO newUser);
-        bool CreateUserRole(string userId, string roleId);
+        void CreateUserAndRole(UserDTO newUser);
         void DeleteUser(string userId);
         void UpdateUserRole(string userId, string newRoleId);
         void DeleteRole(string roleId);

@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Identity;
 using System.Linq;
 using TaskManagerTLA.BLL.DTO;
 using TaskManagerTLA.DAL.Entities;
@@ -12,8 +11,7 @@ namespace TaskManagerTLA.BLL.Mapper
     {
         public MappingProfile()
         {
-            //Тут я нарешті розібрався з мапером) я так думаю.
-            CreateMap<IdentityRole, RoleDTO>();
+            CreateMap<ApplicationRole, RoleDTO>();
             CreateMap<ApplicationUser, UserDTO>()
                 .ForMember("Role", opt => opt.MapFrom(c => c.Roles.FirstOrDefault().Name));
             CreateMap<RegisterViewModel, UserDTO>();

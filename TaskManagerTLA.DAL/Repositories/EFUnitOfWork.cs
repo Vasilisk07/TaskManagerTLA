@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using TaskManagerTLA.DAL.EF;
 using TaskManagerTLA.DAL.Entities;
 using TaskManagerTLA.DAL.Interfaces;
@@ -10,18 +7,21 @@ namespace TaskManagerTLA.DAL.Repositories
 {
     public class EFUnitOfWork : IUnitOfWork
     {
-        // TODO відповідно до SOLID краще тут використовувати інтерфейси ITaskRepository, IActualTaskRepository..
+
         // це все має інжектнутись
+
+        // тут я не зрозумів як можна передати репозиторії через залежності
+        // посуті ж  контролювати створеня репозиторыъв має UnitOfWork і надавати їм спільний доступ до бази данних
+        // а якшо я буду їх інжектувати через залежності то вони будуть створюватись і передаватись без участі UnitOfWork
+
         private readonly TaskContext db;
-        private TaskRepositories globalTaskRepositories;
-        private AssignedTaskRepositories assignedTaskRepositories;
+        private IRepository<GlobalTask> globalTaskRepositories;
+        private IRepository<AssignedTask> assignedTaskRepositories;
         private bool disposed = false;
 
-        public EFUnitOfWork(string connectionString)
+        public EFUnitOfWork(TaskContext database)
         {
-            var optionsBuilder = new DbContextOptionsBuilder<TaskContext>();
-            var options = optionsBuilder.UseSqlServer(connectionString).Options;
-            db = new TaskContext(options);
+            db = database;
         }
 
         public IRepository<GlobalTask> GlobalTasks
@@ -34,7 +34,6 @@ namespace TaskManagerTLA.DAL.Repositories
                 }
                 return globalTaskRepositories;
             }
-
         }
 
         public IRepository<AssignedTask> AssignedTasks
@@ -47,7 +46,6 @@ namespace TaskManagerTLA.DAL.Repositories
                 }
                 return assignedTaskRepositories;
             }
-
         }
 
         public virtual void Dispose(bool disposing)
