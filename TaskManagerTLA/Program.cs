@@ -21,6 +21,7 @@ namespace TaskManagerTLA
                 var services = scope.ServiceProvider;
                 try
                 {
+                    // ми точно не хочемо робити це для продакшина, так як при кожному запуску програми база буде очищатись 
                     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
                     var rolesManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
                     await DbInitializer.InitializeAsync(userManager, rolesManager);

@@ -5,6 +5,7 @@ namespace TaskManagerTLA.DAL.Identity.Interfaces
 {
     public interface IIdentityRepository<T> where T : class
     {
+        // все Async
         bool CreateItem(T newItem);
         bool DeleteItem(T Item);
         void DeleteRange(IEnumerable<T> deletedList);

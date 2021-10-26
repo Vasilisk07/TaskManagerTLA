@@ -5,13 +5,13 @@ namespace TaskManagerTLA.Models
     public class LoginViewModel
     {
         [Required]
-        [Display(Name = "Імя користувача")]
+        [Display(Name = "Ім'я користувача")]
         public string UserName { get; set; }
         [Required]
         [DataType(DataType.Password)]
         [Display(Name = "Пароль")]
         public string Password { get; set; }
-        [Display(Name = "Запамятати?")]
+        [Display(Name = "Запам'ятати?")]
         public bool RememberMe { get; set; }
     }
 }

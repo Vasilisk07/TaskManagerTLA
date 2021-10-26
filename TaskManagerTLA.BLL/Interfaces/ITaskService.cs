@@ -5,6 +5,7 @@ namespace TaskManagerTLA.BLL.Interfaces
 {
     public interface ITaskService
     {
+        // ці всі методи можуть бути async, а async це дуже круто, особливо для нас, коли треба чекати на відповідь з бд
         void CreateAssignedTask(string userName, int? taskId);
         void AddGlobalTask(GlobalTaskDTO globalTaskDTO);
         GlobalTaskDTO GetGlobalTask(int? globalTaskId);

@@ -4,6 +4,7 @@ using TaskManagerTLA.DAL.Identity.Entities;
 
 namespace TaskManagerTLA.DAL.Entities
 {
+
     public class GlobalTask
     {
         public int Id { get; set; }

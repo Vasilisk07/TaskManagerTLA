@@ -11,6 +11,9 @@ using TaskManagerTLA.DAL.Identity.Interfaces;
 
 namespace TaskManagerTLA.BLL.Services
 {
+    // цей сервіс робить забагато, треба розділити на AuthService(login, logout), UserService, UserRoleSerivce, RolesService
+    // все що зв'язано з тасками - в TaskService
+    // почитай про SOLID принципи 
     public class IdentityService : IIdentityService
     {
         private IUnitOfWorkIdentity Db { get; }
@@ -29,6 +32,7 @@ namespace TaskManagerTLA.BLL.Services
             var result = await signInManager.PasswordSignInAsync(loginUser.UserName, loginUser.Password, loginUser.RememberMe, false);
             if (!result.Succeeded)
             {
+                // якщо хочеш кинути виключення, можна зробити щось типу InvalidCredentialsException чи LoginException, але точно не MyException
                 throw new MyException("Невірний логін або пароль.");
             }
         }
@@ -56,9 +60,10 @@ namespace TaskManagerTLA.BLL.Services
             };
             newUserDb.PasswordHash = hasher.HashPassword(newUserDb, newUser.Password);
             //присвоюєм юзеру роль "Developer"
-            if (Db.UsersRepositories.CreateItem(newUserDb))
+            //але ж ми можемо вяти роль з newUser
+            if (Db.UsersRepository.CreateItem(newUserDb))
             {
-                ApplicationRole roleDeveloper = Db.RolesRepositories.Find(p => p.Name == "Developer").FirstOrDefault();
+                ApplicationRole roleDeveloper = Db.RolesRepository.Find(p => p.Name == "Developer").FirstOrDefault();
                 newUserDb.Roles.Add(roleDeveloper);
                 Db.Save();
             }
@@ -70,62 +75,64 @@ namespace TaskManagerTLA.BLL.Services
 
         public void DeleteUser(string userId)
         {
-            Db.UsersRepositories.DeleteItem(Db.UsersRepositories.GetAllItems().Where(p => p.Id == userId).FirstOrDefault());
+            Db.UsersRepository.DeleteItem(Db.UsersRepository.GetAllItems().Where(p => p.Id == userId).FirstOrDefault());
             Db.Save();
         }
 
         public void UpdateUserRole(string userId, string newRoleId)
         {
-            ApplicationUser user = Db.UsersRepositories.GetAllItems().Where(p => p.Id == userId).FirstOrDefault();
+            ApplicationUser user = Db.UsersRepository.GetAllItems().Where(p => p.Id == userId).FirstOrDefault();
+            // user.Roles = nw List().Append(Db.RolesRepositories.Find(p => p.Id == newRoleId).FirstOrDefault());
             user.Roles.RemoveRange(0, user.Roles.Count - 1);
-            user.Roles.Add(Db.RolesRepositories.Find(p => p.Id == newRoleId).FirstOrDefault());
+            user.Roles.Add(Db.RolesRepository.Find(p => p.Id == newRoleId).FirstOrDefault());
             Db.Save();
         }
 
 
         public void DeleteRole(string roleId)
         {
-            var DeletedItem = Db.RolesRepositories.Find(p => p.Id == roleId).GetEnumerator().Current;
+            // добав в RolesRepositories метод DeleteById(..) 
+            var DeletedItem = Db.RolesRepository.Find(p => p.Id == roleId).GetEnumerator().Current;
             if (DeletedItem != null)
             {
-                Db.RolesRepositories.DeleteItem(DeletedItem);
+                Db.RolesRepository.DeleteItem(DeletedItem);
                 Db.Save();
             }
         }
 
         public void CreateRole(string newRoleName)
         {
-            Db.RolesRepositories.CreateItem(new ApplicationRole(newRoleName));
+            Db.RolesRepository.CreateItem(new ApplicationRole(newRoleName));
             Db.Save();
         }
 
         public IEnumerable<RoleDTO> GetUserRoleName(string userId)
         {
-            var userRolesList = Db.UsersRepositories.GetAllItems().Where(p => p.Id == userId).FirstOrDefault().UserRoles;
+            var userRolesList = Db.UsersRepository.GetAllItems().Where(p => p.Id == userId).FirstOrDefault().UserRoles;
             return mapper.Map<IEnumerable<RoleDTO>>(userRolesList);
         }
 
         public IEnumerable<RoleDTO> GetRoles()
         {
-            IEnumerable<ApplicationRole> rolesDb = Db.RolesRepositories.GetAllItems();
+            IEnumerable<ApplicationRole> rolesDb = Db.RolesRepository.GetAllItems();
             return mapper.Map<IEnumerable<ApplicationRole>, List<RoleDTO>>(rolesDb);
         }
 
         public UserDTO GetUserById(string userId)
         {
-            var user = mapper.Map<UserDTO>(Db.UsersRepositories.GetItem(userId));
+            var user = mapper.Map<UserDTO>(Db.UsersRepository.GetItem(userId));
             return user;
         }
 
         public UserDTO GetUserByName(string userName)
         {
-            ApplicationUser returnedUser = Db.UsersRepositories.Find(p => p.UserName == userName).FirstOrDefault();
+            ApplicationUser returnedUser = Db.UsersRepository.Find(p => p.UserName == userName).FirstOrDefault();
             var user = mapper.Map<UserDTO>(returnedUser);
             return user;
         }
         public IEnumerable<UserDTO> GetUsersWhoAreNotAssignedTask(int? globalTaskId)
         {
-            var allUsers = Db.UsersRepositories.GetAllItems().ToList();
+            var allUsers = Db.UsersRepository.GetAllItems().ToList();
             var busyUsers = allUsers.Where(p => p.GlobalTasks.Any(c => c.Id == globalTaskId));
             var freeUsers = allUsers.Except(busyUsers);
             freeUsers = freeUsers.Where(p => p.Roles.Any(c => c.Name == "Developer"));
@@ -134,7 +141,7 @@ namespace TaskManagerTLA.BLL.Services
 
         public IEnumerable<UserDTO> GetUsers()
         {
-            var users = Db.UsersRepositories.GetAllItems().ToList();
+            var users = Db.UsersRepository.GetAllItems().ToList();
             return mapper.Map<IEnumerable<ApplicationUser>, List<UserDTO>>(users);
         }
     }

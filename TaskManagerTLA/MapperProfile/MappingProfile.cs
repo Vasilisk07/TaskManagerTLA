@@ -13,7 +13,7 @@ namespace TaskManagerTLA.BLL.Mapper
         {
             CreateMap<ApplicationRole, RoleDTO>();
             CreateMap<ApplicationUser, UserDTO>()
-                .ForMember("Role", opt => opt.MapFrom(c => c.Roles.FirstOrDefault().Name));
+                .ForMember(_=>_.Role, opt => opt.MapFrom(c => c.Roles.FirstOrDefault().Name)); // через експрешн _=>_.Role безпечніше
             CreateMap<RegisterViewModel, UserDTO>();
             CreateMap<UserDTO, UserViewModel>();
             CreateMap<LoginViewModel, UserDTO>();

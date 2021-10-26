@@ -4,6 +4,7 @@ using System.Text;
 
 namespace TaskManagerTLA.DAL.Interfaces
 {
+    // нічим не відрізняється від IIdentityRepository, може їх не треба два? Або наслдіувати IIdentityRepository від IRepository
     public interface IRepository<T> where T : class
     {
         IEnumerable<T> GetAll();

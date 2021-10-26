@@ -9,10 +9,10 @@ using TaskManagerTLA.DAL.Interfaces;
 
 namespace TaskManagerTLA.DAL.Repositories
 {
-    class TaskRepositories : IRepository<GlobalTask>
+    class TaskRepository : IRepository<GlobalTask>
     {
         private readonly TaskContext db;
-        public TaskRepositories(TaskContext context)
+        public TaskRepository(TaskContext context)
         {
             this.db = context;
         }

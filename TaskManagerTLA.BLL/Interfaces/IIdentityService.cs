@@ -6,6 +6,7 @@ namespace TaskManagerTLA.BLL.Interfaces
 {
     public interface IIdentityService
     {
+        // ці всі методи можуть бути async, а async це дуже круто, особливо для нас, коли треба чекати на відповідь з бд
         Task Login(UserDTO loginUser);
         Task Logout();
         void CreateUserAndRole(UserDTO newUser);

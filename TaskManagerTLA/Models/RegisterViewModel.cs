@@ -4,8 +4,8 @@ namespace TaskManagerTLA.Models
 {
     public class RegisterViewModel
     {
-        [Required(ErrorMessage = "Вкажіть імя користувача")]
-        [Display(Name = "Имя користувача")]
+        [Required(ErrorMessage = "Вкажіть ім'я користувача")]
+        [Display(Name = "Ім'я користувача")]
         public string UserName { get; set; }
         [Required(ErrorMessage = "Вкажіть Email адресу")]
         [Display(Name = "Email адреса")]

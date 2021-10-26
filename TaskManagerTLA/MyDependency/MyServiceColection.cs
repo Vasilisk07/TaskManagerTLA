@@ -13,6 +13,8 @@ using TaskManagerTLA.DAL.Repositories;
 
 namespace TaskManagerTLA.MyDependency
 {
+    // ідея хороша, назва класу і методу не дуже)
+    // розділити метод на кілька в залежності від зони їх відповідальності: бд, ef, tasks, mapping
     public static class MyServiceColection
     {
         public static IServiceCollection AddMyService(this IServiceCollection services, IConfiguration configuration)

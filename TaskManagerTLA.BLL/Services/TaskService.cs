@@ -10,6 +10,7 @@ using TaskManagerTLA.DAL.Interfaces;
 
 namespace TaskManagerTLA.BLL.Services
 {
+    // розділити на TaskService, GlobalTaskService
     public class TaskService : ITaskService
     {
         private readonly IUnitOfWork dataBase;
@@ -91,7 +92,8 @@ namespace TaskManagerTLA.BLL.Services
             //в данній реалізації видаляю саме присвоєну певному юзеру таску з основної
             //щоб не тягнути сюди ще і IdentityService
             if (globalTaskId == null && userId == null) throw new MyException("Не дійсне значення");
-            var globalTask = dataBase.GlobalTasks.GetAll().Where(p => p.Id == globalTaskId).FirstOrDefault();
+            var globalTask = dataBase.GlobalTasks.Find(p => p.Id == globalTaskId).FirstOrDefault();
+            // це просить методу в globalTask
             globalTask.AssignedTasks.Remove(globalTask.AssignedTasks.Where(p => p.UserId == userId).FirstOrDefault());
             dataBase.Save();
         }

@@ -12,6 +12,7 @@ namespace TaskManagerTLA.Controllers
 {
     public class TaskController : Controller
     {
+        // taskService => TaskService; - з маленької щащвиай пишуть лише аргументи функцій і локальні змінні https://docs.microsoft.com/ru-ru/dotnet/csharp/fundamentals/coding-style/coding-conventions
         private readonly ITaskService taskService;
         private readonly IIdentityService identityService;
         private readonly IMapper mapper;
@@ -35,6 +36,7 @@ namespace TaskManagerTLA.Controllers
         public IActionResult CreateTask(GlobalTaskViewModel taskVievModel)
         {
             var taskDTO = mapper.Map<GlobalTaskDTO>(taskVievModel);
+            // async
             taskService.AddGlobalTask(taskDTO);
             return RedirectToAction("TaskList", "Task");
         }
@@ -51,6 +53,7 @@ namespace TaskManagerTLA.Controllers
         {
             try
             {
+                // async
                 taskService.DeleteGlobalTask(globalTaskId);
                 return RedirectToAction("TaskList", "Task");
             }
@@ -67,6 +70,7 @@ namespace TaskManagerTLA.Controllers
             try
             {
                 var selectedTeams = mapper.Map<IEnumerable<AssignedTaskDTO>, List<AssignedTaskViewModel>>(taskService.GetAssignedTasksByGlobalTaskId(globalTaskId));
+                // async
                 ViewBag.TaskName = taskService.GetGlobalTask(globalTaskId).Name;
                 ViewBag.globalTaskId = globalTaskId;
                 return View(selectedTeams);
@@ -87,6 +91,7 @@ namespace TaskManagerTLA.Controllers
                 IEnumerable<UserDTO> usersDTO = identityService.GetUsersWhoAreNotAssignedTask(globalTaskId);
                 var usersModel = mapper.Map<IEnumerable<UserDTO>, List<UserViewModel>>(usersDTO);
                 ViewBag.globalTaskId = globalTaskId;
+                // async
                 ViewBag.TaskName = taskService.GetGlobalTask(globalTaskId).Name;
                 return View(usersModel);
             }
@@ -103,6 +108,7 @@ namespace TaskManagerTLA.Controllers
         {
             try
             {
+                // async
                 taskService.CreateAssignedTask(userId, globalTaskId);
                 return RedirectToAction("DetailAboutTask", new { globalTaskId });
             }
@@ -118,6 +124,7 @@ namespace TaskManagerTLA.Controllers
         {
             try
             {
+                // async
                 taskService.DeleteAssignedTask(userId, globalTaskId);
                 return RedirectToAction("DetailAboutTask", new { globalTaskId });
             }
@@ -131,6 +138,7 @@ namespace TaskManagerTLA.Controllers
         [Authorize(Roles = "Admin, Manager, Developer")]
         public IActionResult ShowAssignedTaskCurrentUser()
         {
+                // async
             var personalTasksDTOList = taskService.GetAssignedTasksByUserName(User.Identity.Name).ToList();
             var personalTasksViewList = mapper.Map<IEnumerable<AssignedTaskDTO>, List<AssignedTaskViewModel>>(personalTasksDTOList);
             return View(personalTasksViewList);
@@ -142,6 +150,7 @@ namespace TaskManagerTLA.Controllers
         {
             try
             {
+                // async
                 ViewBag.TaskName = taskService.GetGlobalTask(globalTaskId).Name;
                 return View(new EditAssignedTaskViewModel { UserId = userId, GlobalTaskId = globalTaskId.Value });
             }
@@ -154,9 +163,11 @@ namespace TaskManagerTLA.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin, Manager, Developer")]
-        public IActionResult EnterDataIntoAssignedTask(EditAssignedTaskViewModel EditModel)
+        public IActionResult EnterDataIntoAssignedTask(EditAssignedTaskViewModel EditModel) // краще назвати UpdateAssignedTask
         {
+            // async
             taskService.UpdateDescription(EditModel.UserId, EditModel.GlobalTaskId, EditModel.Description);
+                // async
             taskService.UpdateElapsedTime(EditModel.UserId, EditModel.GlobalTaskId, EditModel.SpentHours);
             return RedirectToAction("ShowAssignedTaskCurrentUser", "Task");
         }

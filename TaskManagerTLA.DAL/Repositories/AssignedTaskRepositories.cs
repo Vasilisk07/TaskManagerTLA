@@ -8,11 +8,11 @@ using TaskManagerTLA.DAL.Interfaces;
 
 namespace TaskManagerTLA.DAL.Repositories
 {
-    class AssignedTaskRepositories : IRepository<AssignedTask>
+    class AssignedTaskRepository : IRepository<AssignedTask>
     {
         private readonly TaskContext db;
 
-        public AssignedTaskRepositories(TaskContext context)
+        public AssignedTaskRepository(TaskContext context)
         {
             this.db = context;
         }

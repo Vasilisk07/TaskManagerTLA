@@ -7,6 +7,8 @@ namespace TaskManagerTLA.BLL.InitializeDb
 {
     public class DbInitializer
     {
+        // це ніколи не повиноо запускатись, інакше можемо поламати данні в бд
+        // хіба що лакально для development оточення
         public static async Task InitializeAsync(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
         {
             if (await roleManager.FindByNameAsync("Admin") == null)

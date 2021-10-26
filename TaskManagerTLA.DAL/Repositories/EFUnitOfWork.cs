@@ -30,7 +30,7 @@ namespace TaskManagerTLA.DAL.Repositories
             {
                 if (globalTaskRepositories == null)
                 {
-                    globalTaskRepositories = new TaskRepositories(db);
+                    globalTaskRepositories = new TaskRepository(db);
                 }
                 return globalTaskRepositories;
             }
@@ -42,7 +42,7 @@ namespace TaskManagerTLA.DAL.Repositories
             {
                 if (assignedTaskRepositories == null)
                 {
-                    assignedTaskRepositories = new AssignedTaskRepositories(db);
+                    assignedTaskRepositories = new AssignedTaskRepository(db);
                 }
                 return assignedTaskRepositories;
             }

@@ -6,7 +6,9 @@ using TaskManagerTLA.DAL.Identity.Entities;
 
 namespace TaskManagerTLA.DAL.EF
 {
-    public class IdentityContext : IdentityDbContext<ApplicationUser, ApplicationRole, string, IdentityUserClaim<string>, ApplicationUserRole, IdentityUserLogin<string>, IdentityRoleClaim<string>, IdentityUserToken<string>>
+    public class IdentityContext : IdentityDbContext<ApplicationUser, ApplicationRole, string, 
+        IdentityUserClaim<string>, ApplicationUserRole, IdentityUserLogin<string>,
+        IdentityRoleClaim<string>, IdentityUserToken<string>>
     {
         public IdentityContext(DbContextOptions<IdentityContext> options) : base(options)
         {

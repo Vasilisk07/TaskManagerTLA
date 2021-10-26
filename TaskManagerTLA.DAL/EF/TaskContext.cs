@@ -19,25 +19,28 @@ namespace TaskManagerTLA.DAL.EF
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            // венеси в екстенш
             modelBuilder.Entity<ApplicationUser>().ToTable("AspNetUsers");
             modelBuilder.Entity<ApplicationUser>()
-                 .HasMany(u => u.Roles)
-                 .WithMany(s => s.Users)
-                 .UsingEntity<ApplicationUserRole>(
-            j => j
-                 .HasOne(pt => pt.Role)
-                 .WithMany(t => t.UserRoles)
-                 .HasForeignKey(pt => pt.RoleId),
-            j => j
-                 .HasOne(pt => pt.User)
-                 .WithMany(t => t.UserRoles)
-                 .HasForeignKey(pt => pt.UserId),
-            j =>
-            {
-                j.HasKey(t => new { t.RoleId, t.UserId });
-                j.ToTable("AspNetUserRoles");
-            });
+                   .HasMany(u => u.Roles)
+                   .WithMany(s => s.Users)
+                   .UsingEntity<ApplicationUserRole>(
+              j => j
+                   .HasOne(pt => pt.Role)
+                   .WithMany(t => t.UserRoles)
+                   .HasForeignKey(pt => pt.RoleId),
+              j => j
+                   .HasOne(pt => pt.User)
+                   .WithMany(t => t.UserRoles)
+                   .HasForeignKey(pt => pt.UserId),
+              j =>
+              {
+                  j.HasKey(t => new { t.RoleId, t.UserId });
+                  j.ToTable("AspNetUserRoles");
+              });
 
+            // венеси в екстенш
             modelBuilder.Entity<GlobalTask>()
                   .HasMany(u => u.Users)
                   .WithMany(s => s.GlobalTasks)
@@ -58,7 +61,6 @@ namespace TaskManagerTLA.DAL.EF
                  j.ToTable("AssignedTask");
 
              });
-            
         }
     }
 }

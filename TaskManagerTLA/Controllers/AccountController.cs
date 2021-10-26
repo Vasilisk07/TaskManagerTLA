@@ -33,6 +33,7 @@ namespace TaskManagerTLA.Controllers
             UserDTO userDTO = mapper.Map<UserDTO>(model);
             try
             {
+                // бажано зробити цей виклик async
                 identityService.CreateUserAndRole(userDTO);
             }
             catch (MyException ex)
@@ -58,6 +59,8 @@ namespace TaskManagerTLA.Controllers
             UserDTO loginUser = mapper.Map<UserDTO>(model);
             try
             {
+                // асинхронні методи повинні закінчуватись на Async => LoginAsync()
+                //
                 await identityService.Login(loginUser);
             }
             catch (MyException ex)
@@ -73,6 +76,7 @@ namespace TaskManagerTLA.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
+            // асинхронні методи повинні закінчуватись на Async
             await identityService.Logout();
             return RedirectToAction("Index", "Home");
         }
@@ -88,6 +92,7 @@ namespace TaskManagerTLA.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult DeleteUser(string userId)
         {
+            // може бути async
             identityService.DeleteUser(userId);
             return RedirectToAction("ListUser", "Account");
         }
@@ -103,6 +108,7 @@ namespace TaskManagerTLA.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult ChangeRole(string userId, string roleId)
         {
+            // може бути async
             identityService.UpdateUserRole(userId, roleId);
             return RedirectToAction("ListUser", "Account");
         }

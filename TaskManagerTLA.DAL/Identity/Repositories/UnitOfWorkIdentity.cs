@@ -12,6 +12,10 @@ namespace TaskManagerTLA.DAL.Identity.Repositories
         // тут я не зрозумів як можна передати репозиторії через залежності
         // посуті ж  контролювати створеня репозиторыъв має UnitOfWork і надавати їм спільний доступ до бази данних
         // а якшо я буду їх інжектувати через залежності то вони будуть створюватись і передаватись без участі UnitOfWork
+
+        // зараз ти всоедно береш IdentityContext з DI, тому еквівалентно можна зробити щось таке:
+        //      services.AddTransient<IIdentityRepository<ApplicationUser>, IdentityUserRepository>>();
+        // по замовчуванню DbContext налаштований як Scoped, тобто один dbContext на весь реквест
         private IIdentityRepository<ApplicationUser> userRepositories;
         private IIdentityRepository<ApplicationRole> rolesRepositories;
         private readonly IdentityContext IdentityDbContext;
@@ -22,7 +26,7 @@ namespace TaskManagerTLA.DAL.Identity.Repositories
             IdentityDbContext = database;
         }
 
-        public IIdentityRepository<ApplicationUser> UsersRepositories
+        public IIdentityRepository<ApplicationUser> UsersRepository
         {
             get
             {
@@ -34,7 +38,7 @@ namespace TaskManagerTLA.DAL.Identity.Repositories
             }
         }
 
-        public IIdentityRepository<ApplicationRole> RolesRepositories
+        public IIdentityRepository<ApplicationRole> RolesRepository
         {
             get
             {
