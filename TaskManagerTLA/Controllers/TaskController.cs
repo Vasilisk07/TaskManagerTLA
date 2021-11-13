@@ -5,22 +5,25 @@ using System.Collections.Generic;
 using System.Linq;
 using TaskManagerTLA.BLL.DTO;
 using TaskManagerTLA.BLL.Exeption;
-using TaskManagerTLA.BLL.Interfaces;
+using TaskManagerTLA.BLL.Services.IdentityService.Interfaces;
+using TaskManagerTLA.BLL.Services.TaskService.Interfaces;
 using TaskManagerTLA.Models;
 
 namespace TaskManagerTLA.Controllers
 {
     public class TaskController : Controller
     {
-        // taskService => TaskService; - з маленької щащвиай пишуть лише аргументи функцій і локальні змінні https://docs.microsoft.com/ru-ru/dotnet/csharp/fundamentals/coding-style/coding-conventions
-        private readonly ITaskService taskService;
-        private readonly IIdentityService identityService;
+        //! taskService => TaskService; - з маленької щащвиай пишуть лише аргументи функцій і локальні змінні https://docs.microsoft.com/ru-ru/dotnet/csharp/fundamentals/coding-style/coding-conventions
+        private readonly IGlobalTaskService GlobalTaskaskService;
+        private readonly IAssignedTaskService AssignedTaskService;
+        private readonly IUserService UserService;
         private readonly IMapper mapper;
 
-        public TaskController(IIdentityService identityService, ITaskService taskService, IMapper mapper)
+        public TaskController(IGlobalTaskService globalTaskService, IAssignedTaskService assignedTaskService,IUserService userService, IMapper mapper)
         {
-            this.identityService = identityService;
-            this.taskService = taskService;
+            GlobalTaskaskService = globalTaskService;
+            AssignedTaskService = assignedTaskService;
+            UserService = userService;
             this.mapper = mapper;
         }
 
@@ -37,14 +40,14 @@ namespace TaskManagerTLA.Controllers
         {
             var taskDTO = mapper.Map<GlobalTaskDTO>(taskVievModel);
             // async
-            taskService.AddGlobalTask(taskDTO);
+            GlobalTaskaskService.AddGlobalTask(taskDTO);
             return RedirectToAction("TaskList", "Task");
         }
 
         [Authorize(Roles = "Admin, Manager")]
         public IActionResult TaskList()
         {
-            var tasks = mapper.Map<IEnumerable<GlobalTaskDTO>, List<GlobalTaskViewModel>>(taskService.GetGlobalTasks());
+            var tasks = mapper.Map<IEnumerable<GlobalTaskDTO>, List<GlobalTaskViewModel>>(GlobalTaskaskService.GetGlobalTasks());
             return View(tasks);
         }
 
@@ -54,10 +57,10 @@ namespace TaskManagerTLA.Controllers
             try
             {
                 // async
-                taskService.DeleteGlobalTask(globalTaskId);
+                GlobalTaskaskService.DeleteGlobalTask(globalTaskId);
                 return RedirectToAction("TaskList", "Task");
             }
-            catch (MyException ex)
+            catch (ServiceException ex)
             {
                 ModelState.AddModelError("", ex.Message);
                 return View();
@@ -69,13 +72,13 @@ namespace TaskManagerTLA.Controllers
         {
             try
             {
-                var selectedTeams = mapper.Map<IEnumerable<AssignedTaskDTO>, List<AssignedTaskViewModel>>(taskService.GetAssignedTasksByGlobalTaskId(globalTaskId));
+                var selectedTeams = mapper.Map<IEnumerable<AssignedTaskDTO>, List<AssignedTaskViewModel>>(GlobalTaskaskService.GetAssignedTasksByGlobalTaskId(globalTaskId));
                 // async
-                ViewBag.TaskName = taskService.GetGlobalTask(globalTaskId).Name;
+                ViewBag.TaskName = GlobalTaskaskService.GetGlobalTask(globalTaskId).Name;
                 ViewBag.globalTaskId = globalTaskId;
                 return View(selectedTeams);
             }
-            catch (MyException ex)
+            catch (ServiceException ex)
             {
                 ModelState.AddModelError("", ex.Message);
                 return View();
@@ -88,14 +91,14 @@ namespace TaskManagerTLA.Controllers
         {
             try
             {
-                IEnumerable<UserDTO> usersDTO = identityService.GetUsersWhoAreNotAssignedTask(globalTaskId);
+                IEnumerable<UserDTO> usersDTO = UserService.GetUsersWhoAreNotAssignedTask(globalTaskId);
                 var usersModel = mapper.Map<IEnumerable<UserDTO>, List<UserViewModel>>(usersDTO);
                 ViewBag.globalTaskId = globalTaskId;
                 // async
-                ViewBag.TaskName = taskService.GetGlobalTask(globalTaskId).Name;
+                ViewBag.TaskName = GlobalTaskaskService.GetGlobalTask(globalTaskId).Name;
                 return View(usersModel);
             }
-            catch (MyException ex)
+            catch (ServiceException ex)
             {
                 ModelState.AddModelError("", ex.Message);
                 return View();
@@ -109,10 +112,10 @@ namespace TaskManagerTLA.Controllers
             try
             {
                 // async
-                taskService.CreateAssignedTask(userId, globalTaskId);
+                AssignedTaskService.CreateAssignedTask(userId, globalTaskId);
                 return RedirectToAction("DetailAboutTask", new { globalTaskId });
             }
-            catch (MyException ex)
+            catch (ServiceException ex)
             {
                 ModelState.AddModelError("", ex.Message);
                 return View();
@@ -125,10 +128,10 @@ namespace TaskManagerTLA.Controllers
             try
             {
                 // async
-                taskService.DeleteAssignedTask(userId, globalTaskId);
+                AssignedTaskService.DeleteAssignedTask(userId, globalTaskId);
                 return RedirectToAction("DetailAboutTask", new { globalTaskId });
             }
-            catch (MyException ex)
+            catch (ServiceException ex)
             {
                 ModelState.AddModelError("", ex.Message);
                 return View();
@@ -139,7 +142,7 @@ namespace TaskManagerTLA.Controllers
         public IActionResult ShowAssignedTaskCurrentUser()
         {
                 // async
-            var personalTasksDTOList = taskService.GetAssignedTasksByUserName(User.Identity.Name).ToList();
+            var personalTasksDTOList = AssignedTaskService.GetAssignedTasksByUserName(User.Identity.Name).ToList();
             var personalTasksViewList = mapper.Map<IEnumerable<AssignedTaskDTO>, List<AssignedTaskViewModel>>(personalTasksDTOList);
             return View(personalTasksViewList);
         }
@@ -151,10 +154,10 @@ namespace TaskManagerTLA.Controllers
             try
             {
                 // async
-                ViewBag.TaskName = taskService.GetGlobalTask(globalTaskId).Name;
+                ViewBag.TaskName = GlobalTaskaskService.GetGlobalTask(globalTaskId).Name;
                 return View(new EditAssignedTaskViewModel { UserId = userId, GlobalTaskId = globalTaskId.Value });
             }
-            catch (MyException ex)
+            catch (ServiceException ex)
             {
                 ModelState.AddModelError("", ex.Message);
                 return View();
@@ -166,9 +169,11 @@ namespace TaskManagerTLA.Controllers
         public IActionResult EnterDataIntoAssignedTask(EditAssignedTaskViewModel EditModel) // краще назвати UpdateAssignedTask
         {
             // async
-            taskService.UpdateDescription(EditModel.UserId, EditModel.GlobalTaskId, EditModel.Description);
-                // async
-            taskService.UpdateElapsedTime(EditModel.UserId, EditModel.GlobalTaskId, EditModel.SpentHours);
+            AssignedTaskService.UpdateDescription(EditModel.UserId, EditModel.GlobalTaskId, EditModel.Description);
+            // async
+            AssignedTaskService.UpdateElapsedTimeAssignedTask(EditModel.UserId, EditModel.GlobalTaskId, EditModel.SpentHours);
+            GlobalTaskaskService.UpdateElapsedTimeGlobalTask(EditModel.GlobalTaskId, EditModel.SpentHours);
+
             return RedirectToAction("ShowAssignedTaskCurrentUser", "Task");
         }
     }
