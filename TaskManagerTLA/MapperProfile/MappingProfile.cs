@@ -13,7 +13,7 @@ namespace TaskManagerTLA.BLL.Mapper
         {
             CreateMap<ApplicationRole, RoleDTO>();
             CreateMap<ApplicationUser, UserDTO>()
-                .ForMember(_=>_.Role, opt => opt.MapFrom(c => c.Roles.FirstOrDefault().Name)); 
+                .ForMember(_ => _.Role, opt => opt.MapFrom(c => c.Roles.FirstOrDefault().Name));
             CreateMap<RegisterViewModel, UserDTO>();
             CreateMap<UserDTO, UserViewModel>();
             CreateMap<LoginViewModel, UserDTO>();
@@ -21,8 +21,8 @@ namespace TaskManagerTLA.BLL.Mapper
             CreateMap<GlobalTaskViewModel, GlobalTaskDTO>();
             CreateMap<GlobalTaskDTO, GlobalTaskViewModel>();
             CreateMap<AssignedTask, AssignedTaskDTO>()
-                .ForMember(_=>_.GlobalTaskName, opt => opt.MapFrom(c => c.GlobalTask.Name))
-                .ForMember(_=>_.UserName, opt => opt.MapFrom(c => c.User.UserName));
+                .ForMember(_ => _.GlobalTaskName, opt => opt.MapFrom(c => c.GlobalTask.Name))
+                .ForMember(_ => _.UserName, opt => opt.MapFrom(c => c.User.UserName));
             CreateMap<GlobalTask, GlobalTaskDTO>();
             CreateMap<GlobalTaskDTO, GlobalTask>();
             CreateMap<AssignedTaskDTO, AssignedTask>();

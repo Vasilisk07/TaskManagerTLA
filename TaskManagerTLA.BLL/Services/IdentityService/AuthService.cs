@@ -11,7 +11,7 @@ namespace TaskManagerTLA.BLL.Services.IdentityService
     {
         private readonly SignInManager<ApplicationUser> signInManager;
 
-        public AuthService( SignInManager<ApplicationUser> signInManager)
+        public AuthService(SignInManager<ApplicationUser> signInManager)
         {
             this.signInManager = signInManager;
         }

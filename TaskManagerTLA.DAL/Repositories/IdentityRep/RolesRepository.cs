@@ -21,7 +21,7 @@ namespace TaskManagerTLA.DAL.Repositories.IdentityRep
 
         public async Task<bool> CreateItemAsync(ApplicationRole newItem)
         {
-            return await Task.Run(() => 
+            return await Task.Run(() =>
             {
                 var res = dataBase.Roles.Add(newItem);
                 return res.State == EntityState.Added;
@@ -30,7 +30,7 @@ namespace TaskManagerTLA.DAL.Repositories.IdentityRep
 
         public async Task<bool> DeleteItemAsync(ApplicationRole item)
         {
-            return await Task.Run(() => 
+            return await Task.Run(() =>
             {
                 if (item != null)
                 {
@@ -43,7 +43,7 @@ namespace TaskManagerTLA.DAL.Repositories.IdentityRep
 
         public async Task<bool> DeleteItemByIdAsync(string ItemId)
         {
-            return await Task.Run(() => 
+            return await Task.Run(() =>
             {
                 var item = dataBase.Roles.Find(ItemId);
                 if (item != null)
@@ -57,7 +57,7 @@ namespace TaskManagerTLA.DAL.Repositories.IdentityRep
 
         public async Task DeleteRangeAsync(IEnumerable<ApplicationRole> deletedList)
         {
-            await Task.Run(() => 
+            await Task.Run(() =>
             {
                 dataBase.Roles.RemoveRange(deletedList);
             });
@@ -65,7 +65,7 @@ namespace TaskManagerTLA.DAL.Repositories.IdentityRep
 
         public async Task<IEnumerable<ApplicationRole>> GetAllItemsAsync()
         {
-            return await Task.Run(() => 
+            return await Task.Run(() =>
             {
                 return dataBase.Roles.Include(p => p.Users);
             });
@@ -73,7 +73,7 @@ namespace TaskManagerTLA.DAL.Repositories.IdentityRep
 
         public async Task<ApplicationRole> GetItemByIdAsync(string itemId)
         {
-            return await Task.Run(() => 
+            return await Task.Run(() =>
             {
                 return dataBase.Roles.Find(itemId);
             });
@@ -81,7 +81,7 @@ namespace TaskManagerTLA.DAL.Repositories.IdentityRep
 
         public async Task<IEnumerable<ApplicationRole>> FindAsync(Func<ApplicationRole, Boolean> predicate)
         {
-            return await Task.Run(() => 
+            return await Task.Run(() =>
             {
                 return dataBase.Roles.Where(predicate);
             });
@@ -89,7 +89,7 @@ namespace TaskManagerTLA.DAL.Repositories.IdentityRep
 
         public async Task UpdateItemAsunc(ApplicationRole item)
         {
-            await Task.Run(() => 
+            await Task.Run(() =>
             {
                 dataBase.Roles.Update(item);
             });

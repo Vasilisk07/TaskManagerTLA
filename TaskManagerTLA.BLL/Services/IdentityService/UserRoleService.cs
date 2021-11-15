@@ -29,7 +29,7 @@ namespace TaskManagerTLA.BLL.Services.IdentityService
         public async Task UpdateUserRoleAsync(string userId, string roleId)
         {
             var user = (await DataBase.Users.GetAllItemsAsync()).Where(p => p.Id == userId).FirstOrDefault();
-            var newRoles = new List<ApplicationUserRole>(); 
+            var newRoles = new List<ApplicationUserRole>();
             newRoles.Add(new ApplicationUserRole { UserId = userId, RoleId = roleId });
             user.UserRoles = newRoles;
             await DataBase.Users.SaveAsync();

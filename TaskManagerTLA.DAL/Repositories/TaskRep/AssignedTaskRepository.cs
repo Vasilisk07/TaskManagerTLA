@@ -20,7 +20,7 @@ namespace TaskManagerTLA.DAL.Repositories.TaskRep
 
         public async Task<IEnumerable<AssignedTask>> GetAllItemsAsync()
         {
-            return await Task.Run(() => 
+            return await Task.Run(() =>
             {
                 return dataBase.AssignedTask.Include(c => c.GlobalTask).Include(c => c.User);
             });
@@ -28,7 +28,7 @@ namespace TaskManagerTLA.DAL.Repositories.TaskRep
 
         public async Task<AssignedTask> GetItemByIdAsync(int id)
         {
-            return await Task.Run(() => 
+            return await Task.Run(() =>
             {
                 return dataBase.AssignedTask.Find(id);
             });
@@ -36,7 +36,7 @@ namespace TaskManagerTLA.DAL.Repositories.TaskRep
 
         public async Task<bool> CreateItemAsync(AssignedTask newItem)
         {
-            return await Task.Run(() => 
+            return await Task.Run(() =>
             {
                 var res = dataBase.AssignedTask.Add(newItem);
                 return res.State == EntityState.Added;
@@ -45,7 +45,7 @@ namespace TaskManagerTLA.DAL.Repositories.TaskRep
 
         public async Task UpdateItemAsunc(AssignedTask item)
         {
-            await Task.Run(() => 
+            await Task.Run(() =>
             {
                 dataBase.Entry(item).State = EntityState.Modified;
             });
@@ -53,7 +53,7 @@ namespace TaskManagerTLA.DAL.Repositories.TaskRep
 
         public async Task<IEnumerable<AssignedTask>> FindAsync(Func<AssignedTask, Boolean> predicate)
         {
-            return await Task.Run(() => 
+            return await Task.Run(() =>
             {
                 return dataBase.AssignedTask.Where(predicate);
             });
@@ -61,7 +61,7 @@ namespace TaskManagerTLA.DAL.Repositories.TaskRep
 
         public async Task<bool> DeleteItemAsync(AssignedTask item)
         {
-            return await Task.Run(() => 
+            return await Task.Run(() =>
             {
                 if (item != null)
                 {
@@ -74,7 +74,7 @@ namespace TaskManagerTLA.DAL.Repositories.TaskRep
 
         public async Task<bool> DeleteItemByIdAsync(int id)
         {
-            return await Task.Run(() => 
+            return await Task.Run(() =>
             {
                 var item = dataBase.AssignedTask.Find(id);
                 if (item != null)
@@ -88,7 +88,7 @@ namespace TaskManagerTLA.DAL.Repositories.TaskRep
 
         public async Task DeleteRangeAsync(IEnumerable<AssignedTask> deletedList)
         {
-            await Task.Run(() => 
+            await Task.Run(() =>
             {
                 dataBase.AssignedTask.RemoveRange(deletedList);
             });
@@ -96,7 +96,7 @@ namespace TaskManagerTLA.DAL.Repositories.TaskRep
 
         public async Task SaveAsync()
         {
-           await dataBase.SaveChangesAsync();
+            await dataBase.SaveChangesAsync();
         }
     }
 }

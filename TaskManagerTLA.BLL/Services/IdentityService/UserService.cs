@@ -52,8 +52,8 @@ namespace TaskManagerTLA.BLL.Services.IdentityService
 
         public async Task DeleteUserAsync(string userId)
         {
-           await DataBase.Users.DeleteItemByIdAsync(userId);
-           await DataBase.Users.SaveAsync();
+            await DataBase.Users.DeleteItemByIdAsync(userId);
+            await DataBase.Users.SaveAsync();
         }
 
         public async Task<UserDTO> GetUserByIdAsync(string userId)
@@ -80,7 +80,7 @@ namespace TaskManagerTLA.BLL.Services.IdentityService
             return mapper.Map<IEnumerable<ApplicationUser>, List<UserDTO>>(freeUsers);
         }
 
-        public async Task< IEnumerable<UserDTO>> GetUsersAsync()
+        public async Task<IEnumerable<UserDTO>> GetUsersAsync()
         {
             var users = (await DataBase.Users.GetAllItemsAsync()).ToList();
             return mapper.Map<IEnumerable<ApplicationUser>, List<UserDTO>>(users);

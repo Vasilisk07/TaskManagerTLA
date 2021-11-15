@@ -21,7 +21,7 @@ namespace TaskManagerTLA.BLL.Services.IdentityService
 
         public async Task<RoleDTO> GetRoleByNameAsync(string roleName)
         {
-            return await Task.Run(async() =>
+            return await Task.Run(async () =>
             {
                 var roleDbList = await DataBase.Roles.FindAsync(p => p.Name == roleName);
                 var roleDb = roleDbList.FirstOrDefault();
@@ -32,8 +32,8 @@ namespace TaskManagerTLA.BLL.Services.IdentityService
 
         public async Task<IEnumerable<RoleDTO>> GetRolesAsync()
         {
-            
-            return await Task.Run(async() =>
+
+            return await Task.Run(async () =>
             {
                 var rolesDb = await DataBase.Roles.GetAllItemsAsync();
                 return Mapper.Map<IEnumerable<ApplicationRole>, List<RoleDTO>>(rolesDb);
@@ -44,15 +44,15 @@ namespace TaskManagerTLA.BLL.Services.IdentityService
         {
             if (roleId != null)
             {
-               await DataBase.Roles.DeleteItemByIdAsync(roleId);
-               await  DataBase.Roles.SaveAsync();
+                await DataBase.Roles.DeleteItemByIdAsync(roleId);
+                await DataBase.Roles.SaveAsync();
             }
         }
 
         public async Task CreateRoleAsync(string newRoleName)
         {
             await DataBase.Roles.CreateItemAsync(new ApplicationRole(newRoleName));
-            await DataBase .Roles.SaveAsync();
+            await DataBase.Roles.SaveAsync();
         }
 
     }

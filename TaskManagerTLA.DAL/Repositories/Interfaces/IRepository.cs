@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace TaskManagerTLA.DAL.Repositories.Interfaces
 {
 
-    public interface IRepository<T, I> where T : class 
+    public interface IRepository<T, I> where T : class
     {
         Task<IEnumerable<T>> GetAllItemsAsync();
         Task<T> GetItemByIdAsync(I id);

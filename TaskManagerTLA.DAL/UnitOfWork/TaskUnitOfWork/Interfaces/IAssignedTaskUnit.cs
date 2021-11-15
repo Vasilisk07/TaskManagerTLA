@@ -5,6 +5,6 @@ namespace TaskManagerTLA.DAL.UnitOfWork.TaskUnitOfWork.Interfaces
 {
     public interface IAssignedTaskUnit
     {
-        IRepository<AssignedTask,int> AssignedTasks { get; }
+        IRepository<AssignedTask, int> AssignedTasks { get; }
     }
 }

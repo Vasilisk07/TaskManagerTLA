@@ -5,6 +5,6 @@ namespace TaskManagerTLA.DAL.UnitOfWork.TaskUnitOfWork.Interfaces
 {
     public interface IGlobalTaskUnit
     {
-        IRepository<GlobalTask, int> GlobalTasks {get;}
+        IRepository<GlobalTask, int> GlobalTasks { get; }
     }
 }

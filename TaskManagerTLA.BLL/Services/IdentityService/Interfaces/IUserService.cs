@@ -8,7 +8,7 @@ namespace TaskManagerTLA.BLL.Services.IdentityService.Interfaces
     {
         Task CreateUserAndRoleAsync(UserDTO newUser, RoleDTO newRole);
         Task DeleteUserAsync(string userId);
-        Task <IEnumerable<UserDTO>> GetUsersWhoAreNotAssignedTaskAsync(int? globalTaskId);
+        Task<IEnumerable<UserDTO>> GetUsersWhoAreNotAssignedTaskAsync(int? globalTaskId);
         Task<UserDTO> GetUserByIdAsync(string userId);
         Task<UserDTO> GetUserByNameAsync(string userName);
         Task<IEnumerable<UserDTO>> GetUsersAsync();

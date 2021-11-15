@@ -5,6 +5,6 @@ namespace TaskManagerTLA.DAL.UnitOfWork.IdentityUnitOfWork.Interfaces
 {
     public interface IRoleUnit
     {
-        IRepository<ApplicationRole,string> Roles { get; }
+        IRepository<ApplicationRole, string> Roles { get; }
     }
 }

@@ -1,5 +1,4 @@
-﻿
-namespace TaskManagerTLA.Models
+﻿namespace TaskManagerTLA.Models
 {
     public class ErrorViewModel
     {

@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using TaskManagerTLA.DAL.EF.FluentConfigurations;
 using TaskManagerTLA.DAL.Entities;
-using TaskManagerTLA.DAL.Identity.Entities;
 
 namespace TaskManagerTLA.DAL.EF
 {

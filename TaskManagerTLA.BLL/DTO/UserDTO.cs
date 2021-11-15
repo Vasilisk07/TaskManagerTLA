@@ -1,5 +1,4 @@
-﻿
-namespace TaskManagerTLA.BLL.DTO
+﻿namespace TaskManagerTLA.BLL.DTO
 {
     public class UserDTO
     {
@@ -9,6 +8,5 @@ namespace TaskManagerTLA.BLL.DTO
         public string Role { get; set; }
         public string Password { get; set; }
         public bool RememberMe { get; set; }
-
     }
 }

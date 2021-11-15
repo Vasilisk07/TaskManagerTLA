@@ -9,7 +9,7 @@ namespace TaskManagerTLA.DAL.UnitOfWork.IdentityUnitOfWork
 {
     public class UserUnit : IUserUnit
     {
-        public IRepository<ApplicationUser,string> Users { get; }
+        public IRepository<ApplicationUser, string> Users { get; }
         public UserUnit(IRepository<ApplicationUser, string> users)
         {
             Users = users;

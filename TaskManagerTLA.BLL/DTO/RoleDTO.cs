@@ -1,5 +1,4 @@
-﻿
-namespace TaskManagerTLA.BLL.DTO
+﻿namespace TaskManagerTLA.BLL.DTO
 {
     public class RoleDTO
     {
