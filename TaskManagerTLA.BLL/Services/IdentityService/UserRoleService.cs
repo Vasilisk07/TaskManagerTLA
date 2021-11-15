@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using TaskManagerTLA.BLL.DTO;
 using TaskManagerTLA.BLL.Services.IdentityService.Interfaces;
 using TaskManagerTLA.DAL.Identity.Entities;
@@ -19,19 +20,19 @@ namespace TaskManagerTLA.BLL.Services.IdentityService
             this.mapper = mapper;
         }
 
-        public IEnumerable<RoleDTO> GetUserRoleName(string userId)
+        public async Task<IEnumerable<RoleDTO>> GetUserRoleNameAsync(string userId)
         {
-            var userRolesList = DataBase.Users.GetAllItems().Where(p => p.Id == userId).FirstOrDefault().UserRoles;
+            var userRolesList = (await DataBase.Users.GetAllItemsAsync()).Where(p => p.Id == userId).FirstOrDefault().UserRoles;
             return mapper.Map<IEnumerable<RoleDTO>>(userRolesList);
         }
 
-        public void UpdateUserRole(string userId, string roleId)
+        public async Task UpdateUserRoleAsync(string userId, string roleId)
         {
-            var user = DataBase.Users.GetAllItems().Where(p => p.Id == userId).FirstOrDefault();
+            var user = (await DataBase.Users.GetAllItemsAsync()).Where(p => p.Id == userId).FirstOrDefault();
             var newRoles = new List<ApplicationUserRole>(); 
             newRoles.Add(new ApplicationUserRole { UserId = userId, RoleId = roleId });
             user.UserRoles = newRoles;
-            DataBase.Users.Save();
+            await DataBase.Users.SaveAsync();
         }
     }
 }

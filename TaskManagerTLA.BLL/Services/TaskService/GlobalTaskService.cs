@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using TaskManagerTLA.BLL.DTO;
 using TaskManagerTLA.BLL.Exeption;
 using TaskManagerTLA.BLL.Services.TaskService.Interfaces;
@@ -19,45 +20,45 @@ namespace TaskManagerTLA.BLL.Services.TaskService
             this.Mapper = mapper;
         }
 
-        public void AddGlobalTask(GlobalTaskDTO globalTaskDTO)
+        public async Task AddGlobalTaskAsync(GlobalTaskDTO globalTaskDTO)
         {
             GlobalTask taskModel = Mapper.Map<GlobalTask>(globalTaskDTO);
-            DataBase.GlobalTasks.CreateItem(taskModel);
-            DataBase.GlobalTasks.Save();
+            await DataBase.GlobalTasks.CreateItemAsync(taskModel);
+            await DataBase.GlobalTasks.SaveAsync();
         }
 
-        public void DeleteGlobalTask(int? globalTaskId)
+        public async Task DeleteGlobalTaskAsync(int? globalTaskId)
         {
             if (globalTaskId == null) throw new ServiceException("Не дійсне значення");
-            DataBase.GlobalTasks.DeleteItemById(globalTaskId.Value);
-            DataBase.GlobalTasks.Save();
+            await DataBase.GlobalTasks.DeleteItemByIdAsync(globalTaskId.Value);
+            await DataBase.GlobalTasks.SaveAsync();
         }
 
-        public GlobalTaskDTO GetGlobalTask(int? GlobalTaskId)
+        public async Task<GlobalTaskDTO> GetGlobalTaskAsync(int? GlobalTaskId)
         {
             if (GlobalTaskId == null) throw new ServiceException("Не дійсне значення");
-            var globalTask = DataBase.GlobalTasks.GetItemById(GlobalTaskId.Value);
+            var globalTask = await DataBase.GlobalTasks.GetItemByIdAsync(GlobalTaskId.Value);
             return Mapper.Map<GlobalTaskDTO>(globalTask);
         }
 
-        public IEnumerable<GlobalTaskDTO> GetGlobalTasks()
+        public async Task<IEnumerable<GlobalTaskDTO>> GetGlobalTasksAsync()
         {
-            var globalTaskList = DataBase.GlobalTasks.GetAllItems();
+            var globalTaskList = await DataBase.GlobalTasks.GetAllItemsAsync();
             return Mapper.Map<IEnumerable<GlobalTaskDTO>>(globalTaskList);
         }
 
-        public void UpdateElapsedTimeGlobalTask(int? globalTaskId, int? elapsedTime)
+        public async Task UpdateElapsedTimeGlobalTaskAsync(int? globalTaskId, int? elapsedTime)
         {
             if (globalTaskId == null) throw new ServiceException("Не дійсне значення");
-            var globalTask = DataBase.GlobalTasks.GetItemById(globalTaskId.Value);
+            var globalTask = await DataBase.GlobalTasks.GetItemByIdAsync(globalTaskId.Value);
             globalTask.TotalSpentHours = elapsedTime != null && elapsedTime.Value > 0 ? globalTask.TotalSpentHours + elapsedTime.Value : globalTask.TotalSpentHours;
-            DataBase.GlobalTasks.Save();
+            await DataBase.GlobalTasks.SaveAsync();
         }
 
-        public IEnumerable<AssignedTaskDTO> GetAssignedTasksByGlobalTaskId(int? globalTaskId)
+        public async Task<IEnumerable<AssignedTaskDTO>> GetAssignedTasksByGlobalTaskIdAsync(int? globalTaskId)
         {
             if (globalTaskId == null) throw new ServiceException("Не дійсне значення");
-            var assignedTasks = DataBase.GlobalTasks.GetAllItems().Where(p=>p.Id == globalTaskId.Value).FirstOrDefault().AssignedTasks;
+            var assignedTasks = (await DataBase.GlobalTasks.GetAllItemsAsync()).Where(p => p.Id == globalTaskId.Value).FirstOrDefault().AssignedTasks;
             return Mapper.Map<IEnumerable<AssignedTaskDTO>>(assignedTasks);
         }
     }

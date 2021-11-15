@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using TaskManagerTLA.BLL.DTO;
 
 namespace TaskManagerTLA.BLL.Services.IdentityService.Interfaces
 {
     public interface IUserRoleService
     {
-        IEnumerable<RoleDTO> GetUserRoleName(string userId);
-        void UpdateUserRole(string userId, string roleId);
+        Task<IEnumerable<RoleDTO>> GetUserRoleNameAsync(string userId);
+        Task UpdateUserRoleAsync(string userId, string roleId);
     }
 }

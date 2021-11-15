@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using TaskManagerTLA.BLL.DTO;
 using TaskManagerTLA.BLL.Exeption;
 using TaskManagerTLA.BLL.Services.TaskService.Interfaces;
@@ -21,40 +22,40 @@ namespace TaskManagerTLA.BLL.Services.TaskService
             Mapper = mapper;
         }
 
-        public IEnumerable<AssignedTaskDTO> GetAssignedTasksByUserName(string username)
+        public async Task<IEnumerable<AssignedTaskDTO>> GetAssignedTasksByUserNameAsync(string username)
         {
-            var assignedTaskList = DataBase.AssignedTasks.GetAllItems().Where(p => p.User.UserName == username);
+            var assignedTaskList = (await DataBase.AssignedTasks.GetAllItemsAsync()).Where(p => p.User.UserName == username);
             return Mapper.Map<IEnumerable<AssignedTask>, List<AssignedTaskDTO>>(assignedTaskList);
         }
 
-        public void CreateAssignedTask(string userId, int? globalTaskId)
+        public async Task CreateAssignedTaskAsync(string userId, int? globalTaskId)
         {
-            if (userId==null|| globalTaskId==null) throw new ServiceException("Не дійсне значення");
-            DataBase.AssignedTasks.CreateItem(new AssignedTask { UserId = userId, GlobalTaskId = globalTaskId.Value });
-            DataBase.AssignedTasks.Save();
+            if (userId == null || globalTaskId == null) throw new ServiceException("Не дійсне значення");
+            await DataBase.AssignedTasks.CreateItemAsync(new AssignedTask { UserId = userId, GlobalTaskId = globalTaskId.Value });
+            await DataBase.AssignedTasks.SaveAsync();
         }
 
-        public void UpdateDescription(string userId, int? globalTaskId, string description)
+        public async Task UpdateDescriptionAsync(string userId, int? globalTaskId, string description)
         {
-            var asignedTask = DataBase.AssignedTasks.GetAllItems().Where(p => (p.UserId == userId && p.GlobalTaskId == globalTaskId)).FirstOrDefault();
+            var asignedTask = (await DataBase.AssignedTasks.GetAllItemsAsync()).Where(p => (p.UserId == userId && p.GlobalTaskId == globalTaskId)).FirstOrDefault();
             asignedTask.Description = description != null ? $" {asignedTask.Description} | {DateTime.Now:dd.MM.yyyy} {description}" : asignedTask.Description;
-            DataBase.AssignedTasks.Save();
+            await DataBase.AssignedTasks.SaveAsync();
         }
 
-        public void UpdateElapsedTimeAssignedTask(string userId, int? globalTaskId, int? elapsedTime)
+        public async Task UpdateElapsedTimeAssignedTaskAsync(string userId, int? globalTaskId, int? elapsedTime)
         {
             if (globalTaskId == null || userId == null) throw new ServiceException("Не дійсне значення");
-            var asignedTask = DataBase.AssignedTasks.GetAllItems().Where(p => (p.UserId == userId && p.GlobalTaskId == globalTaskId)).FirstOrDefault();
+            var asignedTask = (await DataBase.AssignedTasks.GetAllItemsAsync()).Where(p => (p.UserId == userId && p.GlobalTaskId == globalTaskId)).FirstOrDefault();
             asignedTask.SpentHours = elapsedTime != null && elapsedTime.Value > 0 ? asignedTask.SpentHours + elapsedTime.Value : asignedTask.SpentHours;
-            DataBase.AssignedTasks.Save();
+            await DataBase.AssignedTasks.SaveAsync();
         }
 
-        public void DeleteAssignedTask(string userId, int? globalTaskId)
+        public async Task DeleteAssignedTaskAsync(string userId, int? globalTaskId)
         {
-            var delasignedTask = DataBase.AssignedTasks.Find(p => p.GlobalTaskId == globalTaskId && p.UserId == userId).FirstOrDefault();
-            if (delasignedTask==null) throw new ServiceException("Не дійсне значення");
-            DataBase.AssignedTasks.DeleteItem(delasignedTask);
-            DataBase.AssignedTasks.Save();
+            var delasignedTask = (await DataBase.AssignedTasks.FindAsync(p => p.GlobalTaskId == globalTaskId && p.UserId == userId)).FirstOrDefault();
+            if (delasignedTask == null) throw new ServiceException("Не дійсне значення");
+            await DataBase.AssignedTasks.DeleteItemAsync(delasignedTask);
+            await DataBase.AssignedTasks.SaveAsync();
         }
     }
 }

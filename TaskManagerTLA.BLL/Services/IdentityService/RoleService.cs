@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using TaskManagerTLA.BLL.DTO;
 using TaskManagerTLA.BLL.Services.IdentityService.Interfaces;
 using TaskManagerTLA.DAL.Identity.Entities;
-using TaskManagerTLA.DAL.UnitOfWork.IdentityUnitOfWork;
 using TaskManagerTLA.DAL.UnitOfWork.IdentityUnitOfWork.Interfaces;
+using System.Threading.Tasks;
 
 namespace TaskManagerTLA.BLL.Services.IdentityService
 {
@@ -13,36 +13,46 @@ namespace TaskManagerTLA.BLL.Services.IdentityService
     {
         private IRoleUnit DataBase { get; }
         private readonly IMapper Mapper;
-        public RoleService( IRoleUnit rolesRepositories, IMapper mapper)
+        public RoleService(IRoleUnit rolesRepositories, IMapper mapper)
         {
             DataBase = rolesRepositories;
             this.Mapper = mapper;
         }
-        public RoleDTO GetRoleByName(string roleName)
+
+        public async Task<RoleDTO> GetRoleByNameAsync(string roleName)
         {
-            var roleDb = DataBase.Roles.Find(p => p.Name == roleName).FirstOrDefault();
-            return Mapper.Map<RoleDTO> (roleDb);
+            return await Task.Run(async() =>
+            {
+                var roleDbList = await DataBase.Roles.FindAsync(p => p.Name == roleName);
+                var roleDb = roleDbList.FirstOrDefault();
+                return Mapper.Map<RoleDTO>(roleDb);
+            });
+
         }
 
-        public IEnumerable<RoleDTO> GetRoles()
+        public async Task<IEnumerable<RoleDTO>> GetRolesAsync()
         {
-            IEnumerable<ApplicationRole> rolesDb = DataBase.Roles.GetAllItems();
-            return Mapper.Map<IEnumerable<ApplicationRole>, List<RoleDTO>>(rolesDb);
+            
+            return await Task.Run(async() =>
+            {
+                var rolesDb = await DataBase.Roles.GetAllItemsAsync();
+                return Mapper.Map<IEnumerable<ApplicationRole>, List<RoleDTO>>(rolesDb);
+            });
         }
 
-        public void DeleteRole(string roleId)
+        public async Task DeleteRoleAsync(string roleId)
         {
             if (roleId != null)
             {
-                DataBase.Roles.DeleteItemById(roleId);
-                DataBase.Roles.Save();
+               await DataBase.Roles.DeleteItemByIdAsync(roleId);
+               await  DataBase.Roles.SaveAsync();
             }
         }
 
-        public void CreateRole(string newRoleName)
+        public async Task CreateRoleAsync(string newRoleName)
         {
-            DataBase.Roles.CreateItem(new ApplicationRole(newRoleName));
-            DataBase.Roles.Save();
+            await DataBase.Roles.CreateItemAsync(new ApplicationRole(newRoleName));
+            await DataBase .Roles.SaveAsync();
         }
 
     }

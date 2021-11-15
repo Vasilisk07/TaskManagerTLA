@@ -34,14 +34,13 @@ namespace TaskManagerTLA.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        public async Task<IActionResult> RegisterAsync(RegisterViewModel model)
         {
             UserDTO userDTO = mapper.Map<UserDTO>(model);
             try
             {
-                // бажано зробити цей виклик async
-                var roleDTO = rolesService.GetRoleByName("Developer");
-                userService.CreateUserAndRole(userDTO, roleDTO);
+                var roleDTO = await rolesService.GetRoleByNameAsync("Developer");
+                await userService.CreateUserAndRoleAsync(userDTO, roleDTO);
             }
             catch (LoginException ex)
             {
@@ -66,8 +65,6 @@ namespace TaskManagerTLA.Controllers
             UserDTO loginUser = mapper.Map<UserDTO>(model);
             try
             {
-                //! асинхронні методи повинні закінчуватись на Async => LoginAsync()
-                //
                 await loginService.LoginAsync(loginUser);
             }
             catch (LoginException ex)
@@ -83,40 +80,38 @@ namespace TaskManagerTLA.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LogoutAsync()
         {
-            // асинхронні методи повинні закінчуватись на Async
             await loginService.LogoutAsync();
             return RedirectToAction("Index", "Home");
         }
 
         [Authorize(Roles = "Admin")]
-        public IActionResult ListUser()
+        public async Task<IActionResult> ListUserAsync()
         {
-            IEnumerable<UserDTO> userDTO = userService.GetUsers();
+            IEnumerable<UserDTO> userDTO = await userService.GetUsersAsync();
             var usersModels = mapper.Map<IEnumerable<UserDTO>, List<UserViewModel>>(userDTO);
             return View(usersModels);
         }
 
         [Authorize(Roles = "Admin")]
-        public IActionResult DeleteUser(string userId)
+        public async Task<IActionResult> DeleteUserAsync(string userId)
         {
-            // може бути async
-            userService.DeleteUser(userId);
+            await userService.DeleteUserAsync(userId);
             return RedirectToAction("ListUser", "Account");
         }
 
         [Authorize(Roles = "Admin")]
-        public IActionResult ListRole(string userId)
+        public async Task<IActionResult> ListRoleAsync(string userId)
         {
             ViewBag.UserId = userId;
-            var roleModels = mapper.Map<IEnumerable<RoleDTO>, List<RoleViewModel>>(rolesService.GetRoles());
+            var listRole = await rolesService.GetRolesAsync();
+            var roleModels = mapper.Map<IEnumerable<RoleDTO>, List<RoleViewModel>>(listRole);
             return View(roleModels);
         }
 
         [Authorize(Roles = "Admin")]
-        public IActionResult ChangeRole(string userId, string roleId)
+        public async Task<IActionResult> ChangeRoleAsync(string userId, string roleId)
         {
-            // може бути async
-            userRoleService.UpdateUserRole(userId, roleId);
+            await userRoleService.UpdateUserRoleAsync(userId, roleId);
             return RedirectToAction("ListUser", "Account");
         }
     }

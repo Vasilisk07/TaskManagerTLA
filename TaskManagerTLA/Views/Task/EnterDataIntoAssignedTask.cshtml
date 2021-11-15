@@ -7,7 +7,7 @@
 
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="EnterDataIntoAssignedTask">
+        <form asp-action="UpdateAssignedTask">
             @Html.HiddenFor(model => model.GlobalTaskId)
             @Html.HiddenFor(model => model.UserId)
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>

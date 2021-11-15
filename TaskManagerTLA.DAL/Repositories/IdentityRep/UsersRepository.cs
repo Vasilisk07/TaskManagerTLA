@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using TaskManagerTLA.DAL.EF;
 using TaskManagerTLA.DAL.Identity.Entities;
 using TaskManagerTLA.DAL.Repositories.Interfaces;
@@ -17,61 +18,86 @@ namespace TaskManagerTLA.DAL.Repositories.IdentityRep
             this.dataBase = identityContext;
         }
 
-        public bool CreateItem(ApplicationUser newItem)
+        public async Task<bool> CreateItemAsync(ApplicationUser newItem)
         {
-            var res = dataBase.Users.Add(newItem);
-            return res.State == EntityState.Added;
-        }
-
-        public bool DeleteItem(ApplicationUser item)
-        {
-            if (item != null)
+            return await Task.Run(() =>
             {
-                var res = dataBase.Users.Remove(item);
-                return res.State == EntityState.Deleted;
-            }
-            return false;
+                var res = dataBase.Users.Add(newItem);
+                return res.State == EntityState.Added;
+            });
         }
 
-        public bool DeleteItemById(string itemId)
-        {                     
-            var item = dataBase.Users.Find(itemId);
-            if (item != null)
+        public async Task<bool> DeleteItemAsync(ApplicationUser item)
+        {
+            return await Task.Run(() =>
             {
-                var res = dataBase.Users.Remove(item);
-                return res.State == EntityState.Deleted;
-            }
-            return false;
+                if (item != null)
+                {
+                    var res = dataBase.Users.Remove(item);
+                    return res.State == EntityState.Deleted;
+                }
+                return false;
+            });
         }
 
-        public void DeleteRange(IEnumerable<ApplicationUser> deletedList)
+        public async Task<bool> DeleteItemByIdAsync(string itemId)
         {
-            dataBase.Users.RemoveRange(deletedList);
+            return await Task.Run(() =>
+            {
+                var item = dataBase.Users.Find(itemId);
+                if (item != null)
+                {
+                    var res = dataBase.Users.Remove(item);
+                    return res.State == EntityState.Deleted;
+                }
+                return false;
+            });
         }
 
-        public IEnumerable<ApplicationUser> GetAllItems()
+        public async Task DeleteRangeAsync(IEnumerable<ApplicationUser> deletedList)
         {
-            var users = dataBase.Users.Include(c => c.GlobalTasks).Include(c => c.AssignedTasks).Include(c => c.Roles);
-            return users;
+            await Task.Run(() =>
+            {
+                dataBase.Users.RemoveRange(deletedList);
+            });
         }
 
-        public ApplicationUser GetItemById(string itemId)
+        public async Task<IEnumerable<ApplicationUser>> GetAllItemsAsync()
         {
-            return dataBase.Users.Find(itemId);
+            return await Task.Run(() =>
+            {
+                var users = dataBase.Users.Include(c => c.GlobalTasks).Include(c => c.AssignedTasks).Include(c => c.Roles);
+                return users;
+            });
         }
 
-        public IEnumerable<ApplicationUser> Find(Func<ApplicationUser, Boolean> predicate)
+        public async Task<ApplicationUser> GetItemByIdAsync(string itemId)
         {
-            return dataBase.Users.Where(predicate);
+            return await Task.Run(() =>
+            {
+                return dataBase.Users.Find(itemId);
+            });
         }
 
-        public void UpdateItem(ApplicationUser item)
+        public async Task<IEnumerable<ApplicationUser>> FindAsync(Func<ApplicationUser, Boolean> predicate)
         {
-            dataBase.Users.Update(item);
+            return await Task.Run(() =>
+            {
+                return dataBase.Users.Where(predicate);
+            });
         }
-        public void Save()
+
+        public async Task UpdateItemAsunc(ApplicationUser item)
         {
-            dataBase.SaveChanges();
+            await Task.Run(() =>
+            {
+                dataBase.Users.Update(item);
+            });
+        }
+
+        public async Task SaveAsync()
+        {
+            await dataBase.SaveChangesAsync();
         }
     }
 }

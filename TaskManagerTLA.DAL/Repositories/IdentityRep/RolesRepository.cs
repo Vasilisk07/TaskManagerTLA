@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading.Tasks;
 using TaskManagerTLA.DAL.EF;
 using TaskManagerTLA.DAL.Identity.Entities;
 using TaskManagerTLA.DAL.Repositories.Interfaces;
@@ -19,61 +19,85 @@ namespace TaskManagerTLA.DAL.Repositories.IdentityRep
             this.dataBase = identityContext;
         }
 
-        public bool CreateItem(ApplicationRole newItem)
+        public async Task<bool> CreateItemAsync(ApplicationRole newItem)
         {
-            var res = dataBase.Roles.Add(newItem);
-            return res.State == EntityState.Added;
-        }
-
-        public bool DeleteItem(ApplicationRole item)
-        {
-            if (item != null)
+            return await Task.Run(() => 
             {
-                var res = dataBase.Roles.Remove(item);
-                return res.State == EntityState.Deleted;
-            }
-            return false;
+                var res = dataBase.Roles.Add(newItem);
+                return res.State == EntityState.Added;
+            });
         }
 
-        public bool DeleteItemById(string ItemId)
-        {                     
-            var item = dataBase.Roles.Find(ItemId);
-            if (item != null)
+        public async Task<bool> DeleteItemAsync(ApplicationRole item)
+        {
+            return await Task.Run(() => 
             {
-                var res = dataBase.Roles.Remove(item);
-                return res.State == EntityState.Deleted;
-            }
-            return false;
-        }
-        public void DeleteRange(IEnumerable<ApplicationRole> deletedList)
-        {
-            dataBase.Roles.RemoveRange(deletedList);
-        }
-
-        public IEnumerable<ApplicationRole> GetAllItems()
-        {
-            return dataBase.Roles.Include(p => p.Users);
+                if (item != null)
+                {
+                    var res = dataBase.Roles.Remove(item);
+                    return res.State == EntityState.Deleted;
+                }
+                return false;
+            });
         }
 
-        public ApplicationRole GetItemById(string itemId)
+        public async Task<bool> DeleteItemByIdAsync(string ItemId)
         {
-            return dataBase.Roles.Find(itemId);
+            return await Task.Run(() => 
+            {
+                var item = dataBase.Roles.Find(ItemId);
+                if (item != null)
+                {
+                    var res = dataBase.Roles.Remove(item);
+                    return res.State == EntityState.Deleted;
+                }
+                return false;
+            });
         }
 
-        public IEnumerable<ApplicationRole> Find(Func<ApplicationRole, Boolean> predicate)
+        public async Task DeleteRangeAsync(IEnumerable<ApplicationRole> deletedList)
         {
-            return dataBase.Roles.Where(predicate);
+            await Task.Run(() => 
+            {
+                dataBase.Roles.RemoveRange(deletedList);
+            });
         }
 
-        public void UpdateItem(ApplicationRole item)
+        public async Task<IEnumerable<ApplicationRole>> GetAllItemsAsync()
         {
-            dataBase.Roles.Update(item);
-            
+            return await Task.Run(() => 
+            {
+                return dataBase.Roles.Include(p => p.Users);
+            });
         }
 
-        public void Save()
+        public async Task<ApplicationRole> GetItemByIdAsync(string itemId)
         {
-            dataBase.SaveChanges();
+            return await Task.Run(() => 
+            {
+                return dataBase.Roles.Find(itemId);
+            });
+        }
+
+        public async Task<IEnumerable<ApplicationRole>> FindAsync(Func<ApplicationRole, Boolean> predicate)
+        {
+            return await Task.Run(() => 
+            {
+                return dataBase.Roles.Where(predicate);
+            });
+        }
+
+        public async Task UpdateItemAsunc(ApplicationRole item)
+        {
+            await Task.Run(() => 
+            {
+                dataBase.Roles.Update(item);
+            });
+        }
+
+        public async Task SaveAsync()
+        {
+            await dataBase.SaveChangesAsync();
         }
     }
 }

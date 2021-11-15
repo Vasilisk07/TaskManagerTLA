@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using TaskManagerTLA.DAL.EF;
 using TaskManagerTLA.DAL.Entities;
 using TaskManagerTLA.DAL.Repositories.Interfaces;
@@ -17,59 +18,85 @@ namespace TaskManagerTLA.DAL.Repositories.TaskRep
             this.dataBase = context;
         }
 
-        public IEnumerable<AssignedTask> GetAllItems()
+        public async Task<IEnumerable<AssignedTask>> GetAllItemsAsync()
         {
-            return dataBase.AssignedTask.Include(c => c.GlobalTask).Include(c => c.User);
-        }
-
-        public AssignedTask GetItemById(int id)
-        {
-            return dataBase.AssignedTask.Find(id);
-        }
-
-        public bool CreateItem(AssignedTask task)
-        {
-            var res = dataBase.AssignedTask.Add(task);
-            return res.State == EntityState.Added;
-        }
-        public void UpdateItem(AssignedTask task)
-        {
-            dataBase.Entry(task).State = EntityState.Modified;
-        }
-
-        public IEnumerable<AssignedTask> Find(Func<AssignedTask, Boolean> predicate)
-        {
-            return dataBase.AssignedTask.Where(predicate);
-        }
-
-        public bool DeleteItem(AssignedTask item)
-        {
-            if (item != null)
+            return await Task.Run(() => 
             {
-                var res = dataBase.AssignedTask.Remove(item);
-                return res.State == EntityState.Deleted;
-            }
-            return false;
+                return dataBase.AssignedTask.Include(c => c.GlobalTask).Include(c => c.User);
+            });
         }
 
-        public bool DeleteItemById(int id)
+        public async Task<AssignedTask> GetItemByIdAsync(int id)
         {
-            var item = dataBase.AssignedTask.Find(id);
-            if (item != null)
+            return await Task.Run(() => 
             {
-                var res = dataBase.AssignedTask.Remove(item);
-                return res.State == EntityState.Deleted;
-            }
-            return false;
+                return dataBase.AssignedTask.Find(id);
+            });
         }
 
-        public void DeleteRange(IEnumerable<AssignedTask> deletedList)
+        public async Task<bool> CreateItemAsync(AssignedTask newItem)
         {
-            dataBase.AssignedTask.RemoveRange(deletedList);
+            return await Task.Run(() => 
+            {
+                var res = dataBase.AssignedTask.Add(newItem);
+                return res.State == EntityState.Added;
+            });
         }
-        public void Save()
+
+        public async Task UpdateItemAsunc(AssignedTask item)
         {
-            dataBase.SaveChanges();
+            await Task.Run(() => 
+            {
+                dataBase.Entry(item).State = EntityState.Modified;
+            });
+        }
+
+        public async Task<IEnumerable<AssignedTask>> FindAsync(Func<AssignedTask, Boolean> predicate)
+        {
+            return await Task.Run(() => 
+            {
+                return dataBase.AssignedTask.Where(predicate);
+            });
+        }
+
+        public async Task<bool> DeleteItemAsync(AssignedTask item)
+        {
+            return await Task.Run(() => 
+            {
+                if (item != null)
+                {
+                    var res = dataBase.AssignedTask.Remove(item);
+                    return res.State == EntityState.Deleted;
+                }
+                return false;
+            });
+        }
+
+        public async Task<bool> DeleteItemByIdAsync(int id)
+        {
+            return await Task.Run(() => 
+            {
+                var item = dataBase.AssignedTask.Find(id);
+                if (item != null)
+                {
+                    var res = dataBase.AssignedTask.Remove(item);
+                    return res.State == EntityState.Deleted;
+                }
+                return false;
+            });
+        }
+
+        public async Task DeleteRangeAsync(IEnumerable<AssignedTask> deletedList)
+        {
+            await Task.Run(() => 
+            {
+                dataBase.AssignedTask.RemoveRange(deletedList);
+            });
+        }
+
+        public async Task SaveAsync()
+        {
+           await dataBase.SaveChangesAsync();
         }
     }
 }

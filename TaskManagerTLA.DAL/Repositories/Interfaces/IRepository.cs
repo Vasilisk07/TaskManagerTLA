@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace TaskManagerTLA.DAL.Repositories.Interfaces
 {
 
     public interface IRepository<T, I> where T : class 
     {
-        IEnumerable<T> GetAllItems();
-        T GetItemById(I id);
-        IEnumerable<T> Find(Func<T, Boolean> predicate);
-        bool CreateItem(T item);
-        void UpdateItem(T item);
-        bool DeleteItemById(I id);
-        bool DeleteItem(T item);
-        void DeleteRange(IEnumerable<T> deletedList);
-        void Save();
+        Task<IEnumerable<T>> GetAllItemsAsync();
+        Task<T> GetItemByIdAsync(I id);
+        Task<IEnumerable<T>> FindAsync(Func<T, Boolean> predicate);
+        Task<bool> CreateItemAsync(T item);
+        Task UpdateItemAsunc(T item);
+        Task<bool> DeleteItemByIdAsync(I id);
+        Task<bool> DeleteItemAsync(T item);
+        Task DeleteRangeAsync(IEnumerable<T> deletedList);
+        Task SaveAsync();
     }
 
 }
