@@ -12,9 +12,9 @@ namespace TaskManagerTLA.DAL.Repositories.IdentityRep
     public class RolesRepository : IRepository<ApplicationRole, string>
     {
 
-        private readonly IdentityContext dataBase;
+        private readonly ApplicationContext dataBase;
 
-        public RolesRepository(IdentityContext identityContext)
+        public RolesRepository(ApplicationContext identityContext)
         {
             this.dataBase = identityContext;
         }

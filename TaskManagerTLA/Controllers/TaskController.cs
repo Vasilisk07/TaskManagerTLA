@@ -45,7 +45,7 @@ namespace TaskManagerTLA.Controllers
         }
 
         [Authorize(Roles = "Admin, Manager")]
-        public async Task<IActionResult> TaskListAsync()
+        public async Task<ActionResult<IEnumerable<GlobalTaskViewModel>>> TaskListAsync()
         {
             var globalTaskDTO = await GlobalTaskaskService.GetGlobalTasksAsync();
             var tasks = Mapper.Map<IEnumerable<GlobalTaskDTO>, List<GlobalTaskViewModel>>(globalTaskDTO);
@@ -69,7 +69,7 @@ namespace TaskManagerTLA.Controllers
         }
 
         [Authorize(Roles = "Admin, Manager")]
-        public async Task<IActionResult> DetailAboutTaskAsync(int? globalTaskId)
+        public async Task<ActionResult<IEnumerable<AssignedTaskViewModel>>> DetailAboutTaskAsync(int? globalTaskId)
         {
             try
             {
@@ -88,7 +88,7 @@ namespace TaskManagerTLA.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin, Manager")]
-        public async Task<IActionResult> SelectUserToAssignTaskAsync(int? globalTaskId)
+        public async Task<ActionResult<IEnumerable<UserViewModel>>> SelectUserToAssignTaskAsync(int? globalTaskId)
         {
             try
             {
@@ -137,7 +137,7 @@ namespace TaskManagerTLA.Controllers
         }
 
         [Authorize(Roles = "Admin, Manager, Developer")]
-        public async Task<IActionResult> ShowAssignedTaskCurrentUserAsync()
+        public async Task<ActionResult<IEnumerable<AssignedTaskViewModel>>> ShowAssignedTaskCurrentUserAsync()
         {
             var personalTasksDTOList = (await AssignedTaskService.GetAssignedTasksByUserNameAsync(User.Identity.Name)).ToList();
             var personalTasksViewList = Mapper.Map<IEnumerable<AssignedTaskDTO>, List<AssignedTaskViewModel>>(personalTasksDTOList);
@@ -146,7 +146,7 @@ namespace TaskManagerTLA.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin, Manager, Developer")]
-        public async Task<IActionResult> EnterDataIntoAssignedTaskAsync(string userId, int? globalTaskId)
+        public async Task<ActionResult<EditAssignedTaskViewModel>> EnterDataIntoAssignedTaskAsync(string userId, int? globalTaskId)
         {
             try
             {

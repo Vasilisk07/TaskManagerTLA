@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +12,9 @@ namespace TaskManagerTLA.DAL.Repositories.TaskRep
 {
     public class AssignedTaskRepository : IRepository<AssignedTask, int>
     {
-        private readonly TaskContext dataBase;
+        private readonly ApplicationContext dataBase;
 
-        public AssignedTaskRepository(TaskContext context)
+        public AssignedTaskRepository(ApplicationContext context)
         {
             this.dataBase = context;
         }

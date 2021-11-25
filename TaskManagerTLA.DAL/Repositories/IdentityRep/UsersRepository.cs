@@ -11,9 +11,9 @@ namespace TaskManagerTLA.DAL.Repositories.IdentityRep
 {
     public class UsersRepository : IRepository<ApplicationUser, string>
     {
-        private readonly IdentityContext dataBase;
+        private readonly ApplicationContext dataBase;
 
-        public UsersRepository(IdentityContext identityContext)
+        public UsersRepository(ApplicationContext identityContext)
         {
             this.dataBase = identityContext;
         }

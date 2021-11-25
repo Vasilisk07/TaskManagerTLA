@@ -1,4 +1,5 @@
-﻿using TaskManagerTLA.DAL.Identity.Entities;
+﻿using System.Threading.Tasks;
+using TaskManagerTLA.DAL.Identity.Entities;
 using TaskManagerTLA.DAL.Repositories.Interfaces;
 using TaskManagerTLA.DAL.UnitOfWork.IdentityUnitOfWork.Interfaces;
 
@@ -10,6 +11,11 @@ namespace TaskManagerTLA.DAL.UnitOfWork.IdentityUnitOfWork
         public RoleUnit(IRepository<ApplicationRole, string> roles)
         {
             Roles = roles;
+        }
+
+        public async Task SaveAsync()
+        {
+            await Roles.SaveAsync();
         }
     }
 }

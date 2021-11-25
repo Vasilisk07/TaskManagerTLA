@@ -13,22 +13,30 @@ namespace TaskManagerTLA.BLL.Services.IdentityService
 {
     public class UserService : IUserService
     {
-        private IUserUnit DataBase { get; }
+        private IUserAndRoleUnit userAndRoleUnit { get; }
         private readonly IMapper mapper;
 
-        public UserService(IUserUnit usersRepositories, IMapper mapper)
+        public UserService(IUserAndRoleUnit userAndRoleUnit, IMapper mapper)
         {
-            DataBase = usersRepositories;
+            this.userAndRoleUnit = userAndRoleUnit;
             this.mapper = mapper;
         }
 
-        public async Task CreateUserAndRoleAsync(UserDTO newUser, RoleDTO newRole)
+        public async Task CreateUserAndRoleAsync(UserDTO newUser)
         {
-            if ((await DataBase.Users.FindAsync(p => p.UserName == newUser.UserName)).Count() >= 1)
+            //перевіряєм, якщо юзерів не існує надаєм першому роль адміна всім решта дев
+
+            var role = (await userAndRoleUnit.Roles.FindAsync(p => p.Name == "Developer")).FirstOrDefault();
+            if (!(await userAndRoleUnit.Users.GetAllItemsAsync()).Any())
+            {
+                role = (await userAndRoleUnit.Roles.FindAsync(p => p.Name == "Admin")).FirstOrDefault();
+            }
+
+            if ((await userAndRoleUnit.Users.FindAsync(p => p.UserName == newUser.UserName)).Any())
             {
                 throw new LoginException("Користувач з таким іменем вже існує!");
             }
-            //створення User
+
             PasswordHasher<ApplicationUser> hasher = new PasswordHasher<ApplicationUser>();
             ApplicationUser newUserDb = new ApplicationUser()
             {
@@ -38,11 +46,11 @@ namespace TaskManagerTLA.BLL.Services.IdentityService
                 NormalizedEmail = newUser.Email.ToUpper(),
             };
             newUserDb.PasswordHash = hasher.HashPassword(newUserDb, newUser.Password);
-            //присвоюєм юзеру роль "Developer"
-            if ((await DataBase.Users.CreateItemAsync(newUserDb)) && newRole != null)
+            if (role != null && newUserDb != null)
             {
-                newUserDb.UserRoles.Add(new ApplicationUserRole { RoleId = newRole.Id, UserId = newUser.Id });
-                await DataBase.Users.SaveAsync();
+                newUserDb.Roles.Add(role);
+                await userAndRoleUnit.Users.CreateItemAsync(newUserDb);
+                await userAndRoleUnit.Users.SaveAsync();
             }
             else
             {
@@ -52,37 +60,37 @@ namespace TaskManagerTLA.BLL.Services.IdentityService
 
         public async Task DeleteUserAsync(string userId)
         {
-            await DataBase.Users.DeleteItemByIdAsync(userId);
-            await DataBase.Users.SaveAsync();
+            await userAndRoleUnit.Users.DeleteItemByIdAsync(userId);
+            await userAndRoleUnit.Users.SaveAsync();
         }
 
         public async Task<UserDTO> GetUserByIdAsync(string userId)
         {
-            var userDb = await DataBase.Users.GetItemByIdAsync(userId);
+            var userDb = await userAndRoleUnit.Users.GetItemByIdAsync(userId);
             var user = mapper.Map<UserDTO>(userDb);
             return user;
         }
 
         public async Task<UserDTO> GetUserByNameAsync(string userName)
         {
-            var returnedUser = (await DataBase.Users.FindAsync(p => p.UserName == userName)).FirstOrDefault();
+            var returnedUser = (await userAndRoleUnit.Users.FindAsync(p => p.UserName == userName)).FirstOrDefault();
             var user = mapper.Map<UserDTO>(returnedUser);
             return user;
         }
 
-        //This method can be rewritten, and made optimized
         public async Task<IEnumerable<UserDTO>> GetUsersWhoAreNotAssignedTaskAsync(int? globalTaskId)
         {
-            var allUsers = (await DataBase.Users.GetAllItemsAsync()).ToList();
+            var allUsers = (await userAndRoleUnit.Users.GetAllItemsAsync()).ToList();
             var busyUsers = allUsers.Where(p => p.GlobalTasks.Any(c => c.Id == globalTaskId));
             var freeUsers = allUsers.Except(busyUsers);
             freeUsers = freeUsers.Where(p => p.Roles.Any(c => c.Name == "Developer"));
             return mapper.Map<IEnumerable<ApplicationUser>, List<UserDTO>>(freeUsers);
         }
 
-        public async Task<IEnumerable<UserDTO>> GetUsersAsync()
+        // передаєм в метод імя залогіненого юзера щоб в нього не було можливості редагувати самого себе.
+        public async Task<IEnumerable<UserDTO>> GetUsersAsync(string curentUserName)
         {
-            var users = (await DataBase.Users.GetAllItemsAsync()).ToList();
+            var users = (await userAndRoleUnit.Users.GetAllItemsAsync()).Where(p => p.UserName != curentUserName).ToList();
             return mapper.Map<IEnumerable<ApplicationUser>, List<UserDTO>>(users);
         }
 

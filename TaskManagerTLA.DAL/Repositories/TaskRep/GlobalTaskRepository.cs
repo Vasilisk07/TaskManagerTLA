@@ -11,8 +11,8 @@ namespace TaskManagerTLA.DAL.Repositories.TaskRep
 {
     public class GlobalTasksRepository : IRepository<GlobalTask, int>
     {
-        private readonly TaskContext dataBase;
-        public GlobalTasksRepository(TaskContext context)
+        private readonly ApplicationContext dataBase;
+        public GlobalTasksRepository(ApplicationContext context)
         {
             this.dataBase = context;
         }

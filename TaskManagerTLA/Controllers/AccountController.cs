@@ -39,8 +39,7 @@ namespace TaskManagerTLA.Controllers
             UserDTO userDTO = mapper.Map<UserDTO>(model);
             try
             {
-                var roleDTO = await rolesService.GetRoleByNameAsync("Developer");
-                await userService.CreateUserAndRoleAsync(userDTO, roleDTO);
+                await userService.CreateUserAndRoleAsync(userDTO);
             }
             catch (LoginException ex)
             {
@@ -85,9 +84,9 @@ namespace TaskManagerTLA.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> ListUserAsync()
+        public async Task<ActionResult<IEnumerable<UserViewModel>>> ListUserAsync()
         {
-            IEnumerable<UserDTO> userDTO = await userService.GetUsersAsync();
+            IEnumerable<UserDTO> userDTO = await userService.GetUsersAsync(User.Identity.Name);
             var usersModels = mapper.Map<IEnumerable<UserDTO>, List<UserViewModel>>(userDTO);
             return View(usersModels);
         }
@@ -100,7 +99,7 @@ namespace TaskManagerTLA.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> ListRoleAsync(string userId)
+        public async Task<ActionResult<IEnumerable<RoleViewModel>>> ListRoleAsync(string userId)
         {
             ViewBag.UserId = userId;
             var listRole = await rolesService.GetRolesAsync();

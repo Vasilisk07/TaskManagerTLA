@@ -30,7 +30,7 @@ namespace TaskManagerTLA.MyDependency
             services.AddTransient<IRepository<GlobalTask, int>, GlobalTasksRepository>();
             // UnitOfWork
             services.AddTransient<IRoleUnit, RoleUnit>();
-            services.AddTransient<IUserUnit, UserUnit>();
+            services.AddTransient<IUserAndRoleUnit, UserAndRoleUnit>();
             services.AddTransient<IAssignedTaskUnit, AssignedTaskUnit>();
             services.AddTransient<IGlobalTaskUnit, GlobalTaskUnit>();
             return services;
@@ -39,9 +39,8 @@ namespace TaskManagerTLA.MyDependency
         public static IServiceCollection AddEFService(this IServiceCollection services, IConfiguration configuration)
         {
             string connection = configuration.GetConnectionString("DefaultConnection");
-            services.AddDbContext<TaskContext>(options => options.UseSqlServer(connection));
-            services.AddDbContext<IdentityContext>(options => options.UseSqlServer(connection));
-            services.AddIdentity<ApplicationUser, ApplicationRole>().AddEntityFrameworkStores<IdentityContext>();
+            services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connection));
+            services.AddIdentity<ApplicationUser, ApplicationRole>().AddEntityFrameworkStores<ApplicationContext>();
             return services;
         }
 
