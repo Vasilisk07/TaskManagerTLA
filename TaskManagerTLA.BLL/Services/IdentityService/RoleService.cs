@@ -4,31 +4,30 @@ using System.Collections.Generic;
 using TaskManagerTLA.BLL.DTO;
 using TaskManagerTLA.BLL.Services.IdentityService.Interfaces;
 using TaskManagerTLA.DAL.Identity.Entities;
-using TaskManagerTLA.DAL.UnitOfWork.IdentityUnitOfWork.Interfaces;
 using System.Threading.Tasks;
+using TaskManagerTLA.DAL.Repositories.Interfaces;
 
 namespace TaskManagerTLA.BLL.Services.IdentityService
 {
     public class RoleService : IRoleService
     {
-        private IRoleUnit roleUnit { get; }
+        private IRepository<ApplicationRole, string> roleRepository { get; }
         private readonly IMapper mapper;
-        public RoleService(IRoleUnit roleUnit, IMapper mapper)
+        public RoleService(IRepository<ApplicationRole, string> roleRepository, IMapper mapper)
         {
-            this.roleUnit = roleUnit;
+            this.roleRepository = roleRepository;
             this.mapper = mapper;
         }
 
         public async Task<RoleDTO> GetRoleByNameAsync(string roleName)
         {
-            var roleDbList = await roleUnit.Roles.FindAsync(p => p.Name == roleName);
-            var roleDb = roleDbList.FirstOrDefault();
-            return mapper.Map<RoleDTO>(roleDb);
+            var roleDbList = await roleRepository.FindItemAsync(p => p.Name == roleName);
+            return mapper.Map<RoleDTO>(roleDbList);
         }
 
         public async Task<IEnumerable<RoleDTO>> GetRolesAsync()
         {
-            var rolesDb = await roleUnit.Roles.GetAllItemsAsync();
+            var rolesDb = await roleRepository.GetAllItemsAsync();
             return mapper.Map<IEnumerable<ApplicationRole>, List<RoleDTO>>(rolesDb);
         }
 
@@ -36,15 +35,15 @@ namespace TaskManagerTLA.BLL.Services.IdentityService
         {
             if (roleId != null)
             {
-                await roleUnit.Roles.DeleteItemByIdAsync(roleId);
-                await roleUnit.Roles.SaveAsync();
+                await roleRepository.DeleteItemByIdAsync(roleId);
+                await roleRepository.SaveAsync();
             }
         }
 
         public async Task CreateRoleAsync(string newRoleName)
         {
-            await roleUnit.Roles.CreateItemAsync(new ApplicationRole(newRoleName));
-            await roleUnit.Roles.SaveAsync();
+            await roleRepository.CreateItemAsync(new ApplicationRole(newRoleName));
+            await roleRepository.SaveAsync();
         }
 
     }

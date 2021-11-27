@@ -14,8 +14,6 @@ using TaskManagerTLA.DAL.Repositories.Interfaces;
 using TaskManagerTLA.DAL.Repositories.TaskRep;
 using TaskManagerTLA.DAL.UnitOfWork.IdentityUnitOfWork;
 using TaskManagerTLA.DAL.UnitOfWork.IdentityUnitOfWork.Interfaces;
-using TaskManagerTLA.DAL.UnitOfWork.TaskUnitOfWork;
-using TaskManagerTLA.DAL.UnitOfWork.TaskUnitOfWork.Interfaces;
 
 namespace TaskManagerTLA.MyDependency
 {
@@ -29,10 +27,7 @@ namespace TaskManagerTLA.MyDependency
             services.AddTransient<IRepository<AssignedTask, int>, AssignedTaskRepository>();
             services.AddTransient<IRepository<GlobalTask, int>, GlobalTasksRepository>();
             // UnitOfWork
-            services.AddTransient<IRoleUnit, RoleUnit>();
             services.AddTransient<IUserAndRoleUnit, UserAndRoleUnit>();
-            services.AddTransient<IAssignedTaskUnit, AssignedTaskUnit>();
-            services.AddTransient<IGlobalTaskUnit, GlobalTaskUnit>();
             return services;
         }
 

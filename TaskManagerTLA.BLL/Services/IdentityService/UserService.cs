@@ -26,13 +26,13 @@ namespace TaskManagerTLA.BLL.Services.IdentityService
         {
             //перевіряєм, якщо юзерів не існує надаєм першому роль адміна всім решта дев
 
-            var role = (await userAndRoleUnit.Roles.FindAsync(p => p.Name == "Developer")).FirstOrDefault();
+            var role = await userAndRoleUnit.Roles.FindItemAsync(p => p.Name == "Developer");
             if (!(await userAndRoleUnit.Users.GetAllItemsAsync()).Any())
             {
-                role = (await userAndRoleUnit.Roles.FindAsync(p => p.Name == "Admin")).FirstOrDefault();
+                role = await userAndRoleUnit.Roles.FindItemAsync(p => p.Name == "Admin");
             }
 
-            if ((await userAndRoleUnit.Users.FindAsync(p => p.UserName == newUser.UserName)).Any())
+            if ((await userAndRoleUnit.Users.FindRangeAsync(p => p.UserName == newUser.UserName)).Any())
             {
                 throw new LoginException("Користувач з таким іменем вже існує!");
             }
@@ -73,7 +73,7 @@ namespace TaskManagerTLA.BLL.Services.IdentityService
 
         public async Task<UserDTO> GetUserByNameAsync(string userName)
         {
-            var returnedUser = (await userAndRoleUnit.Users.FindAsync(p => p.UserName == userName)).FirstOrDefault();
+            var returnedUser = await userAndRoleUnit.Users.FindItemAsync(p => p.UserName == userName);
             var user = mapper.Map<UserDTO>(returnedUser);
             return user;
         }
@@ -87,10 +87,9 @@ namespace TaskManagerTLA.BLL.Services.IdentityService
             return mapper.Map<IEnumerable<ApplicationUser>, List<UserDTO>>(freeUsers);
         }
 
-        // передаєм в метод імя залогіненого юзера щоб в нього не було можливості редагувати самого себе.
-        public async Task<IEnumerable<UserDTO>> GetUsersAsync(string curentUserName)
+        public async Task<IEnumerable<UserDTO>> GetUsersAsync()
         {
-            var users = (await userAndRoleUnit.Users.GetAllItemsAsync()).Where(p => p.UserName != curentUserName).ToList();
+            var users = (await userAndRoleUnit.Users.GetAllItemsAsync()).ToList();
             return mapper.Map<IEnumerable<ApplicationUser>, List<UserDTO>>(users);
         }
 

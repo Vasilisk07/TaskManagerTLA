@@ -51,7 +51,15 @@ namespace TaskManagerTLA.DAL.Repositories.TaskRep
             });
         }
 
-        public async Task<IEnumerable<GlobalTask>> FindAsync(Func<GlobalTask, Boolean> predicate)
+        public async Task<GlobalTask> FindItemAsync(Func<GlobalTask, Boolean> predicate)
+        {
+            return await Task.Run(() =>
+            {
+                return dataBase.GlobalTask.FirstOrDefault(predicate);
+            });
+        }
+
+        public async Task<IEnumerable<GlobalTask>> FindRangeAsync(Func<GlobalTask, Boolean> predicate)
         {
             return await Task.Run(() =>
             {

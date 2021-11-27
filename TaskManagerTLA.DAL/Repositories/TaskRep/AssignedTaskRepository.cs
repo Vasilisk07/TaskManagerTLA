@@ -52,7 +52,15 @@ namespace TaskManagerTLA.DAL.Repositories.TaskRep
             });
         }
 
-        public async Task<IEnumerable<AssignedTask>> FindAsync(Func<AssignedTask, Boolean> predicate)
+        public async Task<AssignedTask> FindItemAsync(Func<AssignedTask, Boolean> predicate)
+        {
+            return await Task.Run(() =>
+            {
+                return dataBase.AssignedTask.FirstOrDefault(predicate);
+            });
+        }
+
+        public async Task<IEnumerable<AssignedTask>> FindRangeAsync(Func<AssignedTask, Boolean> predicate)
         {
             return await Task.Run(() =>
             {

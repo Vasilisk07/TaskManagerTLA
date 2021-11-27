@@ -24,21 +24,31 @@
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.UserName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Email)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Role)
-                </td>
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Role)
+            </td>
+            @if (User.Identity.Name != item.UserName)
+            {
                 <td>
                     @Html.ActionLink("Змінити роль", "ListRole", new { UserId = item.Id }) |
                     @Html.ActionLink("Видалити", "DeleteUser", new { UserId = item.Id })
                 </td>
-            </tr>
+            }
+            else
+            {
+                <td>
+                    <span style="color:gray">  Редагування не доступно. </span>
+                </td>
+            }
+
+        </tr>
         }
     </tbody>
 </table>

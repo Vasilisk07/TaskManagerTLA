@@ -86,7 +86,7 @@ namespace TaskManagerTLA.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<UserViewModel>>> ListUserAsync()
         {
-            IEnumerable<UserDTO> userDTO = await userService.GetUsersAsync(User.Identity.Name);
+            IEnumerable<UserDTO> userDTO = await userService.GetUsersAsync();
             var usersModels = mapper.Map<IEnumerable<UserDTO>, List<UserViewModel>>(userDTO);
             return View(usersModels);
         }

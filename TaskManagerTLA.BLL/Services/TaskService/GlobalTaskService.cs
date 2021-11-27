@@ -6,59 +6,59 @@ using TaskManagerTLA.BLL.DTO;
 using TaskManagerTLA.BLL.Exeption;
 using TaskManagerTLA.BLL.Services.TaskService.Interfaces;
 using TaskManagerTLA.DAL.Entities;
-using TaskManagerTLA.DAL.UnitOfWork.TaskUnitOfWork.Interfaces;
+using TaskManagerTLA.DAL.Repositories.Interfaces;
 
 namespace TaskManagerTLA.BLL.Services.TaskService
 {
     public class GlobalTaskService : IGlobalTaskService
     {
-        private readonly IGlobalTaskUnit globalTaskUnit;
+        private readonly IRepository<GlobalTask, int> globalTasRepository;
         private readonly IMapper mapper;
-        public GlobalTaskService(IGlobalTaskUnit globalTaskUnit, IMapper mapper)
+        public GlobalTaskService(IRepository<GlobalTask, int> globalTasRepository, IMapper mapper)
         {
-            this.globalTaskUnit = globalTaskUnit;
+            this.globalTasRepository = globalTasRepository;
             this.mapper = mapper;
         }
 
         public async Task AddGlobalTaskAsync(GlobalTaskDTO globalTaskDTO)
         {
             GlobalTask taskModel = mapper.Map<GlobalTask>(globalTaskDTO);
-            await globalTaskUnit.GlobalTasks.CreateItemAsync(taskModel);
-            await globalTaskUnit.GlobalTasks.SaveAsync();
+            await globalTasRepository.CreateItemAsync(taskModel);
+            await globalTasRepository.SaveAsync();
         }
 
         public async Task DeleteGlobalTaskAsync(int? globalTaskId)
         {
             if (globalTaskId == null) throw new ServiceException("Не дійсне значення: globalTaskId = null");
-            await globalTaskUnit.GlobalTasks.DeleteItemByIdAsync(globalTaskId.Value);
-            await globalTaskUnit.GlobalTasks.SaveAsync();
+            await globalTasRepository.DeleteItemByIdAsync(globalTaskId.Value);
+            await globalTasRepository.SaveAsync();
         }
 
         public async Task<GlobalTaskDTO> GetGlobalTaskAsync(int? globalTaskId)
         {
             if (globalTaskId == null) throw new ServiceException("Не дійсне значення: globalTaskId = null");
-            var globalTask = await globalTaskUnit.GlobalTasks.GetItemByIdAsync(globalTaskId.Value);
+            var globalTask = await globalTasRepository.GetItemByIdAsync(globalTaskId.Value);
             return mapper.Map<GlobalTaskDTO>(globalTask);
         }
 
         public async Task<IEnumerable<GlobalTaskDTO>> GetGlobalTasksAsync()
         {
-            var globalTaskList = await globalTaskUnit.GlobalTasks.GetAllItemsAsync();
+            var globalTaskList = await globalTasRepository.GetAllItemsAsync();
             return mapper.Map<IEnumerable<GlobalTaskDTO>>(globalTaskList);
         }
 
         public async Task UpdateElapsedTimeGlobalTaskAsync(int? globalTaskId, int? elapsedTime)
         {
             if (globalTaskId == null) throw new ServiceException("Не дійсне значення: globalTaskId = null");
-            var globalTask = await globalTaskUnit.GlobalTasks.GetItemByIdAsync(globalTaskId.Value);
+            var globalTask = await globalTasRepository.GetItemByIdAsync(globalTaskId.Value);
             globalTask.TotalSpentHours = elapsedTime != null && elapsedTime.Value > 0 ? globalTask.TotalSpentHours + elapsedTime.Value : globalTask.TotalSpentHours;
-            await globalTaskUnit.GlobalTasks.SaveAsync();
+            await globalTasRepository.SaveAsync();
         }
 
         public async Task<IEnumerable<AssignedTaskDTO>> GetAssignedTasksByGlobalTaskIdAsync(int? globalTaskId)
         {
             if (globalTaskId == null) throw new ServiceException("Не дійсне значення: globalTaskId = null");
-            var assignedTasks = (await globalTaskUnit.GlobalTasks.GetAllItemsAsync()).Where(p => p.Id == globalTaskId.Value).FirstOrDefault().AssignedTasks;
+            var assignedTasks = (await globalTasRepository.GetAllItemsAsync()).Where(p => p.Id == globalTaskId.Value).FirstOrDefault().AssignedTasks;
             return mapper.Map<IEnumerable<AssignedTaskDTO>>(assignedTasks);
         }
     }

@@ -59,7 +59,7 @@ namespace TaskManagerTLA.DAL.Repositories.IdentityRep
         {
             await Task.Run(() =>
             {
-                dataBase.Roles.RemoveRange(deletedList);
+               dataBase.Roles.RemoveRange(deletedList);
             });
         }
 
@@ -79,7 +79,15 @@ namespace TaskManagerTLA.DAL.Repositories.IdentityRep
             });
         }
 
-        public async Task<IEnumerable<ApplicationRole>> FindAsync(Func<ApplicationRole, Boolean> predicate)
+        public async Task<ApplicationRole> FindItemAsync(Func<ApplicationRole, Boolean> predicate)
+        {
+            return await Task.Run(() =>
+            {
+                return dataBase.Roles.FirstOrDefault(predicate);
+            });
+        }
+
+        public async Task<IEnumerable<ApplicationRole>> FindRangeAsync(Func<ApplicationRole, Boolean> predicate)
         {
             return await Task.Run(() =>
             {

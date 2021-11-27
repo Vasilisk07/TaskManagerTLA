@@ -79,7 +79,15 @@ namespace TaskManagerTLA.DAL.Repositories.IdentityRep
             });
         }
 
-        public async Task<IEnumerable<ApplicationUser>> FindAsync(Func<ApplicationUser, Boolean> predicate)
+        public async Task<ApplicationUser> FindItemAsync(Func<ApplicationUser, Boolean> predicate)
+        {
+            return await Task.Run(() =>
+            {
+                return dataBase.Users.FirstOrDefault(predicate);
+            });
+        }
+
+        public async Task<IEnumerable<ApplicationUser>> FindRangeAsync(Func<ApplicationUser, Boolean> predicate)
         {
             return await Task.Run(() =>
             {

@@ -11,6 +11,6 @@ namespace TaskManagerTLA.BLL.Services.IdentityService.Interfaces
         Task<IEnumerable<UserDTO>> GetUsersWhoAreNotAssignedTaskAsync(int? globalTaskId);
         Task<UserDTO> GetUserByIdAsync(string userId);
         Task<UserDTO> GetUserByNameAsync(string userName);
-        Task<IEnumerable<UserDTO>> GetUsersAsync(string curentUserName);
+        Task<IEnumerable<UserDTO>> GetUsersAsync();
     }
 }
