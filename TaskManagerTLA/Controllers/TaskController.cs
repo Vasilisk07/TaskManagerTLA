@@ -53,12 +53,23 @@ namespace TaskManagerTLA.Controllers
         }
 
         [Authorize(Roles = "Admin, Manager")]
-        public async Task<IActionResult> DeleteTaskAsync(int? globalTaskId)
+        [ActionName("DeleteTask")]
+        [HttpGet]
+        public async Task<IActionResult> ConfirmDeleteTaskAsync(int? globalTaskId)
+        {
+            var task = (await GlobalTaskaskService.GetGlobalTasksAsync()).Where(p => p.Id == globalTaskId).FirstOrDefault();
+            return View(task);
+        }
+
+
+        [Authorize(Roles = "Admin, Manager")]
+        [HttpPost]
+        public async Task<IActionResult> DeleteTaskAsync(int? Id)
         {
             try
             {
 
-                await GlobalTaskaskService.DeleteGlobalTaskAsync(globalTaskId);
+                await GlobalTaskaskService.DeleteGlobalTaskAsync(Id);
                 return RedirectToAction("TaskList", "Task");
             }
             catch (ServiceException ex)

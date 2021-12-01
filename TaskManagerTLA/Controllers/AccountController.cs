@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using TaskManagerTLA.BLL.DTO;
 using TaskManagerTLA.BLL.Exeption;
@@ -92,11 +93,22 @@ namespace TaskManagerTLA.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteUserAsync(string userId)
+        [HttpGet]
+        [ActionName ("DeleteUser")]
+        public async Task<IActionResult> ConfirmDeleteUserAsync(string id)
         {
-            await userService.DeleteUserAsync(userId);
+            var user = (await userService.GetUsersAsync()).Where(p=>p.Id== id).FirstOrDefault();
+            return View(user);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteUserAsync(string id)
+        {
+            await userService.DeleteUserAsync(id);
             return RedirectToAction("ListUser", "Account");
         }
+
 
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<RoleViewModel>>> ListRoleAsync(string userId)
