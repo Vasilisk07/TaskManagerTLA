@@ -1,9 +1,9 @@
-﻿
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using TaskManagerTLA.DAL.EF;
 using TaskManagerTLA.DAL.Entities;
 using TaskManagerTLA.DAL.Repositories.Interfaces;
@@ -44,7 +44,7 @@ namespace TaskManagerTLA.DAL.Repositories.TaskRep
             });
         }
 
-        public async Task UpdateItemAsunc(AssignedTask item)
+        public async Task UpdateItemAsync(AssignedTask item)
         {
             await Task.Run(() =>
             {
@@ -52,7 +52,7 @@ namespace TaskManagerTLA.DAL.Repositories.TaskRep
             });
         }
 
-        public async Task<AssignedTask> FindItemAsync(Func<AssignedTask, Boolean> predicate)
+        public async Task<AssignedTask> FindItemAsync(Expression<Func<AssignedTask, bool>> predicate)
         {
             return await Task.Run(() =>
             {
@@ -60,7 +60,7 @@ namespace TaskManagerTLA.DAL.Repositories.TaskRep
             });
         }
 
-        public async Task<IEnumerable<AssignedTask>> FindRangeAsync(Func<AssignedTask, Boolean> predicate)
+        public async Task<IEnumerable<AssignedTask>> FindRangeAsync(Expression<Func<AssignedTask, bool>> predicate)
         {
             return await Task.Run(() =>
             {

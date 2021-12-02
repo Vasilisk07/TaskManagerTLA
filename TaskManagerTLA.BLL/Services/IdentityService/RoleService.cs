@@ -11,23 +11,24 @@ namespace TaskManagerTLA.BLL.Services.IdentityService
 {
     public class RoleService : IRoleService
     {
-        private IRepository<ApplicationRole, string> roleRepository { get; }
+        // з маленької букви лише філди, а це пропертя бо в неї є {get;}
+        private IRepository<ApplicationRole, string> RoleRepository { get; }
         private readonly IMapper mapper;
         public RoleService(IRepository<ApplicationRole, string> roleRepository, IMapper mapper)
         {
-            this.roleRepository = roleRepository;
+            this.RoleRepository = roleRepository;
             this.mapper = mapper;
         }
 
         public async Task<RoleDTO> GetRoleByNameAsync(string roleName)
         {
-            var roleDbList = await roleRepository.FindItemAsync(p => p.Name == roleName);
-            return mapper.Map<RoleDTO>(roleDbList);
+            var role = await RoleRepository.FindItemAsync(p => p.Name == roleName);
+            return mapper.Map<RoleDTO>(role);
         }
 
         public async Task<IEnumerable<RoleDTO>> GetRolesAsync()
         {
-            var rolesDb = await roleRepository.GetAllItemsAsync();
+            var rolesDb = await RoleRepository.GetAllItemsAsync();
             return mapper.Map<IEnumerable<ApplicationRole>, List<RoleDTO>>(rolesDb);
         }
 
@@ -35,15 +36,15 @@ namespace TaskManagerTLA.BLL.Services.IdentityService
         {
             if (roleId != null)
             {
-                await roleRepository.DeleteItemByIdAsync(roleId);
-                await roleRepository.SaveAsync();
+                await RoleRepository.DeleteItemByIdAsync(roleId);
+                await RoleRepository.SaveAsync();
             }
         }
 
         public async Task CreateRoleAsync(string newRoleName)
         {
-            await roleRepository.CreateItemAsync(new ApplicationRole(newRoleName));
-            await roleRepository.SaveAsync();
+            await RoleRepository.CreateItemAsync(new ApplicationRole(newRoleName));
+            await RoleRepository.SaveAsync();
         }
 
     }

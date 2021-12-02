@@ -64,11 +64,10 @@ namespace TaskManagerTLA.Controllers
 
         [Authorize(Roles = "Admin, Manager")]
         [HttpPost]
-        public async Task<IActionResult> DeleteTaskAsync(int? Id)
+        public async Task<IActionResult> DeleteTaskAsync(int Id) // і не треба потім нічого перевіряти на null
         {
             try
             {
-
                 await GlobalTaskaskService.DeleteGlobalTaskAsync(Id);
                 return RedirectToAction("TaskList", "Task");
             }

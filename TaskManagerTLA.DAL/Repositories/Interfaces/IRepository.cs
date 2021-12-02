@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace TaskManagerTLA.DAL.Repositories.Interfaces
@@ -9,10 +10,10 @@ namespace TaskManagerTLA.DAL.Repositories.Interfaces
     {
         Task<IEnumerable<T>> GetAllItemsAsync();
         Task<T> GetItemByIdAsync(I id);
-        Task<T> FindItemAsync(Func<T, Boolean> predicate);
-        Task<IEnumerable<T>> FindRangeAsync(Func<T, Boolean> predicate);
+        Task<T> FindItemAsync(Expression<Func<T, bool>> predicate);
+        Task<IEnumerable<T>> FindRangeAsync(Expression<Func<T, bool>> predicate);
         Task<bool> CreateItemAsync(T item);
-        Task UpdateItemAsunc(T item);
+        Task UpdateItemAsync(T item);
         Task<bool> DeleteItemByIdAsync(I id);
         Task<bool> DeleteItemAsync(T item);
         Task DeleteRangeAsync(IEnumerable<T> deletedList);

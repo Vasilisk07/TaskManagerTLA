@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using TaskManagerTLA.DAL.EF;
 using TaskManagerTLA.DAL.Identity.Entities;
@@ -9,6 +10,9 @@ using TaskManagerTLA.DAL.Repositories.Interfaces;
 
 namespace TaskManagerTLA.DAL.Repositories.IdentityRep
 {
+    // створи базовий репозиторій Repository<T, string>, реалізуй в ньому усі ці базові методи
+    // тут в RolesRepository наслідуй Repository<T, string>, якщщо потрібно добавляй специфічні для ролей методи
+    // ці методи занеси в інтерфейс IRolesRepository який всюди будеш інджектити (IRepository<ApplicationRole, string>)
     public class RolesRepository : IRepository<ApplicationRole, string>
     {
 
@@ -79,7 +83,7 @@ namespace TaskManagerTLA.DAL.Repositories.IdentityRep
             });
         }
 
-        public async Task<ApplicationRole> FindItemAsync(Func<ApplicationRole, Boolean> predicate)
+        public async Task<ApplicationRole> FindItemAsync(Expression<Func<ApplicationRole, bool>> predicate)
         {
             return await Task.Run(() =>
             {
@@ -87,7 +91,7 @@ namespace TaskManagerTLA.DAL.Repositories.IdentityRep
             });
         }
 
-        public async Task<IEnumerable<ApplicationRole>> FindRangeAsync(Func<ApplicationRole, Boolean> predicate)
+        public async Task<IEnumerable<ApplicationRole>> FindRangeAsync(Expression<Func<ApplicationRole, bool>> predicate)
         {
             return await Task.Run(() =>
             {
@@ -95,7 +99,7 @@ namespace TaskManagerTLA.DAL.Repositories.IdentityRep
             });
         }
 
-        public async Task UpdateItemAsunc(ApplicationRole item)
+        public async Task UpdateItemAsync(ApplicationRole item)
         {
             await Task.Run(() =>
             {

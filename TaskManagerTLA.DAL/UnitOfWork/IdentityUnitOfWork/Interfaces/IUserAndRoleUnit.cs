@@ -4,6 +4,7 @@ using TaskManagerTLA.DAL.Repositories.Interfaces;
 
 namespace TaskManagerTLA.DAL.UnitOfWork.IdentityUnitOfWork.Interfaces
 {
+    // в юніта має бути метод Save() це основне його призначення
     public interface IUserAndRoleUnit
     {
         IRepository<ApplicationUser, string> Users { get; }
