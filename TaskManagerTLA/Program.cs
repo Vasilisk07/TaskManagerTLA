@@ -14,17 +14,18 @@ namespace TaskManagerTLA
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
+
             Host.CreateDefaultBuilder(args)
             .ConfigureLogging((context, builder) =>
             {
                 builder.AddConfiguration(context.Configuration.GetSection("Logging"));
                 builder.AddConsole();
                 builder.AddFile();
+                builder.AddDebug();
             })
-
-        .ConfigureWebHostDefaults(webBuilder =>
-        {
-            webBuilder.UseStartup<Startup>();
-        });
+              .ConfigureWebHostDefaults(webBuilder =>
+              {
+                  webBuilder.UseStartup<Startup>();
+              });
     }
 }

@@ -16,26 +16,26 @@
 
     @if (SignInManager.IsSignedIn(User))
     {
-        string role = (await UserManager.GetRolesAsync(await UserManager.FindByNameAsync(User.Identity.Name))).First();
+        var roles = (await UserManager.GetRolesAsync(await UserManager.FindByNameAsync(User.Identity.Name)));
 
-        switch (role)
+
+        if (roles.Contains(UserRoles.Admin.ToString()))
         {
-            case "Admin":
-                <h3>
-                    Ви авторизувались як Адміністратор. Для вас доступний весь функціонал додатка.
-                </h3>
-
-                break;
-            case "Manager":
-                <h3>
-                    Ви авторизувались як Менеджер. Для вас доступний функціонал перегляду та редагування задач.
-                </h3>
-                break;
-            case "Developer":
-                <h3>
-                    Ви авторизувались як Виконавець. Для вас доступні тільки ваші задачі.
-                </h3>
-                break;
+            <h3>
+                Ви авторизувались як Адміністратор. Для вас доступний весь функціонал додатка.
+            </h3>
+        }
+        else if (roles.Contains(UserRoles.Manager.ToString()))
+        {
+            <h3>
+                Ви авторизувались як Менеджер. Для вас доступний функціонал перегляду та редагування задач.
+            </h3>
+        }
+        else if (roles.Contains(UserRoles.Developer.ToString()))
+        {
+            <h3>
+                Ви авторизувались як Виконавець. Для вас доступні тільки ваші задачі.
+            </h3>
         }
     }
     else

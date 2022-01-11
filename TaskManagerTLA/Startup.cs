@@ -24,6 +24,7 @@ namespace TaskManagerTLA
             services.AddIdentityService();
             services.AddMappingService();
             services.AddControllersWithViews();
+            services.AddMemoryCache();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -31,17 +32,19 @@ namespace TaskManagerTLA
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseStatusCodePages();
+                
             }
             else
             {
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
-            app.UseAuthentication();
-            app.UseHttpsRedirection();
-            app.UseResponseCaching();
             app.UseStaticFiles();
             app.UseRouting();
+            app.UseHttpsRedirection();
+            app.UseResponseCaching();
+            app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {

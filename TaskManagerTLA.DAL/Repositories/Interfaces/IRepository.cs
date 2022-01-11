@@ -14,8 +14,8 @@ namespace TaskManagerTLA.DAL.Repositories.Interfaces
         Task<IEnumerable<T>> FindRangeAsync(Expression<Func<T, bool>> predicate);
         Task<bool> CreateItemAsync(T item);
         Task UpdateItemAsync(T item);
-        Task<bool> DeleteItemByIdAsync(I id);
         Task<bool> DeleteItemAsync(T item);
+        Task<bool> DeleteItemByIdAsync(I itemId);
         Task DeleteRangeAsync(IEnumerable<T> deletedList);
         Task SaveAsync();
     }

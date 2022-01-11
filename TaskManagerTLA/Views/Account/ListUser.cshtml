@@ -4,8 +4,15 @@
     ViewData["Title"] = "Список користувачів";
 }
 
-<h1>Список користувачів</h1>
+@if (TempData["UserInfo"] != null)
+{
+    <h4 style="color: green">@TempData["UserInfo"]</h4>
+}
 
+<h1>Список користувачів</h1>
+<div>
+    <a asp-action="AddNewUser" class="btn btn-info">Створити нового користувача</a>
+</div>
 <table class="table">
     <thead>
         <tr>
@@ -16,39 +23,40 @@
                 @Html.DisplayNameFor(model => model.Email)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Role)
+                @Html.DisplayNameFor(model => model.Roles)
             </th>
-            <th></th>
+
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
         {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.UserName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Role)
-            </td>
-            @if (User.Identity.Name != item.UserName)
-            {
+            <tr>
                 <td>
-                    @Html.ActionLink("Змінити роль", "ListRole", new { UserId = item.Id }) |
-                    @Html.ActionLink("Видалити", "DeleteUser", new { Id = item.Id })
+                    @Html.DisplayFor(modelItem => item.UserName)
                 </td>
-            }
-            else
-            {
                 <td>
-                    <span style="color:gray">  Редагування не доступно. </span>
+                    @Html.DisplayFor(modelItem => item.Email)
                 </td>
-            }
+                <td>
+                    @Html.CreateString(item.Roles)
+                </td>
 
-        </tr>
+                @if (User.Identity.Name != item.UserName)
+                {
+                    <td>
+                        @Html.ActionLink("Редагувати", "UserEditing", new { UserId = item.Id }) |
+                        @Html.ActionLink("Видалити", "DeleteUser", new { Id = item.Id })
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        <span style="color:gray">  Редагування не доступно. </span>
+                    </td>
+                }
+
+            </tr>
         }
     </tbody>
 </table>

@@ -13,7 +13,7 @@ namespace TaskManagerTLA.DAL.Repositories.IdentityRep
     // створи базовий репозиторій Repository<T, string>, реалізуй в ньому усі ці базові методи
     // тут в RolesRepository наслідуй Repository<T, string>, якщщо потрібно добавляй специфічні для ролей методи
     // ці методи занеси в інтерфейс IRolesRepository який всюди будеш інджектити (IRepository<ApplicationRole, string>)
-    public class RolesRepository : IRepository<ApplicationRole, string>
+    public class RolesRepository : IRepository<ApplicationRole,string>
     {
 
         private readonly ApplicationContext dataBase;
@@ -34,29 +34,14 @@ namespace TaskManagerTLA.DAL.Repositories.IdentityRep
 
         public async Task<bool> DeleteItemAsync(ApplicationRole item)
         {
-            return await Task.Run(() =>
-            {
-                if (item != null)
-                {
-                    var res = dataBase.Roles.Remove(item);
-                    return res.State == EntityState.Deleted;
-                }
-                return false;
-            });
+            dataBase.Roles.Remove(item);
+            return await Task.FromResult(true);
         }
 
-        public async Task<bool> DeleteItemByIdAsync(string ItemId)
+        public async Task<bool> DeleteItemByIdAsync(string itemId)
         {
-            return await Task.Run(() =>
-            {
-                var item = dataBase.Roles.Find(ItemId);
-                if (item != null)
-                {
-                    var res = dataBase.Roles.Remove(item);
-                    return res.State == EntityState.Deleted;
-                }
-                return false;
-            });
+            dataBase.Roles.Remove(dataBase.Roles.Find(itemId));
+            return await Task.FromResult(true);
         }
 
         public async Task DeleteRangeAsync(IEnumerable<ApplicationRole> deletedList)

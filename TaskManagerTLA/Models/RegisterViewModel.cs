@@ -24,5 +24,6 @@ namespace TaskManagerTLA.Models
         [DataType(DataType.Password)]
         [Display(Name = "Підтвердіть пароль")]
         public string PasswordConfirm { get; set; }
+
     }
 }

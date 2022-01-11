@@ -70,30 +70,16 @@ namespace TaskManagerTLA.DAL.Repositories.TaskRep
 
         public async Task<bool> DeleteItemAsync(AssignedTask item)
         {
-            return await Task.Run(() =>
-            {
-                if (item != null)
-                {
-                    var res = dataBase.AssignedTask.Remove(item);
-                    return res.State == EntityState.Deleted;
-                }
-                return false;
-            });
+            dataBase.AssignedTask.Remove(item);
+            return await Task.FromResult(true);
         }
 
-        public async Task<bool> DeleteItemByIdAsync(int id)
+        public async Task<bool> DeleteItemByIdAsync(int itemId)
         {
-            return await Task.Run(() =>
-            {
-                var item = dataBase.AssignedTask.Find(id);
-                if (item != null)
-                {
-                    var res = dataBase.AssignedTask.Remove(item);
-                    return res.State == EntityState.Deleted;
-                }
-                return false;
-            });
+            dataBase.AssignedTask.Remove(dataBase.AssignedTask.Find(itemId));
+            return await Task.FromResult(true);
         }
+
 
         public async Task DeleteRangeAsync(IEnumerable<AssignedTask> deletedList)
         {
@@ -107,5 +93,6 @@ namespace TaskManagerTLA.DAL.Repositories.TaskRep
         {
             await dataBase.SaveChangesAsync();
         }
+
     }
 }

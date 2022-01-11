@@ -2,49 +2,56 @@
 
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))
-     {
-        string role = (await UserManager.GetRolesAsync(await UserManager.FindByNameAsync(User.Identity.Name))).First();
+    {
+        var role = (await UserManager.GetRolesAsync(await UserManager.FindByNameAsync(User.Identity.Name)));
 
-        switch (role)
+
+        if (role.Contains(UserRoles.Admin.ToString()))
         {
-            case "Admin":
-                <li class="nav-item">
-                    <form class="form-inline" asp-area="" asp-controller="Account" asp-action="ListUser" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                        <button type="submit" class="nav-link btn btn-link text-dark">Редактор користувачів</button>
-                    </form>
-                </li>
-                <li class="nav-item">
-                    <form class="form-inline" asp-area="" asp-controller="Task" asp-action="TaskList" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                        <button type="submit" class="nav-link btn btn-link text-dark">Редактор задач</button>
-                    </form>
-                </li>
-                <li class="nav-item">
-                    <form class="form-inline" asp-area="" asp-controller="Task" asp-action="ShowAssignedTaskCurrentUser" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                        <button type="submit" class="nav-link btn btn-link text-dark">Мої Задачі</button>
-                    </form>
-                </li>
-                break;
-            case "Manager":
-                <li class="nav-item">
-                    <form class="form-inline" asp-area="" asp-controller="Task" asp-action="TaskList" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                        <button type="submit" class="nav-link btn btn-link text-dark">Редактор задач</button>
-                    </form>
-                </li>
-                <li class="nav-item">
-                    <form class="form-inline" asp-area="" asp-controller="Task" asp-action="ShowAssignedTaskCurrentUser" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                        <button type="submit" class="nav-link btn btn-link text-dark">Мої Задачі</button>
-                    </form>
-                </li>
-                break;
-            case "Developer":
-                <li class="nav-item">
-                    <form class="form-inline" asp-area="" asp-controller="Task" asp-action="ShowAssignedTaskCurrentUser" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                        <button type="submit" class="nav-link btn btn-link text-dark">Мої Задачі</button>
-                    </form>
-                </li>
-                break;
+            <li class="nav-item">
+                <form class="form-inline" asp-area="" asp-controller="Account" asp-action="ListUser" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                    <button type="submit" class="nav-link btn btn-link text-dark">Редактор користувачів</button>
+                </form>
+            </li>
+            <li class="nav-item">
+                <form class="form-inline" asp-area="" asp-controller="Task" asp-action="TaskList" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                    <button type="submit" class="nav-link btn btn-link text-dark">Редактор задач</button>
+                </form>
+            </li>
+            <li class="nav-item">
+                <form class="form-inline" asp-area="" asp-controller="Task" asp-action="ShowAssignedTaskCurrentUser" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                    <button type="submit" class="nav-link btn btn-link text-dark">Мої Задачі</button>
+                </form>
+            </li>
+
+        }
+        else if (role.Contains(UserRoles.Manager.ToString()))
+        {
+            <li class="nav-item">
+                <form class="form-inline" asp-area="" asp-controller="Task" asp-action="TaskList" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                    <button type="submit" class="nav-link btn btn-link text-dark">Редактор задач</button>
+                </form>
+            </li>
+            <li class="nav-item">
+                <form class="form-inline" asp-area="" asp-controller="Task" asp-action="ShowAssignedTaskCurrentUser" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                    <button type="submit" class="nav-link btn btn-link text-dark">Мої Задачі</button>
+                </form>
+            </li>
+
+        }
+        else if (role.Contains(UserRoles.Developer.ToString()))
+        {
+            <li class="nav-item">
+                <form class="form-inline" asp-area="" asp-controller="Task" asp-action="ShowAssignedTaskCurrentUser" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                    <button type="submit" class="nav-link btn btn-link text-dark">Мої Задачі</button>
+                </form>
+            </li>
+
         }
 
 
-     }
+    
+
+
+    }
 </ul>

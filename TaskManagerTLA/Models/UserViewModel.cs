@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace TaskManagerTLA.Models
 {
@@ -6,13 +7,18 @@ namespace TaskManagerTLA.Models
     {
         public string Id { get; set; }
 
+        [Required(ErrorMessage = "Вкажіть ім'я користувача")]
         [Display(Name = "Ім'я користувача")]
         public string UserName { get; set; }
 
-        [Display(Name = "Email")]
+        [Required(ErrorMessage = "Вкажіть Email адресу")]
+        [Display(Name = "Email адреса")]
+        [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
 
-        [Display(Name = "Роль")]
-        public string Role { get; set; }
+
+        [Display(Name = "Ролі")]
+        public List<RoleViewModel> Roles { get; set; }
+
     }
 }

@@ -1,0 +1,56 @@
+﻿@model TaskManagerTLA.Models.UserViewModel
+
+@{
+    ViewData["Title"] = "Редагування користувача.";
+}
+@if (TempData["RoleInfo"] != null)
+{
+    <h4 style="color: green">@TempData["RoleInfo"]</h4>
+}
+<h1>@ViewData["Title"]</h1>
+
+<h4>За потреби внесіть зміни в данні користувача</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="UserEditing">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @Html.Hidden("Id", Model.Id)
+            @Html.Hidden("Roles", Model.Roles)
+            <div class="form-group">
+                <label asp-for="UserName" class="control-label"></label>
+                <input asp-for="UserName" class="form-control" />
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" type="email" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Змінити персональні данні" class="btn btn-primary" />
+
+            </div>
+        </form>
+        <div class="form-group">
+            <h4>Pолі користувача:</h4>
+            <ul>
+                @foreach (var item in Model.Roles)
+                {
+                    <li>@item.Name</li>
+
+                }
+            </ul>
+            <a asp-action="ChangeRole" asp-route-id="@Model.Id" class="btn btn-info">Редагувати ролі</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+<div>
+    <a asp-action="ListUser">Повернутись до списку користувачів</a>
+</div>
+

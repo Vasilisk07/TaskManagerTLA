@@ -12,10 +12,12 @@ namespace TaskManagerTLA.BLL.Mapper
         public MappingProfile()
         {
             CreateMap<ApplicationRole, RoleDTO>();
-            CreateMap<ApplicationUser, UserDTO>()
-                .ForMember(_ => _.Role, opt => opt.MapFrom(c => c.Roles.FirstOrDefault().Name)); // жосткий костиль, краще зроби підтримку декількох ролей
+            CreateMap<ApplicationUser, UserDTO>();
+            CreateMap<UserDTO,ApplicationUser> ();
+            //.ForMember(_ => _.Roles, opt => opt.MapFrom(c => c.Roles.FirstOrDefault().Name)); // жосткий костиль, краще зроби підтримку декількох ролей
             CreateMap<RegisterViewModel, UserDTO>();
             CreateMap<UserDTO, UserViewModel>();
+            CreateMap<UserViewModel,UserDTO> ();
             CreateMap<LoginViewModel, UserDTO>();
             CreateMap<RoleDTO, RoleViewModel>();
             CreateMap<GlobalTaskViewModel, GlobalTaskDTO>();

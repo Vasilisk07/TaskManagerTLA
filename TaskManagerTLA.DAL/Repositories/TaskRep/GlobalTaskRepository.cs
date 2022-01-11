@@ -70,29 +70,14 @@ namespace TaskManagerTLA.DAL.Repositories.TaskRep
 
         public async Task<bool> DeleteItemAsync(GlobalTask item)
         {
-            return await Task.Run(() =>
-            {
-                if (item != null)
-                {
-                    var res = dataBase.GlobalTask.Remove(item);
-                    return res.State == EntityState.Deleted;
-                }
-                return false;
-            });
+            dataBase.GlobalTask.Remove(item);
+            return await Task.FromResult(true);
         }
 
-        public async Task<bool> DeleteItemByIdAsync(int id)
+        public async Task<bool> DeleteItemByIdAsync(int itemId)
         {
-            return await Task.Run(() =>
-            {
-                var task = dataBase.GlobalTask.Find(id);
-                if (task != null)
-                {
-                    var res = dataBase.GlobalTask.Remove(task);
-                    return res.State == EntityState.Deleted;
-                }
-                return false;
-            });
+            dataBase.GlobalTask.Remove(dataBase.GlobalTask.Find(itemId));
+            return await Task.FromResult(true);
         }
 
         public async Task DeleteRangeAsync(IEnumerable<GlobalTask> deletedList)
@@ -107,5 +92,6 @@ namespace TaskManagerTLA.DAL.Repositories.TaskRep
         {
             await dataBase.SaveChangesAsync();
         }
+
     }
 }

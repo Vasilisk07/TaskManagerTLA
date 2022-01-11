@@ -1,0 +1,34 @@
+﻿@model IEnumerable< TaskManagerTLA.Models.RoleViewModel>
+
+@{
+    ViewData["Title"] = "Зміна ролей користувача.";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<h4>Вкажыть потрыбні ролі для користувача</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="ChangeRole">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @Html.Hidden("userId", (string)ViewBag.UserId)
+            <div class="form-group">
+                <input @(Model.Any(p=>p.Name==UserRoles.Admin.ToString())?"checked='checked'" : string.Empty) type="checkbox" id="Roles[0]" name="Roles[]" value="@UserRoles.Admin.ToString()">
+                <label for="Admin"> Admin</label><br>
+                <input @(Model.Any(p=>p.Name==UserRoles.Manager.ToString())?"checked='checked'" : string.Empty) type="checkbox" id="Roles[1]" name="Roles[]" value="@UserRoles.Manager.ToString()">
+                <label for="Manager"> Manage</label><br>
+                <input @(Model.Any(p=>p.Name==UserRoles.Developer.ToString())?"checked='checked'" : string.Empty) type="checkbox" id="Roles[2]" name="Roles[]" value="@UserRoles.Developer.ToString()">
+                <label for="Developer"> Developer</label><br>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Зберегти зміни" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="UserEditing" asp-route-userId="@ViewBag.UserId" >Назад</a>
+</div>
+

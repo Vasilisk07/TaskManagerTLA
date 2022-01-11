@@ -32,7 +32,7 @@ namespace TaskManagerTLA.BLL.Services.TaskService
             // а для чого ти робиш int?, якщо null не валідне значення?
             /// добав валідацію на 
             if (globalTaskId == null) throw new ServiceException("Не дійсне значення: globalTaskId = null");
-            await globalTasRepository.DeleteItemByIdAsync(globalTaskId.Value);
+            await globalTasRepository.DeleteItemAsync(new GlobalTask {Id= globalTaskId.Value});
             await globalTasRepository.SaveAsync();
         }
 
