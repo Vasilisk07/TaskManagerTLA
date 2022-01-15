@@ -1,4 +1,5 @@
-﻿using TaskManagerTLA.DAL.Identity.Entities;
+﻿using System.Collections.Generic;
+using TaskManagerTLA.DAL.Identity.Entities;
 
 namespace TaskManagerTLA.DAL.Entities
 {
@@ -9,6 +10,6 @@ namespace TaskManagerTLA.DAL.Entities
         public int GlobalTaskId { get; set; }
         public GlobalTask GlobalTask { get; set; }
         public int SpentHours { get; set; }
-        public string Description { get; set; }
+        public List<AssignedTComments> Comments { get; set; }
     }
 }

@@ -16,7 +16,7 @@
                 @Html.DisplayNameFor(model => model.SpentHours)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Description)
+                @Html.DisplayNameFor(model => model.Comments.LastOrDefault().DateModified)
             </th>
             <th></th>
         </tr>
@@ -32,11 +32,19 @@
                     @Html.DisplayFor(modelItem => item.SpentHours)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Description)
+                    @Html.DisplayFor(modelItem => item.Comments.LastOrDefault().DateModified)
                 </td>
                 <td>
                     @Html.ActionLink("Внести данні", "EnterDataIntoAssignedTask", new { userId = item.UserId, globalTaskId = item.GlobalTaskId })
-
+                    |
+                    @if (item.Comments.Count != 0)
+                    {
+                        @Html.ActionLink("Переглянути коментарії виконавця", "ShowATComments", new { userId = item.UserId, globalTaskId = item.GlobalTaskId })
+                    }
+                    else
+                    {
+                        <span style="color: gray">Данні відсутні</span>
+                    }
                 </td>
             </tr>
         }

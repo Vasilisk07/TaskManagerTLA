@@ -10,7 +10,7 @@ using TaskManagerTLA.DAL.Repositories.Interfaces;
 
 namespace TaskManagerTLA.DAL.Repositories.TaskRep
 {
-    public class GlobalTasksRepository : IRepository<GlobalTask, int>
+    public class GlobalTasksRepository : IGlobalTaskRepo<GlobalTask, int>
     {
         private readonly ApplicationContext dataBase;
         public GlobalTasksRepository(ApplicationContext context)
@@ -44,27 +44,11 @@ namespace TaskManagerTLA.DAL.Repositories.TaskRep
             });
         }
 
-        public async Task UpdateItemAsync(GlobalTask item)
-        {
-            await Task.Run(() =>
-            {
-                dataBase.Entry(item).State = EntityState.Modified;
-            });
-        }
-
-        public async Task<GlobalTask> FindItemAsync(Expression<Func<GlobalTask, bool>> predicate)
+        public async Task<GlobalTask> FindFirstItemAsync(Expression<Func<GlobalTask, bool>> predicate)
         {
             return await Task.Run(() =>
             {
                 return dataBase.GlobalTask.FirstOrDefault(predicate);
-            });
-        }
-
-        public async Task<IEnumerable<GlobalTask>> FindRangeAsync(Expression<Func<GlobalTask, bool>> predicate)
-        {
-            return await Task.Run(() =>
-            {
-                return dataBase.GlobalTask.Where(predicate);
             });
         }
 
@@ -80,18 +64,22 @@ namespace TaskManagerTLA.DAL.Repositories.TaskRep
             return await Task.FromResult(true);
         }
 
-        public async Task DeleteRangeAsync(IEnumerable<GlobalTask> deletedList)
-        {
-            await Task.Run(() =>
-            {
-                dataBase.GlobalTask.RemoveRange(deletedList);
-            });
-        }
-
         public async Task SaveAsync()
         {
             await dataBase.SaveChangesAsync();
         }
 
+
+        public async Task<GlobalTask> GetItemByGlobalTaskIdAsync(int taskId)
+        {
+            return await Task.Run(() =>
+            {
+                return dataBase.GlobalTask.Where(p => p.Id == taskId)
+                                          .Include(p => p.Users)
+                                          .Include(p => p.AssignedTasks)
+                                          .ThenInclude(c => c.Comments)
+                                          .FirstOrDefault();
+            });
+        }
     }
 }

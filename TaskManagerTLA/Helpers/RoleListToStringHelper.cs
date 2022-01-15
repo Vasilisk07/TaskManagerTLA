@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using TaskManagerTLA.Models;
 
 namespace TaskManagerTLA.Helpers
@@ -27,6 +25,5 @@ namespace TaskManagerTLA.Helpers
             tagP.WriteTo(writer, HtmlEncoder.Default);
             return new HtmlString(writer.ToString());
         }
-
     }
 }

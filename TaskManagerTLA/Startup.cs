@@ -33,7 +33,7 @@ namespace TaskManagerTLA
             {
                 app.UseDeveloperExceptionPage();
                 app.UseStatusCodePages();
-                
+
             }
             else
             {

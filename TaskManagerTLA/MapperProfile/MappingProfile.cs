@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using System.Linq;
 using TaskManagerTLA.BLL.DTO;
 using TaskManagerTLA.DAL.Entities;
 using TaskManagerTLA.DAL.Identity.Entities;
@@ -13,11 +12,10 @@ namespace TaskManagerTLA.BLL.Mapper
         {
             CreateMap<ApplicationRole, RoleDTO>();
             CreateMap<ApplicationUser, UserDTO>();
-            CreateMap<UserDTO,ApplicationUser> ();
-            //.ForMember(_ => _.Roles, opt => opt.MapFrom(c => c.Roles.FirstOrDefault().Name)); // жосткий костиль, краще зроби підтримку декількох ролей
+            CreateMap<UserDTO, ApplicationUser>();
             CreateMap<RegisterViewModel, UserDTO>();
             CreateMap<UserDTO, UserViewModel>();
-            CreateMap<UserViewModel,UserDTO> ();
+            CreateMap<UserViewModel, UserDTO>();
             CreateMap<LoginViewModel, UserDTO>();
             CreateMap<RoleDTO, RoleViewModel>();
             CreateMap<GlobalTaskViewModel, GlobalTaskDTO>();
@@ -30,6 +28,10 @@ namespace TaskManagerTLA.BLL.Mapper
             CreateMap<AssignedTaskDTO, AssignedTask>();
             CreateMap<AssignedTaskDTO, AssignedTaskViewModel>();
             CreateMap<AssignedTaskViewModel, AssignedTaskDTO>();
+            CreateMap<AssignedTComments, AssignedTCommentsDTO>();
+            CreateMap<AssignedTCommentsDTO, AssignedTComments>();
+            CreateMap<AssignedTCommentsViewModel, AssignedTCommentsDTO>();
+            CreateMap<AssignedTCommentsDTO, AssignedTCommentsViewModel>();
         }
     }
 }

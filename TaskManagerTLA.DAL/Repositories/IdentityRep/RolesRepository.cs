@@ -13,7 +13,8 @@ namespace TaskManagerTLA.DAL.Repositories.IdentityRep
     // створи базовий репозиторій Repository<T, string>, реалізуй в ньому усі ці базові методи
     // тут в RolesRepository наслідуй Repository<T, string>, якщщо потрібно добавляй специфічні для ролей методи
     // ці методи занеси в інтерфейс IRolesRepository який всюди будеш інджектити (IRepository<ApplicationRole, string>)
-    public class RolesRepository : IRepository<ApplicationRole,string>
+    // VB Тут я не зовсім зрозумів шо ти мав на увазі і в решті зробив по своєму
+    public class RolesRepository : IRoleRepository<ApplicationRole, string>
     {
 
         private readonly ApplicationContext dataBase;
@@ -44,13 +45,6 @@ namespace TaskManagerTLA.DAL.Repositories.IdentityRep
             return await Task.FromResult(true);
         }
 
-        public async Task DeleteRangeAsync(IEnumerable<ApplicationRole> deletedList)
-        {
-            await Task.Run(() =>
-            {
-               dataBase.Roles.RemoveRange(deletedList);
-            });
-        }
 
         public async Task<IEnumerable<ApplicationRole>> GetAllItemsAsync()
         {
@@ -67,28 +61,19 @@ namespace TaskManagerTLA.DAL.Repositories.IdentityRep
                 return dataBase.Roles.Find(itemId);
             });
         }
+        public async Task<ApplicationRole> GetItemByNameAsync(string itemName)
+        {
+            return await Task.Run(() =>
+            {
+                return dataBase.Roles.Where(p => p.Name == itemName).Include(p => p.Users).FirstOrDefault();
+            });
+        }
 
-        public async Task<ApplicationRole> FindItemAsync(Expression<Func<ApplicationRole, bool>> predicate)
+        public async Task<ApplicationRole> FindFirstItemAsync(Expression<Func<ApplicationRole, bool>> predicate)
         {
             return await Task.Run(() =>
             {
                 return dataBase.Roles.FirstOrDefault(predicate);
-            });
-        }
-
-        public async Task<IEnumerable<ApplicationRole>> FindRangeAsync(Expression<Func<ApplicationRole, bool>> predicate)
-        {
-            return await Task.Run(() =>
-            {
-                return dataBase.Roles.Where(predicate);
-            });
-        }
-
-        public async Task UpdateItemAsync(ApplicationRole item)
-        {
-            await Task.Run(() =>
-            {
-                dataBase.Roles.Update(item);
             });
         }
 

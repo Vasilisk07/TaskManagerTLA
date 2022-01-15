@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using System.Linq;
 using System.Collections.Generic;
 using TaskManagerTLA.BLL.DTO;
 using TaskManagerTLA.BLL.Services.IdentityService.Interfaces;
@@ -11,39 +10,24 @@ namespace TaskManagerTLA.BLL.Services.IdentityService
 {
     public class RoleService : IRoleService
     {
-        private IRepository<ApplicationRole, string> roleRepository { get; }
+        private IRoleRepository<ApplicationRole, string> RoleRepository { get; }
         private readonly IMapper mapper;
-        public RoleService(IRepository<ApplicationRole, string> roleRepository, IMapper mapper)
+        public RoleService(IRoleRepository<ApplicationRole, string> roleRepository, IMapper mapper)
         {
-            this.roleRepository = roleRepository;
+            this.RoleRepository = roleRepository;
             this.mapper = mapper;
         }
 
         public async Task<RoleDTO> GetRoleByNameAsync(string roleName)
         {
-            var role = await roleRepository.FindItemAsync(p => p.Name == roleName);
+            var role = await RoleRepository.GetItemByNameAsync(roleName);
             return mapper.Map<RoleDTO>(role);
         }
 
         public async Task<IEnumerable<RoleDTO>> GetRolesAsync()
         {
-            var rolesDb = await roleRepository.GetAllItemsAsync();
+            var rolesDb = await RoleRepository.GetAllItemsAsync();
             return mapper.Map<IEnumerable<ApplicationRole>, List<RoleDTO>>(rolesDb);
-        }
-
-        public async Task DeleteRoleAsync(string roleId)
-        {
-            if (roleId != null)
-            {
-                await roleRepository.DeleteItemAsync(new ApplicationRole { Id = roleId });
-                await roleRepository.SaveAsync();
-            }
-        }
-
-        public async Task CreateRoleAsync(string newRoleName)
-        {
-            await roleRepository.CreateItemAsync(new ApplicationRole(newRoleName));
-            await roleRepository.SaveAsync();
         }
 
     }

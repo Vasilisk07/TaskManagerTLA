@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using TaskManagerTLA.BLL.DTO;
-using TaskManagerTLA.BLL.Exeption;
 using TaskManagerTLA.BLL.Services.TaskService.Interfaces;
 using TaskManagerTLA.DAL.Entities;
 using TaskManagerTLA.DAL.Repositories.Interfaces;
@@ -12,9 +10,9 @@ namespace TaskManagerTLA.BLL.Services.TaskService
 {
     public class GlobalTaskService : IGlobalTaskService
     {
-        private readonly IRepository<GlobalTask, int> globalTasRepository;
+        private readonly IGlobalTaskRepo<GlobalTask, int> globalTasRepository;
         private readonly IMapper mapper;
-        public GlobalTaskService(IRepository<GlobalTask, int> globalTasRepository, IMapper mapper)
+        public GlobalTaskService(IGlobalTaskRepo<GlobalTask, int> globalTasRepository, IMapper mapper)
         {
             this.globalTasRepository = globalTasRepository;
             this.mapper = mapper;
@@ -27,19 +25,19 @@ namespace TaskManagerTLA.BLL.Services.TaskService
             await globalTasRepository.SaveAsync();
         }
 
-        public async Task DeleteGlobalTaskAsync(int? globalTaskId)
+        public async Task DeleteGlobalTaskAsync(int globalTaskId)
         {
             // а для чого ти робиш int?, якщо null не валідне значення?
             /// добав валідацію на 
-            if (globalTaskId == null) throw new ServiceException("Не дійсне значення: globalTaskId = null");
-            await globalTasRepository.DeleteItemAsync(new GlobalTask {Id= globalTaskId.Value});
+            //VB десь прочитав що якщо використовуєш в ролі ID int то він обовязково має бути Nullable type з ним типу простіше працювати
+
+            await globalTasRepository.DeleteItemByIdAsync(globalTaskId);
             await globalTasRepository.SaveAsync();
         }
 
-        public async Task<GlobalTaskDTO> GetGlobalTaskAsync(int? globalTaskId)
+        public async Task<GlobalTaskDTO> GetGlobalTaskAsync(int globalTaskId)
         {
-            if (globalTaskId == null) throw new ServiceException("Не дійсне значення: globalTaskId = null");
-            var globalTask = await globalTasRepository.GetItemByIdAsync(globalTaskId.Value);
+            var globalTask = await globalTasRepository.GetItemByIdAsync(globalTaskId);
             return mapper.Map<GlobalTaskDTO>(globalTask);
         }
 
@@ -49,18 +47,16 @@ namespace TaskManagerTLA.BLL.Services.TaskService
             return mapper.Map<IEnumerable<GlobalTaskDTO>>(globalTaskList);
         }
 
-        public async Task UpdateElapsedTimeGlobalTaskAsync(int? globalTaskId, int? elapsedTime)
+        public async Task UpdateElapsedTimeGlobalTaskAsync(int globalTaskId, int elapsedTime)
         {
-            if (globalTaskId == null) throw new ServiceException("Не дійсне значення: globalTaskId = null");
-            var globalTask = await globalTasRepository.GetItemByIdAsync(globalTaskId.Value);
-            globalTask.TotalSpentHours = elapsedTime != null && elapsedTime.Value > 0 ? globalTask.TotalSpentHours + elapsedTime.Value : globalTask.TotalSpentHours;
+            var globalTask = await globalTasRepository.GetItemByIdAsync(globalTaskId);
+            globalTask.TotalSpentHours = elapsedTime > 0 ? globalTask.TotalSpentHours + elapsedTime : globalTask.TotalSpentHours;
             await globalTasRepository.SaveAsync();
         }
 
-        public async Task<IEnumerable<AssignedTaskDTO>> GetAssignedTasksByGlobalTaskIdAsync(int? globalTaskId)
+        public async Task<IEnumerable<AssignedTaskDTO>> GetAssignedTasksByGlobalTaskIdAsync(int globalTaskId)
         {
-            if (globalTaskId == null) throw new ServiceException("Не дійсне значення: globalTaskId = null");
-            var assignedTasks = (await globalTasRepository.GetAllItemsAsync()).Where(p => p.Id == globalTaskId.Value).FirstOrDefault().AssignedTasks;
+            var assignedTasks = (await globalTasRepository.GetItemByGlobalTaskIdAsync(globalTaskId)).AssignedTasks;
             return mapper.Map<IEnumerable<AssignedTaskDTO>>(assignedTasks);
         }
     }

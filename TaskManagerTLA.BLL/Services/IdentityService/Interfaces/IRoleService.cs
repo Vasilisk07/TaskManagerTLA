@@ -8,7 +8,5 @@ namespace TaskManagerTLA.BLL.Services.IdentityService.Interfaces
     {
         Task<IEnumerable<RoleDTO>> GetRolesAsync();
         Task<RoleDTO> GetRoleByNameAsync(string roleName);
-        Task DeleteRoleAsync(string roleId);
-        Task CreateRoleAsync(string newRoleName);
     }
 }

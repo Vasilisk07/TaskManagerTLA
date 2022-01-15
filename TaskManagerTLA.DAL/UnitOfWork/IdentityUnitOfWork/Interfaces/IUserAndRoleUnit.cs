@@ -6,8 +6,8 @@ namespace TaskManagerTLA.DAL.UnitOfWork.IdentityUnitOfWork.Interfaces
 {
     public interface IUserAndRoleUnit
     {
-        IRepository<ApplicationUser, string> Users { get; }
-        IRepository<ApplicationRole, string> Roles { get; }
+        IUserRepository<ApplicationUser, string> Users { get; }
+        IRoleRepository<ApplicationRole, string> Roles { get; }
         Task SaveAsync();
     }
 }

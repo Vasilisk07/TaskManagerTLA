@@ -11,7 +11,6 @@ namespace TaskManagerTLA.Models
         [Required]
         [DataType(DataType.Password)]
         [Display(Name = "Пароль")]
-
         public string Password { get; set; }
 
         [Display(Name = "Запам'ятати?")]

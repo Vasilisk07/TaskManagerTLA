@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using TaskManagerTLA.DAL.Identity.Entities;
+﻿using System.Threading.Tasks;
 
 namespace TaskManagerTLA.DAL.Repositories.Interfaces
 {
-    //public interface IUserRepository : IRepository<ApplicationUser, string>
-    //{
-    //    Task<bool> AnyThereUsersAsync();
-
-    //}
+    public interface IUserRepository<T, I> : IRepository<T, I>
+    {
+        Task<bool> AnyThereUsersAsync();
+    }
 }

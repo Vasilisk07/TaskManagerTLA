@@ -5,19 +5,14 @@ using System.Threading.Tasks;
 
 namespace TaskManagerTLA.DAL.Repositories.Interfaces
 {
-
-    public interface IRepository<T, I> where T : class
+    public interface IRepository<T, I>
     {
         Task<IEnumerable<T>> GetAllItemsAsync();
         Task<T> GetItemByIdAsync(I id);
-        Task<T> FindItemAsync(Expression<Func<T, bool>> predicate);
-        Task<IEnumerable<T>> FindRangeAsync(Expression<Func<T, bool>> predicate);
+        Task<T> FindFirstItemAsync(Expression<Func<T, bool>> predicate);
         Task<bool> CreateItemAsync(T item);
-        Task UpdateItemAsync(T item);
         Task<bool> DeleteItemAsync(T item);
         Task<bool> DeleteItemByIdAsync(I itemId);
-        Task DeleteRangeAsync(IEnumerable<T> deletedList);
         Task SaveAsync();
     }
-
 }

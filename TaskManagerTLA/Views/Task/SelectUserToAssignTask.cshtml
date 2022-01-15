@@ -4,7 +4,7 @@
     ViewData["Title"] = "Додати користувача";
 }
 
-<h2>Додати користувача до задачі @ViewBag.TaskName</h2>
+<h2>Додати користувача до задачі:"@ViewBag.TaskName"</h2>
 
 
 <table class="table">
@@ -36,13 +36,12 @@
                     @Html.CreateString(item.Roles)
                 </td>
                 <td>
-
-                    @Html.ActionLink("Додати", "AssignTaskToUser", new { userId = item.Id, globalTaskId = ViewBag.globalTaskId }) |
+                    @Html.ActionLink("Додати", "AssignTaskToUser", new { userId = item.Id, globalTaskId = ViewBag.globalTaskId })
                 </td>
             </tr>
         }
     </tbody>
 </table>
 <div>
-    <a asp-action="TaskList">назад</a>
+    <a asp-action="TaskList">Назад</a>
 </div>

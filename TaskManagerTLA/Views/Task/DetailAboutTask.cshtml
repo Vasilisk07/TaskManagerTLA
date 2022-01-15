@@ -19,7 +19,7 @@
                 @Html.DisplayNameFor(model => model.SpentHours)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Description)
+                @Html.DisplayNameFor(model => model.Comments.LastOrDefault().DateModified)
             </th>
 
             <th></th>
@@ -37,11 +37,21 @@
                     @Html.DisplayFor(modelItem => item.SpentHours)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Description)
+                    @Html.DisplayFor(modelItem => item.Comments.LastOrDefault().DateModified)
                 </td>
 
                 <td>
                     @Html.ActionLink("Видалити виконавця", "CancelAssignedTask", new { userId = item.UserId, globalTaskId = ViewBag.globalTaskId })
+                    |
+                    @if (item.Comments.Count != 0)
+                    {
+                        @Html.ActionLink("Переглянути коментарії виконавця", "ShowATComments", new { userId = item.UserId, globalTaskId = ViewBag.globalTaskId })
+                    }
+                    else
+                    {
+                        <span style="color: gray">Користувач ще не вносив данних</span>
+                    }
+
                 </td>
             </tr>
         }

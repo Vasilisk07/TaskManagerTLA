@@ -13,6 +13,7 @@ namespace TaskManagerTLA.DAL.EF
     {
         public DbSet<GlobalTask> GlobalTask { get; set; }
         public DbSet<AssignedTask> AssignedTask { get; set; }
+        public DbSet<AssignedTComments> AssignedTaskComments { get; set; }
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
         {
@@ -24,6 +25,7 @@ namespace TaskManagerTLA.DAL.EF
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfiguration(new IdentityConfiguration());
             modelBuilder.ApplyConfiguration(new TaskConfiguration());
+            modelBuilder.ApplyConfiguration(new AssignedTaskConfiguration());
 
             //Ініціалізуєм базу данних ролями. (При виконанні міграцій вони будуть додані в базу)
             modelBuilder.Entity<ApplicationRole>().HasData(

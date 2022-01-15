@@ -55,16 +55,15 @@ namespace TaskManagerTLA.Controllers
         [Authorize(Roles = "Admin, Manager")]
         [ActionName("DeleteTask")]
         [HttpGet]
-        public async Task<IActionResult> ConfirmDeleteTaskAsync(int? globalTaskId)
+        public async Task<IActionResult> ConfirmDeleteTaskAsync(int globalTaskId)
         {
             var task = (await GlobalTaskaskService.GetGlobalTasksAsync()).Where(p => p.Id == globalTaskId).FirstOrDefault();
             return View(task);
         }
 
-
         [Authorize(Roles = "Admin, Manager")]
         [HttpPost]
-        public async Task<IActionResult> DeleteTaskAsync(int Id) // і не треба потім нічого перевіряти на null
+        public async Task<IActionResult> DeleteTaskAsync(int Id)
         {
             try
             {
@@ -79,7 +78,7 @@ namespace TaskManagerTLA.Controllers
         }
 
         [Authorize(Roles = "Admin, Manager")]
-        public async Task<ActionResult<IEnumerable<AssignedTaskViewModel>>> DetailAboutTaskAsync(int? globalTaskId)
+        public async Task<ActionResult<IEnumerable<AssignedTaskViewModel>>> DetailAboutTaskAsync(int globalTaskId)
         {
             try
             {
@@ -98,7 +97,7 @@ namespace TaskManagerTLA.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin, Manager")]
-        public async Task<ActionResult<IEnumerable<UserViewModel>>> SelectUserToAssignTaskAsync(int? globalTaskId)
+        public async Task<ActionResult<IEnumerable<UserViewModel>>> SelectUserToAssignTaskAsync(int globalTaskId)
         {
             try
             {
@@ -113,11 +112,10 @@ namespace TaskManagerTLA.Controllers
                 ModelState.AddModelError("", ex.Message);
                 return View();
             }
-
         }
 
         [Authorize(Roles = "Admin, Manager")]
-        public async Task<IActionResult> AssignTaskToUserAsync(string userId, int? globalTaskId)
+        public async Task<IActionResult> AssignTaskToUserAsync(string userId, int globalTaskId)
         {
             try
             {
@@ -132,7 +130,7 @@ namespace TaskManagerTLA.Controllers
         }
 
         [Authorize(Roles = "Admin, Manager")]
-        public async Task<IActionResult> CancelAssignedTaskAsync(string userId, int? globalTaskId)
+        public async Task<IActionResult> CancelAssignedTaskAsync(string userId, int globalTaskId)
         {
             try
             {
@@ -156,12 +154,12 @@ namespace TaskManagerTLA.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin, Manager, Developer")]
-        public async Task<ActionResult<EditAssignedTaskViewModel>> EnterDataIntoAssignedTaskAsync(string userId, int? globalTaskId)
+        public async Task<ActionResult<EditAssignedTaskViewModel>> EnterDataIntoAssignedTaskAsync(string userId, int globalTaskId)
         {
             try
             {
                 ViewBag.TaskName = (await GlobalTaskaskService.GetGlobalTaskAsync(globalTaskId)).Name;
-                return View(new EditAssignedTaskViewModel { UserId = userId, GlobalTaskId = globalTaskId.Value });
+                return View(new EditAssignedTaskViewModel { UserId = userId, GlobalTaskId = globalTaskId });
             }
             catch (ServiceException ex)
             {
@@ -178,6 +176,14 @@ namespace TaskManagerTLA.Controllers
             await AssignedTaskService.UpdateElapsedTimeAssignedTaskAsync(EditModel.UserId, EditModel.GlobalTaskId, EditModel.SpentHours);
             await GlobalTaskaskService.UpdateElapsedTimeGlobalTaskAsync(EditModel.GlobalTaskId, EditModel.SpentHours);
             return RedirectToAction("ShowAssignedTaskCurrentUser", "Task");
+        }
+
+        [Authorize(Roles = "Admin, Manager, Developer")]
+        public async Task<ActionResult<IEnumerable<AssignedTCommentsViewModel>>> ShowATCommentsAsync(string userId, int globalTaskId)
+        {
+            var personalTasksDTOList = (await AssignedTaskService.GetAssignedTaskCommentsAsync(userId, globalTaskId)).ToList();
+            var personalTasksViewList = Mapper.Map<IEnumerable<AssignedTCommentsDTO>, List<AssignedTCommentsViewModel>>(personalTasksDTOList);
+            return View(personalTasksViewList);
         }
     }
 }

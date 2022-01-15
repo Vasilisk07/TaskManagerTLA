@@ -1,14 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TaskManagerTLA.BLL.DTO;
 using TaskManagerTLA.BLL.Exeption;
 using TaskManagerTLA.BLL.Services.IdentityService.Interfaces;
-using TaskManagerTLA.DAL.Entities;
 using TaskManagerTLA.Models;
 
 namespace TaskManagerTLA.Controllers
@@ -18,14 +16,12 @@ namespace TaskManagerTLA.Controllers
         private readonly IMapper mapper;
         private readonly IAuthService loginService;
         private readonly IRoleService rolesService;
-        private readonly IUserRoleService userRoleService;
         private readonly IUserService userService;
-        public AccountController(IAuthService loginService, IRoleService rolesService, IUserRoleService userRoleService, IUserService userService, IMapper mapper)
+        public AccountController(IAuthService loginService, IRoleService rolesService, IUserService userService, IMapper mapper)
         {
             this.mapper = mapper;
             this.loginService = loginService;
             this.rolesService = rolesService;
-            this.userRoleService = userRoleService;
             this.userService = userService;
         }
 
@@ -172,7 +168,7 @@ namespace TaskManagerTLA.Controllers
 
             await userService.ChangeUserRolesAsync(userId, roles);
             TempData["RoleInfo"] = $"Здійснена успішна зміна ролей користувача.";
-            return RedirectToAction("UserEditing", "Account", new { userId = userId });
+            return RedirectToAction("UserEditing", "Account", new { userId });
         }
 
         [Authorize(Roles = "Admin")]
@@ -191,7 +187,7 @@ namespace TaskManagerTLA.Controllers
             try
             {
                 await userService.CreateUserAndRoleAsync(userDTO, role);
-                TempData["UserInfo"] =$"Користувач під ніком {userDTO.UserName} успішно створений.";
+                TempData["UserInfo"] = $"Користувач під ніком {userDTO.UserName} успішно створений.";
             }
             catch (LoginException ex)
             {
@@ -201,8 +197,5 @@ namespace TaskManagerTLA.Controllers
 
             return RedirectToAction("ListUser", "Account");
         }
-
-
-
     }
 }

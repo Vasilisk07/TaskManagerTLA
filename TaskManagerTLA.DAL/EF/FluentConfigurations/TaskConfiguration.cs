@@ -26,7 +26,6 @@ namespace TaskManagerTLA.DAL.EF.FluentConfigurations
              j =>
              {
                  j.Property(pt => pt.SpentHours).HasDefaultValue(0);
-                 j.Property(pt => pt.Description).HasDefaultValue("");
                  j.HasKey(t => new { t.GlobalTaskId, t.UserId });
                  j.ToTable("AssignedTask");
 

@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using TaskManagerTLA.BLL.DTO;
 using TaskManagerTLA.BLL.Exeption;
 using TaskManagerTLA.BLL.Services.IdentityService.Interfaces;
@@ -27,33 +26,25 @@ namespace TaskManagerTLA.BLL.Services.IdentityService
         public async Task CreateUserAndRoleAsync(UserDTO newUser, string roleName)
         {
 
-
-            if ((await UserAndRoleUnit.Users.FindItemAsync(p => p.UserName == newUser.UserName)) != null)
+            if ((await UserAndRoleUnit.Users.FindFirstItemAsync(p => p.UserName == newUser.UserName)) != null)
             {
                 throw new LoginException("Користувач з таким іменем вже існує!");
             }
 
             //Визначаємо яку роль присвоїти користувачу
             ApplicationRole newUserRole;
-            if (false)  //await UserAndRoleUnit.Users.AnyThereUsersAsync(
+            if (await UserAndRoleUnit.Users.AnyThereUsersAsync())
             {
-                newUserRole = await UserAndRoleUnit.Roles.FindItemAsync(p => p.Name == UserRoles.Admin.ToString());
+                newUserRole = await UserAndRoleUnit.Roles.GetItemByNameAsync(UserRoles.Admin.ToString());
             }
             else if (roleName != null)
             {
-                newUserRole = await UserAndRoleUnit.Roles.FindItemAsync(p => p.Name == roleName);
+                newUserRole = await UserAndRoleUnit.Roles.GetItemByNameAsync(roleName);
             }
             else
             {
-                newUserRole = await UserAndRoleUnit.Roles.FindItemAsync(p => p.Name == UserRoles.Developer.ToString());
+                newUserRole = await UserAndRoleUnit.Roles.GetItemByNameAsync(UserRoles.Developer.ToString());
             }
-
-
-            // ця перевірка дістане всі мільон юзерів, тільки для того щоб перевірити чи є один, краще перевірити dbSet.Any()
-            //if (!(await UserAndRoleUnit.Users.GetAllItemsAsync()).Any())
-            //{
-            //    newUserRole = await UserAndRoleUnit.Roles.FindItemAsync(p => p.Name == UserRoles.Admin.ToString());
-            //}
 
             PasswordHasher<ApplicationUser> hasher = new PasswordHasher<ApplicationUser>();
             ApplicationUser newUserDb = new ApplicationUser()
@@ -68,8 +59,6 @@ namespace TaskManagerTLA.BLL.Services.IdentityService
             newUserDb.Roles.Add(newUserRole);
             await UserAndRoleUnit.Users.CreateItemAsync(newUserDb);
             await UserAndRoleUnit.SaveAsync();
-
-
         }
 
         public async Task DeleteUserAsync(string userId)
@@ -87,16 +76,16 @@ namespace TaskManagerTLA.BLL.Services.IdentityService
 
         public async Task<UserDTO> GetUserByNameAsync(string userName)
         {
-            var userDb = await UserAndRoleUnit.Users.FindItemAsync(p => p.UserName == userName);
+            var userDb = await UserAndRoleUnit.Users.FindFirstItemAsync(p => p.UserName == userName);
             var user = mapper.Map<UserDTO>(userDb);
             return user;
         }
 
-        public async Task<IEnumerable<UserDTO>> GetUsersWhoAreNotAssignedTaskAsync(int? globalTaskId)
+        public async Task<IEnumerable<UserDTO>> GetUsersWhoAreNotAssignedTaskAsync(int globalTaskId)
         {
             var freeUsers = (await UserAndRoleUnit.Users.GetAllItemsAsync())
                      .Where(p => p.Roles.Any(c => c.Name == UserRoles.Developer.ToString()))
-                     .Where(p => p.GlobalTasks.Count==0 || p.GlobalTasks.All(c => c.Id != globalTaskId));
+                     .Where(p => p.GlobalTasks.Count == 0 || p.GlobalTasks.All(c => c.Id != globalTaskId));
 
             return mapper.Map<IEnumerable<ApplicationUser>, List<UserDTO>>(freeUsers);
         }
@@ -110,10 +99,7 @@ namespace TaskManagerTLA.BLL.Services.IdentityService
 
         public async Task<IEnumerable<RoleDTO>> GetUserRolesAsync(string userId)
         {
-            var roles = (await UserAndRoleUnit.Users.GetAllItemsAsync())
-                .Where(p => p.Id == userId)
-                .FirstOrDefault()
-                .Roles;
+            var roles = (await UserAndRoleUnit.Users.GetItemByIdAsync(userId)).Roles;
             return mapper.Map<IEnumerable<ApplicationRole>, List<RoleDTO>>(roles);
         }
 
@@ -122,11 +108,11 @@ namespace TaskManagerTLA.BLL.Services.IdentityService
 
             if (roles != null && roles.Length != 0)
             {
-                var editUser = (await UserAndRoleUnit.Users.GetAllItemsAsync()).Where(p => p.Id == userId).FirstOrDefault();
+                var editUser = await UserAndRoleUnit.Users.GetItemByIdAsync(userId);
                 var newRoles = new List<ApplicationRole>();
                 foreach (var item in roles)
                 {
-                    newRoles.Add((await UserAndRoleUnit.Roles.GetAllItemsAsync()).Where(p => p.Name == item).FirstOrDefault());
+                    newRoles.Add(await UserAndRoleUnit.Roles.GetItemByNameAsync(item));
                 }
                 editUser.Roles = newRoles;
                 await UserAndRoleUnit.SaveAsync();
@@ -139,11 +125,11 @@ namespace TaskManagerTLA.BLL.Services.IdentityService
             {
                 throw new ServiceException("Всі поля повинні бути заповнені");
             }
-            else if ((await UserAndRoleUnit.Users.FindItemAsync(p => p.UserName.ToUpper() == user.UserName.ToUpper() && p.Id != user.Id)) != null)
+            else if ((await UserAndRoleUnit.Users.FindFirstItemAsync(p => p.UserName.ToUpper() == user.UserName.ToUpper() && p.Id != user.Id)) != null)
             {
                 throw new ServiceException($"Користувач з таким іменем: {user.UserName} вже існує");
             }
-            else if ((await UserAndRoleUnit.Users.FindItemAsync(p => p.Email.ToUpper() == user.Email.ToUpper() && p.Id != user.Id)) != null)
+            else if ((await UserAndRoleUnit.Users.FindFirstItemAsync(p => p.Email.ToUpper() == user.Email.ToUpper() && p.Id != user.Id)) != null)
             {
                 throw new ServiceException($"Користувач з таким Email: {user.Email} вже існує");
             }
@@ -158,7 +144,5 @@ namespace TaskManagerTLA.BLL.Services.IdentityService
             }
 
         }
-
-
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace TaskManagerTLA.Models
 {
@@ -8,7 +9,7 @@ namespace TaskManagerTLA.Models
         public int SpentHours { get; set; }
 
         [Display(Name = "Короткі звіти")]
-        public string Description { get; set; }
+        public List<AssignedTCommentsViewModel> Comments { get; set; }
 
         [Display(Name = "Виконавці")]
         public string UserName { get; set; }

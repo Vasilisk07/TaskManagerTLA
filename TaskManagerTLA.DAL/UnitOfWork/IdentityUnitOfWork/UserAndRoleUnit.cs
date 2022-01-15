@@ -7,10 +7,10 @@ namespace TaskManagerTLA.DAL.UnitOfWork.IdentityUnitOfWork
 {
     public class UserAndRoleUnit : IUserAndRoleUnit
     {
-        public IRepository<ApplicationUser, string> Users { get; }
-        public IRepository<ApplicationRole, string> Roles { get; }
+        public IUserRepository<ApplicationUser, string> Users { get; }
+        public IRoleRepository<ApplicationRole, string> Roles { get; }
 
-        public UserAndRoleUnit(IRepository<ApplicationUser, string> users, IRepository<ApplicationRole, string> roles)
+        public UserAndRoleUnit(IUserRepository<ApplicationUser, string> users, IRoleRepository<ApplicationRole, string> roles)
         {
             Users = users;
             Roles = roles;
@@ -22,7 +22,7 @@ namespace TaskManagerTLA.DAL.UnitOfWork.IdentityUnitOfWork
         public async Task SaveAsync()
         {
             await Users.SaveAsync();
-           // await Roles.SaveAsync();
+            // await Roles.SaveAsync();
         }
     }
 }

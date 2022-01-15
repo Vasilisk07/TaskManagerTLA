@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using TaskManagerTLA.BLL.DTO;
@@ -13,10 +12,10 @@ namespace TaskManagerTLA.BLL.Services.TaskService
 {
     public class AssignedTaskService : IAssignedTaskService
     {
-        private readonly IRepository<AssignedTask, int> assignedTaskRepository;
+        private readonly IAssignedTaskRepo<AssignedTask, int> assignedTaskRepository;
         private readonly IMapper mapper;
 
-        public AssignedTaskService(IRepository<AssignedTask, int> assignedTaskRepository, IMapper mapper)
+        public AssignedTaskService(IAssignedTaskRepo<AssignedTask, int> assignedTaskRepository, IMapper mapper)
         {
             this.assignedTaskRepository = assignedTaskRepository;
             this.mapper = mapper;
@@ -24,59 +23,52 @@ namespace TaskManagerTLA.BLL.Services.TaskService
 
         public async Task<IEnumerable<AssignedTaskDTO>> GetAssignedTasksByUserNameAsync(string username)
         {
-            // не ефективно
-            var assignedTaskList = (await assignedTaskRepository.GetAllItemsAsync()).Where(p => p.User.UserName == username);
+            var assignedTaskList = await assignedTaskRepository.GetItemsByUserNameAsync(username);
             return mapper.Map<IEnumerable<AssignedTask>, List<AssignedTaskDTO>>(assignedTaskList);
         }
 
-        public async Task CreateAssignedTaskAsync(string userId, int? globalTaskId)
+        public async Task CreateAssignedTaskAsync(string userId, int globalTaskId)
         {
-            // так точно буде видно що прийшло пустим
             if (userId == null)
                 throw new ArgumentNullException("userId не може бути пустим");
 
-            if (globalTaskId == null)
-                throw new ArgumentNullException("globalTaskId не може бути пустим");
-
-            await assignedTaskRepository.CreateItemAsync(new AssignedTask { UserId = userId, GlobalTaskId = globalTaskId.Value });
+            await assignedTaskRepository.CreateItemAsync(new AssignedTask { UserId = userId, GlobalTaskId = globalTaskId });
             await assignedTaskRepository.SaveAsync();
         }
 
-        public async Task UpdateDescriptionAsync(string userId, int? globalTaskId, string description)
+        public async Task UpdateDescriptionAsync(string userId, int globalTaskId, string description)
         {
-            // не ефективно
-            //  var asignedTask = await assignedTaskRepository.GetTaskForUserAsync(userId,globalTaskId);
-            var asignedTask = (await assignedTaskRepository.GetAllItemsAsync()).Where(p => (p.UserId == userId && p.GlobalTaskId == globalTaskId)).FirstOrDefault();
-            asignedTask.Description = description != null ? $" {asignedTask.Description} | {DateTime.Now:dd.MM.yyyy} {description}" : asignedTask.Description;
-            // думаю тут з кожнним апдейтом буде добавлятись | {DateTime.Now:dd.MM.yyyy} {description}
-            // краще збережи asignedTaskю.UpdatedAt = DateTime.Now:dd.MM.yyyy і показуй його на формі
+            var asignedTask = await assignedTaskRepository.GetTaskForUserIdAsync(userId, globalTaskId);
+            asignedTask.Comments.Add(new AssignedTComments { DateModified = DateTime.Now, Comments = description });
             await assignedTaskRepository.SaveAsync();
         }
 
-        public async Task UpdateElapsedTimeAssignedTaskAsync(string userId, int? globalTaskId, int? elapsedTime)
+        public async Task UpdateElapsedTimeAssignedTaskAsync(string userId, int globalTaskId, int elapsedTime)
         {
-            if (globalTaskId == null || userId == null)
-                throw new ServiceException("Не дійсне значення: userId або globalTaskId = null");
-
-            var asignedTask = (await assignedTaskRepository.GetAllItemsAsync()).Where(p => (p.UserId == userId && p.GlobalTaskId == globalTaskId)).FirstOrDefault();
-            // тут я не можу зрозуміти як воно має работати :-)
-            asignedTask.SpentHours = elapsedTime != null && elapsedTime.Value > 0 ? asignedTask.SpentHours + elapsedTime.Value : asignedTask.SpentHours;
+            var asignedTask = await assignedTaskRepository.GetTaskForUserIdAsync(userId, globalTaskId);
+            asignedTask.SpentHours = elapsedTime > 0 ? asignedTask.SpentHours + elapsedTime : asignedTask.SpentHours;
             await assignedTaskRepository.SaveAsync();
         }
 
-        public async Task DeleteAssignedTaskAsync(string userId, int? globalTaskId)
-        {
-            if (globalTaskId == null || userId == null)
-                throw new ServiceException("Не дійсне значення: userId або globalTaskId = null");
 
-            var delAsignedTask = await assignedTaskRepository.FindItemAsync(p => p.GlobalTaskId == globalTaskId && p.UserId == userId);
+        public async Task DeleteAssignedTaskAsync(string userId, int globalTaskId)
+        {
+            if (userId == null)
+                throw new ServiceException("Не дійсне значення: userId = null");
+
+            var delAsignedTask = await assignedTaskRepository.FindFirstItemAsync(p => p.GlobalTaskId == globalTaskId && p.UserId == userId);
 
             if (delAsignedTask == null)
                 throw new ServiceException("Не знайдено відповідний запис в базі данних: AsignedTask = null");
-            // пару пустий ліній і код читаєтьяс набагато лешге
 
             await assignedTaskRepository.DeleteItemAsync(delAsignedTask);
             await assignedTaskRepository.SaveAsync();
+        }
+
+        public async Task<IEnumerable<AssignedTCommentsDTO>> GetAssignedTaskCommentsAsync(string userId, int globalTaskId)
+        {
+            var assignedTask = (await assignedTaskRepository.FindFirstItemAsync(p => p.GlobalTaskId == globalTaskId && p.UserId == userId));
+            return mapper.Map<IEnumerable<AssignedTComments>, List<AssignedTCommentsDTO>>(assignedTask.Comments);
         }
     }
 }

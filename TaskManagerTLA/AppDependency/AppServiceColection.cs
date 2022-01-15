@@ -22,10 +22,10 @@ namespace TaskManagerTLA.MyDependency
         public static IServiceCollection AddDataBaseService(this IServiceCollection services)
         {
             // Repository
-            services.AddTransient<IRepository<ApplicationUser, string>, UsersRepository>();
-            services.AddTransient<IRepository<ApplicationRole, string>, RolesRepository>();
-            services.AddTransient<IRepository<AssignedTask, int>, AssignedTaskRepository>();
-            services.AddTransient<IRepository<GlobalTask, int>, GlobalTasksRepository>();
+            services.AddTransient<IUserRepository<ApplicationUser, string>, UsersRepository>();
+            services.AddTransient<IRoleRepository<ApplicationRole, string>, RolesRepository>();
+            services.AddTransient<IAssignedTaskRepo<AssignedTask, int>, AssignedTaskRepository>();
+            services.AddTransient<IGlobalTaskRepo<GlobalTask, int>, GlobalTasksRepository>();
             // UnitOfWork
             services.AddTransient<IUserAndRoleUnit, UserAndRoleUnit>();
             return services;
@@ -44,7 +44,6 @@ namespace TaskManagerTLA.MyDependency
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IRoleService, RoleService>();
-            services.AddTransient<IUserRoleService, UserRoleService>();
             return services;
         }
 

@@ -1,4 +1,4 @@
-﻿@model IEnumerable< TaskManagerTLA.Models.RoleViewModel>
+﻿@model IEnumerable<TaskManagerTLA.Models.RoleViewModel>
 
 @{
     ViewData["Title"] = "Зміна ролей користувача.";
@@ -14,11 +14,11 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             @Html.Hidden("userId", (string)ViewBag.UserId)
             <div class="form-group">
-                <input @(Model.Any(p=>p.Name==UserRoles.Admin.ToString())?"checked='checked'" : string.Empty) type="checkbox" id="Roles[0]" name="Roles[]" value="@UserRoles.Admin.ToString()">
+                <input @(Model.Any(p => p.Name == UserRoles.Admin.ToString()) ? "checked='checked'" : string.Empty) type="checkbox" id="Roles[0]" name="Roles[]" value="@UserRoles.Admin.ToString()">
                 <label for="Admin"> Admin</label><br>
-                <input @(Model.Any(p=>p.Name==UserRoles.Manager.ToString())?"checked='checked'" : string.Empty) type="checkbox" id="Roles[1]" name="Roles[]" value="@UserRoles.Manager.ToString()">
+                <input @(Model.Any(p => p.Name == UserRoles.Manager.ToString()) ? "checked='checked'" : string.Empty) type="checkbox" id="Roles[1]" name="Roles[]" value="@UserRoles.Manager.ToString()">
                 <label for="Manager"> Manage</label><br>
-                <input @(Model.Any(p=>p.Name==UserRoles.Developer.ToString())?"checked='checked'" : string.Empty) type="checkbox" id="Roles[2]" name="Roles[]" value="@UserRoles.Developer.ToString()">
+                <input @(Model.Any(p => p.Name == UserRoles.Developer.ToString()) ? "checked='checked'" : string.Empty) type="checkbox" id="Roles[2]" name="Roles[]" value="@UserRoles.Developer.ToString()">
                 <label for="Developer"> Developer</label><br>
             </div>
             <div class="form-group">
@@ -29,6 +29,6 @@
 </div>
 
 <div>
-    <a asp-action="UserEditing" asp-route-userId="@ViewBag.UserId" >Назад</a>
+    <a asp-action="UserEditing" asp-route-userId="@ViewBag.UserId">Назад</a>
 </div>
 

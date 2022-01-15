@@ -10,7 +10,7 @@ using TaskManagerTLA.DAL.Repositories.Interfaces;
 
 namespace TaskManagerTLA.DAL.Repositories.IdentityRep
 {
-    public class UsersRepository : IRepository<ApplicationUser, string>
+    public class UsersRepository : IUserRepository<ApplicationUser, string>
     {
         private readonly ApplicationContext dataBase;
 
@@ -36,14 +36,8 @@ namespace TaskManagerTLA.DAL.Repositories.IdentityRep
 
         public async Task<bool> DeleteItemAsync(ApplicationUser item)
         {
-            //if (item != null) // така перевірка дуже небезпечна тим, що ти ніколи не дізнаєшся що в тебе в коді щось зламалось і прийшов item==null
-            //{
-            //    var res = dataBase.Users.Remove(item);
-            //    return res.State == EntityState.Deleted;
-            //}
             dataBase.Users.Remove(item);
-            return await Task.FromResult(true); // так можна заткнути компілятор щоб не ругався warning CS1998: This async method lacks 'await' operators and will run synchronously. Consider using the 'await' operator to await non-blocking API calls, or 'await Task.Run(...)' to do CPU-bound work on a background thread.
-
+            return await Task.FromResult(true);
         }
 
         public async Task<bool> DeleteItemByIdAsync(string itemId)
@@ -52,13 +46,6 @@ namespace TaskManagerTLA.DAL.Repositories.IdentityRep
             return await Task.FromResult(true);
         }
 
-        public async Task DeleteRangeAsync(IEnumerable<ApplicationUser> deletedList)
-        {
-            await Task.Run(() =>
-            {
-                dataBase.Users.RemoveRange(deletedList);
-            });
-        }
 
         public async Task<IEnumerable<ApplicationUser>> GetAllItemsAsync()
         {
@@ -70,30 +57,22 @@ namespace TaskManagerTLA.DAL.Repositories.IdentityRep
 
         public async Task<ApplicationUser> GetItemByIdAsync(string itemId)
         {
-            return await dataBase.Users.FindAsync(itemId);
+            return await Task.Run(() =>
+            {
+                return dataBase.Users.Where(p => p.Id == itemId)
+                    .Include(c => c.GlobalTasks)
+                    .Include(c => c.AssignedTasks)
+                    .Include(c => c.Roles)
+                    .FirstOrDefault();
+            });
+
         }
 
-        public async Task<ApplicationUser> FindItemAsync(Expression<Func<ApplicationUser, bool>> predicate)
+        public async Task<ApplicationUser> FindFirstItemAsync(Expression<Func<ApplicationUser, bool>> predicate)
         {
-            // linq може перетворити Expression на sql запит і послати його на сервер, Func доведеться запукати уже локально тут для ВСІХ дкументів що прийдуть з бд
             return await dataBase.Users.FirstOrDefaultAsync(predicate);
         }
 
-        public async Task<IEnumerable<ApplicationUser>> FindRangeAsync(Expression<Func<ApplicationUser, bool>> predicate)
-        {
-            return await Task.Run(() =>
-            {
-                return dataBase.Users.Where(predicate);
-            });
-        }
-
-        public async Task UpdateItemAsync(ApplicationUser item)
-        {
-            await Task.Run(() =>
-            {
-                dataBase.Users.Update(item);
-            });
-        }
         public async Task SaveAsync()
         {
             await dataBase.SaveChangesAsync();

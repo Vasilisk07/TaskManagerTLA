@@ -1,0 +1,38 @@
+﻿@model IEnumerable<TaskManagerTLA.Models.AssignedTCommentsViewModel>
+
+@{
+    ViewData["Title"] = "Список змін";
+}
+
+<h2>@ViewData["Title"] до задачі: @Model.FirstOrDefault().AssignedTask.GlobalTaskName</h2>
+<h3>Виконавець: @Model.FirstOrDefault().AssignedTask.UserName</h3>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.DateModified)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Comments)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DateModified)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Comments)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div>
+    <a asp-action="ShowAssignedTaskCurrentUser">Повернутись до задач</a>
+</div>

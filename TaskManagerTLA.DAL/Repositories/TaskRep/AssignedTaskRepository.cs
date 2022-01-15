@@ -10,7 +10,7 @@ using TaskManagerTLA.DAL.Repositories.Interfaces;
 
 namespace TaskManagerTLA.DAL.Repositories.TaskRep
 {
-    public class AssignedTaskRepository : IRepository<AssignedTask, int>
+    public class AssignedTaskRepository : IAssignedTaskRepo<AssignedTask, int>
     {
         private readonly ApplicationContext dataBase;
 
@@ -44,27 +44,15 @@ namespace TaskManagerTLA.DAL.Repositories.TaskRep
             });
         }
 
-        public async Task UpdateItemAsync(AssignedTask item)
-        {
-            await Task.Run(() =>
-            {
-                dataBase.Entry(item).State = EntityState.Modified;
-            });
-        }
-
-        public async Task<AssignedTask> FindItemAsync(Expression<Func<AssignedTask, bool>> predicate)
+        public async Task<AssignedTask> FindFirstItemAsync(Expression<Func<AssignedTask, bool>> predicate)
         {
             return await Task.Run(() =>
             {
-                return dataBase.AssignedTask.FirstOrDefault(predicate);
-            });
-        }
-
-        public async Task<IEnumerable<AssignedTask>> FindRangeAsync(Expression<Func<AssignedTask, bool>> predicate)
-        {
-            return await Task.Run(() =>
-            {
-                return dataBase.AssignedTask.Where(predicate);
+                return dataBase.AssignedTask.Where(predicate)
+                                            .Include(p => p.Comments)
+                                            .Include(p => p.User)
+                                            .Include(p => p.GlobalTask)
+                                            .FirstOrDefault();
             });
         }
 
@@ -80,19 +68,30 @@ namespace TaskManagerTLA.DAL.Repositories.TaskRep
             return await Task.FromResult(true);
         }
 
-
-        public async Task DeleteRangeAsync(IEnumerable<AssignedTask> deletedList)
-        {
-            await Task.Run(() =>
-            {
-                dataBase.AssignedTask.RemoveRange(deletedList);
-            });
-        }
-
         public async Task SaveAsync()
         {
             await dataBase.SaveChangesAsync();
         }
 
+        public async Task<IEnumerable<AssignedTask>> GetItemsByUserNameAsync(string username)
+        {
+            return await Task.Run(() =>
+            {
+                return dataBase.AssignedTask.Where(p => p.User.UserName == username)
+                                            .Include(p => p.GlobalTask)
+                                            .Include(p => p.Comments);
+            });
+        }
+
+        public async Task<AssignedTask> GetTaskForUserIdAsync(string userId, int taskId)
+        {
+            return await Task.Run(() =>
+            {
+                return dataBase.AssignedTask.Where(p => p.User.Id == userId && p.GlobalTask.Id == taskId)
+                                            .Include(p => p.GlobalTask)
+                                            .Include(p => p.Comments)
+                                            .FirstOrDefault();
+            });
+        }
     }
 }
