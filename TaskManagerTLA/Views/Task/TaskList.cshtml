@@ -7,7 +7,7 @@
 <h1>Список Задач</h1>
 
 <p>
-    <a asp-action="CreateTask">Додати задачу</a>
+    <a asp-action="CreateTask" class="btn btn-info">Додати задачу</a>
 </p>
 <table class="table">
     <thead>
@@ -28,7 +28,6 @@
             <th>
                 @Html.DisplayNameFor(model => model.End)
             </th>
-            <th></th>
         </tr>
     </thead>
     <tbody>

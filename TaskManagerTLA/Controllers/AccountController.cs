@@ -84,11 +84,20 @@ namespace TaskManagerTLA.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<IEnumerable<UserViewModel>>> ListUserAsync()
+        public async Task<ActionResult<IEnumerable<UserViewModel>>> ListUserAsync(int page = 1)
         {
+            int pageSize = 5;
             IEnumerable<UserDTO> userDTO = await userService.GetUsersAsync();
             var usersModels = mapper.Map<IEnumerable<UserDTO>, List<UserViewModel>>(userDTO);
-            return View(usersModels);
+            var count = usersModels.Count();
+            var items = usersModels.Skip((page-1)*pageSize).Take(pageSize).ToList();
+            PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
+            UserListViewModel userListViewModel = new UserListViewModel
+            {
+                PageViewModel = pageViewModel,
+                Users = items
+            };
+            return View(userListViewModel);
         }
 
         [Authorize(Roles = "Admin")]

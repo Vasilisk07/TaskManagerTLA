@@ -1,4 +1,5 @@
-﻿@model IEnumerable<TaskManagerTLA.Models.UserViewModel>
+﻿@model TaskManagerTLA.Models.UserListViewModel
+@addTagHelper *, TaskManagerTLA
 
 @{
     ViewData["Title"] = "Список користувачів";
@@ -17,19 +18,19 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.UserName)
+                @Html.DisplayNameFor(model => model.Users.FirstOrDefault().UserName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Email)
+                @Html.DisplayNameFor(model => model.Users.FirstOrDefault().Email)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Roles)
+                @Html.DisplayNameFor(model => model.Users.FirstOrDefault().Roles)
             </th>
 
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @foreach (var item in Model.Users)
         {
             <tr>
                 <td>
@@ -60,3 +61,5 @@
         }
     </tbody>
 </table>
+
+<page-link page-model="Model.PageViewModel" page-action="ListUser"></page-link>
