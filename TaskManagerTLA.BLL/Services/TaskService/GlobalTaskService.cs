@@ -27,10 +27,6 @@ namespace TaskManagerTLA.BLL.Services.TaskService
 
         public async Task DeleteGlobalTaskAsync(int globalTaskId)
         {
-            // а для чого ти робиш int?, якщо null не валідне значення?
-            /// добав валідацію на 
-            //VB десь прочитав що якщо використовуєш в ролі ID int то він обовязково має бути Nullable type з ним типу простіше працювати
-
             await globalTasRepository.DeleteItemByIdAsync(globalTaskId);
             await globalTasRepository.SaveAsync();
         }

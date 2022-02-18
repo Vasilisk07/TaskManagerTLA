@@ -15,14 +15,11 @@ namespace TaskManagerTLA.DAL.UnitOfWork.IdentityUnitOfWork
             Users = users;
             Roles = roles;
         }
-        //шось мені здалось що данний підхід не зовсім правельний але як саме його переробити теж поки не в курсі
-        //по перше певно не варто в двох властивостях Users і Roles викликати метод Save вони ж зсилаються на один і тойже контекст 
-        //а по друге нам все ще доступні методи Save на рівні обєктів UserAndRoleUnit.Users.SaveAsync() і UserAndRoleUnit.Roles.SaveAsync()
-        //
+
         public async Task SaveAsync()
         {
             await Users.SaveAsync();
-            // await Roles.SaveAsync();
+            await Roles.SaveAsync();
         }
     }
 }

@@ -10,10 +10,6 @@ using TaskManagerTLA.DAL.Repositories.Interfaces;
 
 namespace TaskManagerTLA.DAL.Repositories.IdentityRep
 {
-    // створи базовий репозиторій Repository<T, string>, реалізуй в ньому усі ці базові методи
-    // тут в RolesRepository наслідуй Repository<T, string>, якщщо потрібно добавляй специфічні для ролей методи
-    // ці методи занеси в інтерфейс IRolesRepository який всюди будеш інджектити (IRepository<ApplicationRole, string>)
-    // VB Тут я не зовсім зрозумів шо ти мав на увазі і в решті зробив по своєму
     public class RolesRepository : IRoleRepository<ApplicationRole, string>
     {
 

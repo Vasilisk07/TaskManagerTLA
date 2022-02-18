@@ -12,7 +12,6 @@ namespace TaskManagerTLA.Helpers
     {
         public static HtmlString CreateString(this IHtmlHelper html, IEnumerable<RoleViewModel> items)
         {
-            //Тут можливо виглядає все складно і непотрібно, просто хотілось попробувати по працювати з хелперами
             string result = "";
             var itemsArray = items.ToArray();
             for (int i = 0; i < itemsArray.Length; i++)
